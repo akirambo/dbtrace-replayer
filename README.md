@@ -18,8 +18,8 @@
 |Mongodb|v2.6 to v3.2|
 |Cassandra|3.0 - 3.6|
 
-## Quick Trial
-- dockerhub.com
+## Quick Trial(Start)
+- Under Construction
 
 ## Installation
 - ruby 2.x or later
