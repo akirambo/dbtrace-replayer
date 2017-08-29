@@ -1,0 +1,72 @@
+#
+# Copyright (c) 2017, Carnegie Mellon University.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. Neither the name of the University nor the names of its contributors
+#    may be used to endorse or promote products derived from this software
+#    without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT
+# HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+# OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+# AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+# WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+
+desc "Get Third Party Library (sudo)"
+task :init do
+  ## Check Distribution
+  dist = `uname -v`
+  dist.downcase!
+  if(dist.include?("ubuntu"))then
+    ## Ubuntu
+    sh "sudo aptitude install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool cmake"
+  elsif(dist.include?("centos"))then
+    #### Centos  
+    sh "sudo yum install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool "
+  end
+  ## For mongodb-c-driver
+  sh "git clone https://github.com/mongodb/mongo-c-driver.git"
+  sh "cd  mongo-c-driver; git checkout 1.6.3; ./autogen.sh --with-libbson=bundled; make ; sudo make install"
+  ## For mongodb-cxx-driver
+  sh "git clone https://github.com/mongodb/mongo-cxx-driver.git --branch releases/stable --depth 1"
+  sh "cd mongo-cxx-driver/build;cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..;sudo make EP_mnmlstc_core;make;sudo make install"
+end
+
+desc "Build Redis Runner (CXX)"
+task :build do
+  sh "ruby extconf.rb"
+  sh "make"
+end
+
+desc "Simple Test"
+task :test => [:build] do
+  sh "cd test; make ; ./testrun"
+  sh "ruby test/syncTest.rb"
+end
+
+task :clean do
+  if(File.exist?("Makefile"))then
+    sh "make clean"
+  end
+  sh "cd test; make clean"
+end
+
+task :distclean do
+  sh "rm -vf Makefile mongo-cxx-driver mongo-c-driver-1.6.2"
+end

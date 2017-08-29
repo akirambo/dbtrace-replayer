@@ -1,0 +1,70 @@
+
+
+begin
+  dir = ARGV[0]
+  rows = {
+    "TOTAL[count]" => [],
+    "TOTAL[sec]"   => []
+  }
+  Dir.glob("#{dir}/*.log").each{|file|
+    File.open(file,"r"){|f|
+      # parseLog
+      targetDB = nil
+      sourceDB = nil
+      targetQuery = nil
+      while line = f.gets
+        if(line.include?("=>"))then
+          _data_ = line.chop.split("=>")
+          sourceDB = _data_[0].split(" : ")[1].gsub(/\s/,"")
+          targetDB = _data_[1].gsub(/\s/,"")
+          if(!rows[sourceDB])then
+            rows[sourceDB] = []
+          end
+          rows[sourceDB].push(targetDB)
+        elsif(line.include?("QUERY"))then
+          targetQuery = line.gsub(/\s/,"").split("QUERY:")[1]
+          if(!rows["#{targetQuery}_TOTAL[sec]"])then
+            rows["#{targetQuery}_TOTAL[count]"] = []
+            rows["#{targetQuery}_TOTAL[sec]"] = []
+            rows["#{targetQuery}_AVG  [sec]"] = []
+            rows["#{targetQuery}_MAX  [sec]"] = []
+            rows["#{targetQuery}_MIN  [sec]"] = []
+          end
+        elsif(line.include?("TOTAL[count]"))then
+          rows["#{targetQuery}_TOTAL[count]"].push(line.split(/\s/).last)
+        elsif(line.include?("TOTAL[sec]"))then
+          rows["#{targetQuery}_TOTAL[sec]"].push(line.split(/\s/).last)
+        elsif(line.include?("AVG  [sec]"))then
+          rows["#{targetQuery}_AVG  [sec]"].push(line.split(/\s/).last)
+        elsif(line.include?("MAX  [sec]"))then
+          rows["#{targetQuery}_MAX  [sec]"].push(line.split(/\s/).last)
+        elsif(line.include?("MIN  [sec]"))then
+          rows["#{targetQuery}_MIN  [sec]"].push(line.split(/\s/).last)
+        end
+        if(rows["#{targetQuery}_TOTAL[count]"])then
+          index = rows["#{targetQuery}_TOTAL[count]"].size - 1
+        end
+      end
+      # Calculating Total Values
+      sums = {
+        "TOTAL[count]" => 0,
+        "TOTAL[sec]"   => 0
+      }
+      rows.each{|k,vals|
+        if(k.include?("TOTAL[count]") and k != "TOTAL[count]")then
+          sums["TOTAL[count]"] += vals[index].to_i
+        elsif(k.include?("TOTAL[sec]") and k != "TOTAL[sec]")then
+          sums["TOTAL[sec]"] += vals[index].to_f
+        end
+      }
+      sums.each{|k,v|
+        rows[k].push(v)
+      }
+    }
+  }
+  ## output
+  puts dir
+  rows.each{|k,v|
+    puts "#{k},#{v.join(",")}"
+  }
+end

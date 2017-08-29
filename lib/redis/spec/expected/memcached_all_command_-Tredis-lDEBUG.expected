@@ -1,0 +1,18 @@
+D, [2016-12-07T18:46:20.980458 #26931] DEBUG -- : {"operand"=>"MEMCACHED_SET", "args"=>["test", 244]}
+D, [2016-12-07T18:46:20.981739 #26931] DEBUG -- : {"operand"=>"MEMCACHED_GET", "args"=>["test"]}
+D, [2016-12-07T18:46:20.982281 #26931] DEBUG -- : {"operand"=>"MEMCACHED_ADD", "args"=>["test", 376]}
+D, [2016-12-07T18:46:20.982732 #26931] DEBUG -- : {"operand"=>"MEMCACHED_ADD", "args"=>["test1", 385]}
+D, [2016-12-07T18:46:20.983549 #26931] DEBUG -- : {"operand"=>"MEMCACHED_GET", "args"=>["test"]}
+D, [2016-12-07T18:46:20.984002 #26931] DEBUG -- : {"operand"=>"MEMCACHED_GET", "args"=>["test1"]}
+D, [2016-12-07T18:46:20.984386 #26931] DEBUG -- : {"operand"=>"MEMCACHED_REPLACE", "args"=>["test1", 1]}
+D, [2016-12-07T18:46:20.985061 #26931] DEBUG -- : {"operand"=>"MEMCACHED_GET", "args"=>["test1"]}
+D, [2016-12-07T18:46:20.985417 #26931] DEBUG -- : {"operand"=>"MEMCACHED_APPEND", "args"=>["test1", 6]}
+D, [2016-12-07T18:46:20.985995 #26931] DEBUG -- : {"operand"=>"MEMCACHED_GET", "args"=>["test1"]}
+D, [2016-12-07T18:46:20.986480 #26931] DEBUG -- : {"operand"=>"MEMCACHED_PREPEND", "args"=>["test1", 6]}
+D, [2016-12-07T18:46:20.987427 #26931] DEBUG -- : {"operand"=>"MEMCACHED_GET", "args"=>["test1"]}
+D, [2016-12-07T18:46:20.987904 #26931] DEBUG -- : {"operand"=>"MEMCACHED_INCR", "args"=>["test", "100"]}
+D, [2016-12-07T18:46:20.988317 #26931] DEBUG -- : {"operand"=>"MEMCACHED_GET", "args"=>["test"]}
+D, [2016-12-07T18:46:20.988797 #26931] DEBUG -- : {"operand"=>"MEMCACHED_DECR", "args"=>["test", "10"]}
+D, [2016-12-07T18:46:20.989284 #26931] DEBUG -- : {"operand"=>"MEMCACHED_GET", "args"=>["test"]}
+D, [2016-12-07T18:46:20.989618 #26931] DEBUG -- : {"operand"=>"MEMCACHED_DELETE", "args"=>["test"]}
+D, [2016-12-07T18:46:20.990019 #26931] DEBUG -- : {"operand"=>"MEMCACHED_DELETE", "args"=>["test1"]}

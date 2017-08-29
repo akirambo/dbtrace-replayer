@@ -1,0 +1,2 @@
+
+CREATE TABLE testdb.testcf (field0 VARCHAR, field1 VARCHAR, field2 INT,field3 INT, PRIMARY KEY (field0))

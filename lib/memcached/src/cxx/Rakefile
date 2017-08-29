@@ -1,0 +1,36 @@
+
+desc "Get Third Party Library (sudo)"
+task :init do
+  dist = `uname -v`
+  dist.downcase!
+  if(dist.include?("ubuntu"))then
+    ## Ubuntu
+    sh "sudo aptitude -y install autoconf automake make g++ "
+    sh "sudo aptitude -y install libmemcached-dev"
+  elsif(dist.include?("centos"))then
+    sh "sudo yum -y install autoconf automake make gcc-c++ pcre-devel zlib-devel libmemcached-devel"
+  end
+end
+
+desc "Build Redis Runner (CXX)"
+task :build => [:clean,:init] do
+  sh "ruby extconf.rb"
+  sh "make"
+end
+
+desc "Simple Test"
+task :test => [:build] do
+  sh "cd test; make ; ./testrun"
+  sh "ruby test/syncTest.rb"
+end
+
+task :clean do
+  if(File.exist?("Makefile"))then
+    sh "make clean"
+  end
+  sh "cd test; make clean"
+end
+
+task :distclean do
+  sh "rm -vf Makefile"
+end

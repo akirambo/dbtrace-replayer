@@ -1,0 +1,498 @@
+2016-11-10T14:43:27.888+0000 I CONTROL  [initandlisten] MongoDB starting : pid=7885 port=27017 dbpath=/data/db 64-bit host=dbs
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten] db version v3.2.10
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten] git version: 79d9b3ab5ce20f51c272b4411202710a082d0317
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1e-fips 11 Feb 2013
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten] allocator: tcmalloc
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten] modules: none
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten] build environment:
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten]     distmod: rhel70
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten]     distarch: x86_64
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten]     target_arch: x86_64
+2016-11-10T14:43:27.889+0000 I CONTROL  [initandlisten] options: { systemLog: { verbosity: 4 } }
+2016-11-10T14:43:27.889+0000 D NETWORK  [initandlisten] fd limit hard:4096 soft:1024 max conn: 819
+2016-11-10T14:43:27.908+0000 I -        [initandlisten] Detected data files in /data/db created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+2016-11-10T14:43:27.908+0000 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=3G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2016-11-10T14:43:28.632+0000 D COMMAND  [WTJournalFlusher] BackgroundJob starting: WTJournalFlusher
+2016-11-10T14:43:28.632+0000 D STORAGE  [WTJournalFlusher] starting WTJournalFlusher thread
+2016-11-10T14:43:28.632+0000 D STORAGE  [initandlisten] WiredTigerSizeStorer::loadFrom table:_mdb_catalog -> { numRecords: 3, dataSize: 927 }
+2016-11-10T14:43:28.632+0000 D STORAGE  [initandlisten] WiredTigerSizeStorer::loadFrom table:collection-0--3010489992879825638 -> { numRecords: 142, dataSize: 8657 }
+2016-11-10T14:43:28.632+0000 D STORAGE  [initandlisten] WiredTigerSizeStorer::loadFrom table:collection-0--773859288544310536 -> { numRecords: 33, dataSize: 44265 }
+2016-11-10T14:43:28.632+0000 D STORAGE  [initandlisten] WiredTigerSizeStorer::loadFrom table:collection-0-2405447531245327190 -> { numRecords: 1059, dataSize: 1236785 }
+2016-11-10T14:43:28.633+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:28.633+0000 D STORAGE  [initandlisten] WiredTigerKVEngine::createRecordStore uri: table:_mdb_catalog config: type=file,memory_page_max=10m,split_pct=90,leaf_value_max=64MB,checksum=on,block_compressor=snappy,,key_format=q,value_format=u,app_metadata=(formatVersion=1)
+2016-11-10T14:43:28.633+0000 D STORAGE  [initandlisten] WT begin_transaction
+2016-11-10T14:43:28.634+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:_mdb_catalog ok range 1 -> 1 current: 1
+2016-11-10T14:43:28.636+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.636+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.636+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.637+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:collection-0--773859288544310536 ok range 1 -> 1 current: 1
+2016-11-10T14:43:28.637+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.637+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.637+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.638+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:collection-0--3010489992879825638 ok range 1 -> 1 current: 1
+2016-11-10T14:43:28.639+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.639+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.639+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.640+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:collection-0-2405447531245327190 ok range 1 -> 1 current: 1
+2016-11-10T14:43:28.640+0000 D STORAGE  [initandlisten] WT commit_transaction
+2016-11-10T14:43:28.640+0000 D STORAGE  [initandlisten] WT begin_transaction
+2016-11-10T14:43:28.649+0000 D STORAGE  [initandlisten] WT rollback_transaction
+2016-11-10T14:43:28.681+0000 D STORAGE  [initandlisten] flushing directory /data/db
+2016-11-10T14:43:28.681+0000 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.
+2016-11-10T14:43:28.681+0000 I CONTROL  [initandlisten] 
+2016-11-10T14:43:28.681+0000 I CONTROL  [initandlisten] 
+2016-11-10T14:43:28.681+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+2016-11-10T14:43:28.681+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2016-11-10T14:43:28.681+0000 I CONTROL  [initandlisten] 
+2016-11-10T14:43:28.681+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
+2016-11-10T14:43:28.681+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2016-11-10T14:43:28.681+0000 I CONTROL  [initandlisten] 
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] enter repairDatabases (to check pdfile version #)
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] WT begin_transaction
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.682+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:index-1--773859288544310536 ok range 6 -> 6 current: 6
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] local.startup_log: clearing plan cache - collection info cache reset
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] Checking node for SERVER-23299 eligibility
+2016-11-10T14:43:28.683+0000 D STORAGE  [initandlisten] Checking node for SERVER-23299 applicability - reading startup log
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] Checking node for SERVER-23299 applicability - checking version 3.2.x for x in [0, 4]
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten]     Recovering database: local
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten]     Recovering database: test00
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.684+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:index-1--3010489992879825638 ok range 6 -> 6 current: 6
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] test00.users: clearing plan cache - collection info cache reset
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: test00.users @ RecordId(3)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--3010489992879825638" }, ns: "test00.users", ident: "collection-0--3010489992879825638" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "test00.users", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "test00.users" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]     Recovering database: ycsb
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.685+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:index-1-2405447531245327190 ok range 6 -> 6 current: 6
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] ycsb.usertable: clearing plan cache - collection info cache reset
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] WT commit_transaction
+2016-11-10T14:43:28.686+0000 D STORAGE  [initandlisten] done repairDatabases
+2016-11-10T14:43:28.687+0000 D QUERY    [initandlisten] Running query: query: {} sort: {} projection: {}
+2016-11-10T14:43:28.687+0000 D QUERY    [initandlisten] Collection admin.system.roles does not exist. Using EOF plan: query: {} sort: {} projection: {}
+2016-11-10T14:43:28.687+0000 I COMMAND  [initandlisten] query admin.system.roles planSummary: EOF ntoreturn:0 ntoskip:0 keysExamined:0 docsExamined:0 cursorExhausted:1 keyUpdates:0 writeConflicts:0 numYields:0 nreturned:0 reslen:20 locks:{ Global: { acquireCount: { r: 10, W: 2 } }, Database: { acquireCount: { r: 4 } }, Collection: { acquireCount: { r: 4 } } } 0ms
+2016-11-10T14:43:28.687+0000 D INDEX    [initandlisten] IndexRebuilder::checkNS: local.startup_log
+2016-11-10T14:43:28.687+0000 D INDEX    [initandlisten] IndexRebuilder::checkNS: test00.users
+2016-11-10T14:43:28.687+0000 D INDEX    [initandlisten] IndexRebuilder::checkNS: ycsb.usertable
+2016-11-10T14:43:28.687+0000 D INDEX    [initandlisten] checking complete
+2016-11-10T14:43:28.687+0000 D COMMAND  [TTLMonitor] BackgroundJob starting: TTLMonitor
+2016-11-10T14:43:28.687+0000 D COMMAND  [PeriodicTaskRunner] BackgroundJob starting: PeriodicTaskRunner
+2016-11-10T14:43:28.687+0000 D COMMAND  [ClientCursorMonitor] BackgroundJob starting: ClientCursorMonitor
+2016-11-10T14:43:28.687+0000 I FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/data/db/diagnostic.data'
+2016-11-10T14:43:28.687+0000 I NETWORK  [HostnameCanonicalizationWorker] Starting hostname canonicalization worker
+2016-11-10T14:43:28.687+0000 D NETWORK  [HostnameCanonicalizationWorker] Hostname Canonicalizer is acquiring host FQDNs
+2016-11-10T14:43:28.688+0000 D STORAGE  [initandlisten] WT begin_transaction
+2016-11-10T14:43:28.689+0000 D STORAGE  [initandlisten] WT commit_transaction
+2016-11-10T14:43:28.689+0000 I NETWORK  [initandlisten] waiting for connections on port 27017
+2016-11-10T14:43:28.701+0000 D NETWORK  [HostnameCanonicalizationWorker] Hostname Canonicalizer acquired FQDNs
+2016-11-10T14:43:28.756+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:28.856+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:28.956+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.057+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.157+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.257+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.357+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.457+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.558+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.658+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.758+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.859+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:29.959+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.059+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.159+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.260+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.360+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.460+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.561+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.661+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.761+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.861+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:30.962+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.062+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.162+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.262+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.363+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.463+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.564+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.664+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.764+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.864+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.965+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:31.970+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:36970 #1 (1 connection now open)
+2016-11-10T14:43:31.970+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:36971 #2 (2 connections now open)
+2016-11-10T14:43:31.970+0000 D NETWORK  [conn1] Socket recv() conn closed? 127.0.0.1:36970
+2016-11-10T14:43:31.970+0000 D NETWORK  [conn1] SocketException: remote: 127.0.0.1:36970 error: 9001 socket exception [CLOSED] server [127.0.0.1:36970] 
+2016-11-10T14:43:31.970+0000 I NETWORK  [conn1] end connection 127.0.0.1:36970 (1 connection now open)
+2016-11-10T14:43:31.971+0000 D COMMAND  [conn2] run command admin.$cmd { ismaster: 1 }
+2016-11-10T14:43:31.971+0000 I COMMAND  [conn2] command admin.$cmd command: isMaster { ismaster: 1 } keyUpdates:0 writeConflicts:0 numYields:0 reslen:178 locks:{} protocol:op_query 0ms
+2016-11-10T14:43:31.972+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:36972 #3 (2 connections now open)
+2016-11-10T14:43:31.972+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x0", age: 0, gender: "m", _id: ObjectId('5824879385afaa1edef213e1') } ], ordered: true }
+2016-11-10T14:43:31.973+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.973+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.973+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x0", age: 0, gender: "m", _id: ObjectId('5824879385afaa1edef213e1') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.974+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x1", age: 1, gender: "m", _id: ObjectId('5824879385afaa1edef213e2') } ], ordered: true }
+2016-11-10T14:43:31.974+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.974+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.974+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x1", age: 1, gender: "m", _id: ObjectId('5824879385afaa1edef213e2') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.975+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x2", age: 2, gender: "m", _id: ObjectId('5824879385afaa1edef213e3') } ], ordered: true }
+2016-11-10T14:43:31.975+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.975+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.975+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x2", age: 2, gender: "m", _id: ObjectId('5824879385afaa1edef213e3') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.976+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x3", age: 3, gender: "m", _id: ObjectId('5824879385afaa1edef213e4') } ], ordered: true }
+2016-11-10T14:43:31.976+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.976+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.976+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x3", age: 3, gender: "m", _id: ObjectId('5824879385afaa1edef213e4') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.976+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x4", age: 4, gender: "m", _id: ObjectId('5824879385afaa1edef213e5') } ], ordered: true }
+2016-11-10T14:43:31.976+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.976+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.976+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x4", age: 4, gender: "m", _id: ObjectId('5824879385afaa1edef213e5') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.977+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x5", age: 5, gender: "m", _id: ObjectId('5824879385afaa1edef213e6') } ], ordered: true }
+2016-11-10T14:43:31.977+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.977+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.977+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x5", age: 5, gender: "m", _id: ObjectId('5824879385afaa1edef213e6') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.978+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x6", age: 6, gender: "m", _id: ObjectId('5824879385afaa1edef213e7') } ], ordered: true }
+2016-11-10T14:43:31.978+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.978+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.978+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x6", age: 6, gender: "m", _id: ObjectId('5824879385afaa1edef213e7') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.979+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x7", age: 7, gender: "m", _id: ObjectId('5824879385afaa1edef213e8') } ], ordered: true }
+2016-11-10T14:43:31.979+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.979+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.979+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x7", age: 7, gender: "m", _id: ObjectId('5824879385afaa1edef213e8') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.979+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x8", age: 8, gender: "m", _id: ObjectId('5824879385afaa1edef213e9') } ], ordered: true }
+2016-11-10T14:43:31.979+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.979+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.979+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x8", age: 8, gender: "m", _id: ObjectId('5824879385afaa1edef213e9') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.980+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: [ { name: "mr.x9", age: 9, gender: "m", _id: ObjectId('5824879385afaa1edef213ea') } ], ordered: true }
+2016-11-10T14:43:31.980+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.980+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.980+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: [ { name: "mr.x9", age: 9, gender: "m", _id: ObjectId('5824879385afaa1edef213ea') } ], ordered: true } ninserted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.981+0000 D COMMAND  [conn3] run command test00.$cmd { insert: "users", documents: 2, ordered: true }
+2016-11-10T14:43:31.981+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.981+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.981+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.981+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.981+0000 I COMMAND  [conn3] command test00.users command: insert { insert: "users", documents: 2, ordered: true } ninserted:2 keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.982+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x0" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.983+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x0" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.983+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.983+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 0 numMatched: 1
+2016-11-10T14:43:31.983+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.983+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x0" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:1 nMatched:1 nModified:0 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.983+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x0" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.984+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x1" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.984+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x1" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.984+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.984+0000 D WRITE    [conn3] update validate options --  updatedFields: Fields:[ age,] immutableAndSingleValueFields.size:0 validate:1
+2016-11-10T14:43:31.984+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.984+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.984+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 1 numMatched: 1
+2016-11-10T14:43:31.984+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.984+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x1" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:9 nMatched:1 nModified:1 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.984+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x1" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.985+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x2" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.985+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x2" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.985+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.985+0000 D WRITE    [conn3] update validate options --  updatedFields: Fields:[ age,] immutableAndSingleValueFields.size:0 validate:1
+2016-11-10T14:43:31.985+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.985+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.985+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 1 numMatched: 1
+2016-11-10T14:43:31.985+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.985+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x2" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:10 nMatched:1 nModified:1 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.985+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x2" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.986+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x3" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.986+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x3" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.986+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.986+0000 D WRITE    [conn3] update validate options --  updatedFields: Fields:[ age,] immutableAndSingleValueFields.size:0 validate:1
+2016-11-10T14:43:31.986+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.986+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.986+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 1 numMatched: 1
+2016-11-10T14:43:31.986+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.986+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x3" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:11 nMatched:1 nModified:1 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.986+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x3" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.987+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x4" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.987+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x4" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.987+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.987+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 0 numMatched: 1
+2016-11-10T14:43:31.987+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.987+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x4" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:3 nMatched:1 nModified:0 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.987+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x4" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.987+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x5" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.988+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x5" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.988+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.988+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.988+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.988+0000 D WRITE    [conn3] update validate options --  updatedFields: Fields:[ age,] immutableAndSingleValueFields.size:0 validate:1
+2016-11-10T14:43:31.988+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.988+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.988+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 1 numMatched: 1
+2016-11-10T14:43:31.988+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.988+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x5" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:148 nMatched:1 nModified:1 keyUpdates:0 writeConflicts:0 numYields:1 locks:{ Global: { acquireCount: { r: 2, w: 2 } }, Database: { acquireCount: { w: 2 } }, Collection: { acquireCount: { w: 2 } } } 0ms
+2016-11-10T14:43:31.988+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x5" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 2, w: 2 } }, Database: { acquireCount: { w: 2 } }, Collection: { acquireCount: { w: 2 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.989+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x6" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.989+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x6" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.989+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.989+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 0 numMatched: 1
+2016-11-10T14:43:31.989+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.989+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x6" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:4 nMatched:1 nModified:0 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.989+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x6" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.989+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x7" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.990+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x7" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.990+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.990+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 0 numMatched: 1
+2016-11-10T14:43:31.990+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.990+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x7" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:5 nMatched:1 nModified:0 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.990+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x7" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.990+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x8" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.990+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x8" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.990+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.991+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 0 numMatched: 1
+2016-11-10T14:43:31.991+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.991+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x8" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:6 nMatched:1 nModified:0 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.991+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x8" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.991+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x9" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.991+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x9" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.991+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.991+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 0 numMatched: 1
+2016-11-10T14:43:31.992+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.992+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x9" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:7 nMatched:1 nModified:0 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.992+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x9" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.992+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x10" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.992+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x10" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.992+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.992+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.992+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.993+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 0 numDocsModified: 0 numMatched: 0
+2016-11-10T14:43:31.993+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.993+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x10" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:154 nMatched:0 nModified:0 keyUpdates:0 writeConflicts:0 numYields:1 locks:{ Global: { acquireCount: { r: 2, w: 2 } }, Database: { acquireCount: { w: 2 } }, Collection: { acquireCount: { w: 2 } } } 0ms
+2016-11-10T14:43:31.993+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x10" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 2, w: 2 } }, Database: { acquireCount: { w: 2 } }, Collection: { acquireCount: { w: 2 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.993+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x11" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.993+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x11" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.993+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.993+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 0 numMatched: 1
+2016-11-10T14:43:31.994+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.994+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x11" } update: { $set: { age: 50 } } keysExamined:0 docsExamined:53 nMatched:1 nModified:0 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:31.994+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x11" }, u: { $set: { age: 50 } }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.994+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x12" }, u: { $set: { age: 60 } }, multi: true, upsert: false } ], ordered: true }
+2016-11-10T14:43:31.994+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x12" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.995+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.995+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.995+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.995+0000 D WRITE    [conn3] update validate options --  updatedFields: Fields:[ age,] immutableAndSingleValueFields.size:0 validate:1
+2016-11-10T14:43:31.995+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:31.995+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.995+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 1 existing: 1 numDocsModified: 1 numMatched: 10
+2016-11-10T14:43:31.995+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.995+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x12" } update: { $set: { age: 60 } } keysExamined:0 docsExamined:154 nMatched:10 nModified:1 keyUpdates:0 writeConflicts:0 numYields:1 locks:{ Global: { acquireCount: { r: 2, w: 2 } }, Database: { acquireCount: { w: 2 } }, Collection: { acquireCount: { w: 2 } } } 0ms
+2016-11-10T14:43:31.995+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x12" }, u: { $set: { age: 60 } }, multi: true, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 2, w: 2 } }, Database: { acquireCount: { w: 2 } }, Collection: { acquireCount: { w: 2 } } } protocol:op_query 0ms
+2016-11-10T14:43:31.996+0000 D COMMAND  [conn3] run command test00.$cmd { find: "users", filter: {} }
+2016-11-10T14:43:31.996+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: {} sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:31.996+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:31.996+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:31.996+0000 I COMMAND  [conn3] command test00.users command: find { find: "users", filter: {} } planSummary: COLLSCAN cursorid:14070946273 keysExamined:0 docsExamined:101 keyUpdates:0 writeConflicts:0 numYields:0 nreturned:101 reslen:6661 locks:{ Global: { acquireCount: { r: 2 } }, Database: { acquireCount: { r: 1 } }, Collection: { acquireCount: { r: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.000+0000 D COMMAND  [conn3] run command test00.$cmd { getMore: 14070946273, collection: "users" }
+2016-11-10T14:43:32.000+0000 D FTDC     [ftdc] full-time diagnostic data capture schema change: field name change - from 'R' to 'w'
+2016-11-10T14:43:32.001+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.001+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.001+0000 I COMMAND  [conn3] command test00.users command: getMore { getMore: 14070946273, collection: "users" } planSummary: COLLSCAN cursorid:14070946273 keysExamined:0 docsExamined:53 cursorExhausted:1 keyUpdates:0 writeConflicts:0 numYields:0 nreturned:53 reslen:3544 locks:{ Global: { acquireCount: { r: 2 } }, Database: { acquireCount: { r: 1 } }, Collection: { acquireCount: { r: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.004+0000 D COMMAND  [conn3] run command test00.$cmd { find: "users", filter: { name: "mr.x11" } }
+2016-11-10T14:43:32.004+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x11" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:32.004+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.004+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.004+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.004+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.004+0000 I COMMAND  [conn3] command test00.users command: find { find: "users", filter: { name: "mr.x11" } } planSummary: COLLSCAN keysExamined:0 docsExamined:154 cursorExhausted:1 keyUpdates:0 writeConflicts:0 numYields:1 nreturned:10 reslen:768 locks:{ Global: { acquireCount: { r: 4 } }, Database: { acquireCount: { r: 2 } }, Collection: { acquireCount: { r: 2 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.005+0000 D COMMAND  [conn3] run command test00.$cmd { distinct: "users", key: "name", query: {} }
+2016-11-10T14:43:32.005+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: {} sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:32.005+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.006+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.006+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.006+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.006+0000 I COMMAND  [conn3] command test00.users command: distinct { distinct: "users", key: "name", query: {} } keyUpdates:0 writeConflicts:0 numYields:1 reslen:334 locks:{ Global: { acquireCount: { r: 4 } }, Database: { acquireCount: { r: 2 } }, Collection: { acquireCount: { r: 2 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.006+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.x1" }, u: { name: "mr.y1" }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:32.007+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x1" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:32.007+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.007+0000 D WRITE    [conn3] update validate options --  updatedFields: Fields:[ ] immutableAndSingleValueFields.size:0 validate:1
+2016-11-10T14:43:32.007+0000 D WRITE    [conn3] Changed immutable fields: Fields:[ _id,]
+2016-11-10T14:43:32.007+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:32.007+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.007+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 0 existing: 1 numDocsModified: 1 numMatched: 1
+2016-11-10T14:43:32.007+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.007+0000 I WRITE    [conn3] update test00.users query: { name: "mr.x1" } update: { name: "mr.y1" } keysExamined:0 docsExamined:9 nMatched:1 nModified:1 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:32.007+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.x1" }, u: { name: "mr.y1" }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.008+0000 D COMMAND  [conn3] run command test00.$cmd { update: "users", updates: [ { q: { name: "mr.y1" }, u: { name: "mr.z1" }, multi: false, upsert: false } ], ordered: true }
+2016-11-10T14:43:32.008+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.y1" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:32.008+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.008+0000 D WRITE    [conn3] update validate options --  updatedFields: Fields:[ ] immutableAndSingleValueFields.size:0 validate:1
+2016-11-10T14:43:32.008+0000 D WRITE    [conn3] Changed immutable fields: Fields:[ _id,]
+2016-11-10T14:43:32.008+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:32.008+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.008+0000 D WRITE    [conn3] UpdateResult --  upserted: {} modifiers: 0 existing: 1 numDocsModified: 1 numMatched: 1
+2016-11-10T14:43:32.008+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.008+0000 I WRITE    [conn3] update test00.users query: { name: "mr.y1" } update: { name: "mr.z1" } keysExamined:0 docsExamined:9 nMatched:1 nModified:1 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:32.008+0000 I COMMAND  [conn3] command test00.$cmd command: update { update: "users", updates: [ { q: { name: "mr.y1" }, u: { name: "mr.z1" }, multi: false, upsert: false } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:55 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.009+0000 D COMMAND  [conn3] run command test00.$cmd { findandmodify: "users", query: { name: "mr.z1" }, remove: true }
+2016-11-10T14:43:32.009+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.z1" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:32.009+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.009+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:32.009+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.009+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.009+0000 I COMMAND  [conn3] command test00.users command: findAndModify { findandmodify: "users", query: { name: "mr.z1" }, remove: true } ndeleted:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:111 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.010+0000 D COMMAND  [conn3] run command test00.$cmd { findandmodify: "users", query: { name: "mr.x2" }, update: { name: "mr.y2" }, new: false, bypassDocumentValidation: false }
+2016-11-10T14:43:32.010+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x2" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:32.010+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.010+0000 D WRITE    [conn3] update validate options --  updatedFields: Fields:[ ] immutableAndSingleValueFields.size:0 validate:1
+2016-11-10T14:43:32.010+0000 D WRITE    [conn3] Changed immutable fields: Fields:[ _id,]
+2016-11-10T14:43:32.010+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:32.010+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.010+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.010+0000 I COMMAND  [conn3] command test00.users command: findAndModify { findandmodify: "users", query: { name: "mr.x2" }, update: { name: "mr.y2" }, new: false, bypassDocumentValidation: false } update: { name: "mr.y2" } keysExamined:0 docsExamined:9 nMatched:1 nModified:1 keyUpdates:0 writeConflicts:0 numYields:0 reslen:152 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.011+0000 D COMMAND  [conn3] run command test00.$cmd { delete: "users", deletes: [ { q: { name: "mr.x3" }, limit: 1 } ], ordered: true }
+2016-11-10T14:43:32.011+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x3" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:32.011+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.011+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:32.011+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.011+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.011+0000 I WRITE    [conn3] remove test00.users query: { name: "mr.x3" } ndeleted:1 keyUpdates:0 writeConflicts:0 numYields:0 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } 0ms
+2016-11-10T14:43:32.011+0000 I COMMAND  [conn3] command test00.$cmd command: delete { delete: "users", deletes: [ { q: { name: "mr.x3" }, limit: 1 } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.012+0000 D COMMAND  [conn3] run command test00.$cmd { delete: "users", deletes: [ { q: { name: "mr.x5" }, limit: 0 } ], ordered: true }
+2016-11-10T14:43:32.012+0000 D QUERY    [conn3] Only one plan is available; it will be run but will not be cached. query: { name: "mr.x5" } sort: {} projection: {}, planSummary: COLLSCAN
+2016-11-10T14:43:32.012+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.012+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.012+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.012+0000 D STORAGE  [conn3] WT commit_transaction
+2016-11-10T14:43:32.012+0000 D STORAGE  [conn3] WT begin_transaction
+2016-11-10T14:43:32.012+0000 D STORAGE  [conn3] WT rollback_transaction
+2016-11-10T14:43:32.012+0000 I WRITE    [conn3] remove test00.users query: { name: "mr.x5" } ndeleted:1 keyUpdates:0 writeConflicts:0 numYields:1 locks:{ Global: { acquireCount: { r: 2, w: 2 } }, Database: { acquireCount: { w: 2 } }, Collection: { acquireCount: { w: 2 } } } 0ms
+2016-11-10T14:43:32.012+0000 I COMMAND  [conn3] command test00.$cmd command: delete { delete: "users", deletes: [ { q: { name: "mr.x5" }, limit: 0 } ], ordered: true } keyUpdates:0 writeConflicts:0 numYields:0 reslen:40 locks:{ Global: { acquireCount: { r: 2, w: 2 } }, Database: { acquireCount: { w: 2 } }, Collection: { acquireCount: { w: 2 } } } protocol:op_query 0ms
+2016-11-10T14:43:32.028+0000 D NETWORK  [conn2] Socket recv() conn closed? 127.0.0.1:36971
+2016-11-10T14:43:32.028+0000 D NETWORK  [conn2] SocketException: remote: 127.0.0.1:36971 error: 9001 socket exception [CLOSED] server [127.0.0.1:36971] 
+2016-11-10T14:43:32.028+0000 I NETWORK  [conn2] end connection 127.0.0.1:36971 (1 connection now open)
+2016-11-10T14:43:32.028+0000 D NETWORK  [conn3] Socket recv() conn closed? 127.0.0.1:36972
+2016-11-10T14:43:32.028+0000 D NETWORK  [conn3] SocketException: remote: 127.0.0.1:36972 error: 9001 socket exception [CLOSED] server [127.0.0.1:36972] 
+2016-11-10T14:43:32.028+0000 I NETWORK  [conn3] end connection 127.0.0.1:36972 (0 connections now open)
+2016-11-10T14:43:32.096+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:32.196+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:32.296+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:32.396+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:32.496+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:32.597+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:32.697+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:32.797+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:32.897+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:32.998+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:33.098+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:33.198+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:33.298+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:33.398+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:33.499+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:33.599+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:33.699+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:33.799+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:33.899+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.000+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.100+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.200+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.300+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.401+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.501+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.601+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.701+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.802+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:34.902+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:35.002+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:35.102+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:35.203+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:35.303+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:35.403+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:35.503+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:35.604+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:35.704+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-10T14:43:35.804+0000 D STORAGE  [WTJournalFlusher] flushed journal

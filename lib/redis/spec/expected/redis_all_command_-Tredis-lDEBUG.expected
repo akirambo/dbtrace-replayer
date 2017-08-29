@@ -1,0 +1,93 @@
+D, [2016-12-07T14:27:21.635063 #13234] DEBUG -- : {"operand"=>"FLUSHALL", "args"=>[]}
+D, [2016-12-07T14:27:21.678502 #13234] DEBUG -- : {"operand"=>"SET", "args"=>["test::set", "true"]}
+D, [2016-12-07T14:27:21.678752 #13234] DEBUG -- : {"operand"=>"GET", "args"=>["test::set"]}
+D, [2016-12-07T14:27:21.679016 #13234] DEBUG -- : {"operand"=>"SETNX", "args"=>["test::set", "false"]}
+D, [2016-12-07T14:27:21.679219 #13234] DEBUG -- : {"operand"=>"SETNX", "args"=>["test::setnx", "true"]}
+D, [2016-12-07T14:27:21.679426 #13234] DEBUG -- : {"operand"=>"SETEX", "args"=>["test::setex", "1", "true"]}
+D, [2016-12-07T14:27:21.679611 #13234] DEBUG -- : {"operand"=>"PSETEX", "args"=>["test::psetex", "1000", "bar"]}
+D, [2016-12-07T14:27:21.679804 #13234] DEBUG -- : {"operand"=>"MSET", "args"=>{"test::mset1"=>"true", "test::mset2"=>"true"}}
+D, [2016-12-07T14:27:21.680023 #13234] DEBUG -- : {"operand"=>"MSETNX", "args"=>{"test::mset1"=>"false", "test::mset2"=>"false"}}
+D, [2016-12-07T14:27:21.680269 #13234] DEBUG -- : {"operand"=>"SET", "args"=>["test::incr", "0"]}
+D, [2016-12-07T14:27:21.680514 #13234] DEBUG -- : {"operand"=>"INCR", "args"=>["test::incr"]}
+D, [2016-12-07T14:27:21.680706 #13234] DEBUG -- : {"operand"=>"INCRBY", "args"=>["test::incr", "11"]}
+D, [2016-12-07T14:27:21.680893 #13234] DEBUG -- : {"operand"=>"DECR", "args"=>["test::incr"]}
+D, [2016-12-07T14:27:21.681077 #13234] DEBUG -- : {"operand"=>"DECRBY", "args"=>["test::incr", "3"]}
+D, [2016-12-07T14:27:21.681308 #13234] DEBUG -- : {"operand"=>"SET", "args"=>["test::append", "tr"]}
+D, [2016-12-07T14:27:21.681494 #13234] DEBUG -- : {"operand"=>"APPEND", "args"=>["test::append", "ue"]}
+D, [2016-12-07T14:27:21.681701 #13234] DEBUG -- : {"operand"=>"SET", "args"=>["test::getset", "init"]}
+D, [2016-12-07T14:27:21.681889 #13234] DEBUG -- : {"operand"=>"GETSET", "args"=>["test::getset", "true"]}
+D, [2016-12-07T14:27:21.682100 #13234] DEBUG -- : {"operand"=>"STRLEN", "args"=>["test::getset"]}
+D, [2016-12-07T14:27:21.682302 #13234] DEBUG -- : {"operand"=>"FLUSHALL", "args"=>[]}
+D, [2016-12-07T14:27:21.704298 #13234] DEBUG -- : {"operand"=>"SADD", "args"=>["test::sadd", "m1"]}
+D, [2016-12-07T14:27:21.704633 #13234] DEBUG -- : {"operand"=>"SADD", "args"=>["test::sadd", "m2"]}
+D, [2016-12-07T14:27:21.704922 #13234] DEBUG -- : {"operand"=>"SADD", "args"=>["test::sadd", "m3"]}
+D, [2016-12-07T14:27:21.705262 #13234] DEBUG -- : {"operand"=>"SADD", "args"=>["test::sadd", "m4"]}
+D, [2016-12-07T14:27:21.705554 #13234] DEBUG -- : {"operand"=>"SREM", "args"=>["test::sadd", "m1"]}
+D, [2016-12-07T14:27:21.705864 #13234] DEBUG -- : {"operand"=>"SPOP", "args"=>["test::sadd"]}
+D, [2016-12-07T14:27:21.706375 #13234] DEBUG -- : {"operand"=>"SMOVE", "args"=>["test::sadd", "test::smove", "m3"]}
+D, [2016-12-07T14:27:21.706700 #13234] DEBUG -- : {"operand"=>"SCARD", "args"=>["test::sadd"]}
+D, [2016-12-07T14:27:21.707047 #13234] DEBUG -- : {"operand"=>"SINTER", "args"=>["set", "set_new"]}
+D, [2016-12-07T14:27:21.707370 #13234] DEBUG -- : {"operand"=>"SINTERSTORE", "args"=>{"key"=>"set_x", "args"=>["set", "set_new"]}}
+D, [2016-12-07T14:27:21.707672 #13234] DEBUG -- : {"operand"=>"SDIFF", "args"=>["set", "set_new"]}
+D, [2016-12-07T14:27:21.707990 #13234] DEBUG -- : {"operand"=>"SDIFFSTORE", "args"=>{"key"=>"set", "args"=>["set_new"]}}
+D, [2016-12-07T14:27:21.708349 #13234] DEBUG -- : {"operand"=>"SMEMBERS", "args"=>["set"]}
+D, [2016-12-07T14:27:21.708633 #13234] DEBUG -- : {"operand"=>"SRANDMEMBER", "args"=>["set"]}
+D, [2016-12-07T14:27:21.708915 #13234] DEBUG -- : {"operand"=>"FLUSHALL", "args"=>[]}
+D, [2016-12-07T14:27:21.737593 #13234] DEBUG -- : {"operand"=>"RPUSH", "args"=>["list", "v2"]}
+D, [2016-12-07T14:27:21.738038 #13234] DEBUG -- : {"operand"=>"RPUSH", "args"=>["list", "v3"]}
+D, [2016-12-07T14:27:21.738376 #13234] DEBUG -- : {"operand"=>"LPUSH", "args"=>["list", "v1"]}
+D, [2016-12-07T14:27:21.738680 #13234] DEBUG -- : {"operand"=>"LLEN", "args"=>["list"]}
+D, [2016-12-07T14:27:21.739241 #13234] DEBUG -- : {"operand"=>"LRANGE", "args"=>["list", "0", "2"]}
+D, [2016-12-07T14:27:21.739663 #13234] DEBUG -- : {"operand"=>"LTRIM", "args"=>["list", "0", "1"]}
+D, [2016-12-07T14:27:21.739958 #13234] DEBUG -- : {"operand"=>"LINDEX", "args"=>["list", "1"]}
+D, [2016-12-07T14:27:21.740278 #13234] DEBUG -- : {"operand"=>"LSET", "args"=>["list", "1", "n4"]}
+D, [2016-12-07T14:27:21.740577 #13234] DEBUG -- : {"operand"=>"LREM", "args"=>["list", "2", "v1"]}
+D, [2016-12-07T14:27:21.740875 #13234] DEBUG -- : {"operand"=>"LPOP", "args"=>["list"]}
+D, [2016-12-07T14:27:21.741212 #13234] DEBUG -- : {"operand"=>"RPOP", "args"=>["list"]}
+D, [2016-12-07T14:27:21.741512 #13234] DEBUG -- : {"operand"=>"RPOPLPUSH", "args"=>["list", "list1"]}
+D, [2016-12-07T14:27:21.741801 #13234] DEBUG -- : {"operand"=>"FLUSHALL", "args"=>[]}
+D, [2016-12-07T14:27:21.762384 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set", "100", "v0"]}
+D, [2016-12-07T14:27:21.762744 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set", "200", "1"]}
+D, [2016-12-07T14:27:21.763117 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set", "300", "v1"]}
+D, [2016-12-07T14:27:21.763457 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set", "400", "v2"]}
+D, [2016-12-07T14:27:21.763754 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set", "500", "v3"]}
+D, [2016-12-07T14:27:21.764051 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set2", "100", "v0"]}
+D, [2016-12-07T14:27:21.764380 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set2", "200", "1"]}
+D, [2016-12-07T14:27:21.764708 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set2", "300", "v1"]}
+D, [2016-12-07T14:27:21.765003 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set2", "400", "n2"]}
+D, [2016-12-07T14:27:21.765326 #13234] DEBUG -- : {"operand"=>"ZADD", "args"=>["set2", "500", "m3"]}
+D, [2016-12-07T14:27:21.765624 #13234] DEBUG -- : {"operand"=>"ZREM", "args"=>["set", "v3"]}
+D, [2016-12-07T14:27:21.765940 #13234] DEBUG -- : {"operand"=>"ZINCRBY", "args"=>["set", "100", "1"]}
+D, [2016-12-07T14:27:21.766329 #13234] DEBUG -- : {"operand"=>"ZRANK", "args"=>["set", "2"]}
+D, [2016-12-07T14:27:21.766644 #13234] DEBUG -- : {"operand"=>"ZREVRANK", "args"=>["set", "2"]}
+D, [2016-12-07T14:27:21.766961 #13234] DEBUG -- : {"operand"=>"ZRANGE", "args"=>["set", "1", "2"]}
+D, [2016-12-07T14:27:21.767202 #13234] DEBUG -- : {"operand"=>"ZREVRANGE", "args"=>["set", "1", "2"]}
+D, [2016-12-07T14:27:21.767426 #13234] DEBUG -- : {"operand"=>"ZRANGEBYSCORE", "args"=>["set", "300", "500"]}
+D, [2016-12-07T14:27:21.767654 #13234] DEBUG -- : {"operand"=>"ZCOUNT", "args"=>["set", "200", "400"]}
+D, [2016-12-07T14:27:21.767847 #13234] DEBUG -- : {"operand"=>"ZCARD", "args"=>["set"]}
+D, [2016-12-07T14:27:21.768072 #13234] DEBUG -- : {"operand"=>"ZSCORE", "args"=>["set2", "n2"]}
+D, [2016-12-07T14:27:21.768296 #13234] DEBUG -- : {"operand"=>"ZREMRANGEBYRANK", "args"=>["set", "3", "3"]}
+D, [2016-12-07T14:27:21.768497 #13234] DEBUG -- : {"operand"=>"ZREMRANGEBYSCORE", "args"=>["set", "300", "300"]}
+D, [2016-12-07T14:27:21.768714 #13234] DEBUG -- : {"operand"=>"ZUNIONSTORE", "args"=>{"args"=>["set", "set2"], "key"=>"dst0", "options"=>{}}}
+D, [2016-12-07T14:27:21.768941 #13234] DEBUG -- : {"operand"=>"ZUNIONSTORE", "args"=>{"args"=>["set", "set2"], "key"=>"dst0_sum", "options"=>{:weights=>["2.0", "1.0"], :aggregate=>"sum"}}}
+D, [2016-12-07T14:27:21.769215 #13234] DEBUG -- : {"operand"=>"ZUNIONSTORE", "args"=>{"args"=>["set", "set2"], "key"=>"dst0_min", "options"=>{:weights=>["2.0", "1.0"], :aggregate=>"min"}}}
+D, [2016-12-07T14:27:21.769464 #13234] DEBUG -- : {"operand"=>"ZUNIONSTORE", "args"=>{"args"=>["set", "set2"], "key"=>"dst0_max", "options"=>{:weights=>["2.0", "1.0"], :aggregate=>"max"}}}
+D, [2016-12-07T14:27:21.769699 #13234] DEBUG -- : {"operand"=>"ZINTERSTORE", "args"=>{"args"=>["set", "set2"], "key"=>"dst1", "options"=>{}}}
+D, [2016-12-07T14:27:21.769941 #13234] DEBUG -- : {"operand"=>"ZINTERSTORE", "args"=>{"args"=>["set", "set2"], "key"=>"dst1_sum", "options"=>{:weights=>["2.0", "1.0"], :aggregate=>"sum"}}}
+D, [2016-12-07T14:27:21.770164 #13234] DEBUG -- : {"operand"=>"ZINTERSTORE", "args"=>{"args"=>["set", "set2"], "key"=>"dst1_min", "options"=>{:weights=>["2.0", "1.0"], :aggregate=>"min"}}}
+D, [2016-12-07T14:27:21.770642 #13234] DEBUG -- : {"operand"=>"ZINTERSTORE", "args"=>{"args"=>["set", "set2"], "key"=>"dst1_max", "options"=>{:weights=>["2.0", "1.0"], :aggregate=>"max"}}}
+D, [2016-12-07T14:27:21.770909 #13234] DEBUG -- : {"operand"=>"FLUSHALL", "args"=>[]}
+D, [2016-12-07T14:27:21.795814 #13234] DEBUG -- : {"operand"=>"HSET", "args"=>["hash", "f0", "v0"]}
+D, [2016-12-07T14:27:21.796026 #13234] DEBUG -- : {"operand"=>"HSET", "args"=>["hash", "f1", "v1"]}
+D, [2016-12-07T14:27:21.796268 #13234] DEBUG -- : {"operand"=>"HSET", "args"=>["hash", "f2", "v2"]}
+D, [2016-12-07T14:27:21.796460 #13234] DEBUG -- : {"operand"=>"HGET", "args"=>["hash", "f0"]}
+D, [2016-12-07T14:27:21.796655 #13234] DEBUG -- : {"operand"=>"HMGET", "args"=>{"key"=>"hash", "args"=>["f0", "f1", "f2"]}}
+D, [2016-12-07T14:27:21.796901 #13234] DEBUG -- : {"operand"=>"HMSET", "args"=>{"key"=>"hash", "args"=>{"f3"=>"v3", "f4"=>"v4", "f5"=>"10"}}}
+D, [2016-12-07T14:27:21.797109 #13234] DEBUG -- : {"operand"=>"HINCRBY", "args"=>["hash", "f5", "25"]}
+D, [2016-12-07T14:27:21.797324 #13234] DEBUG -- : {"operand"=>"HEXISTS", "args"=>["hash", "f4"]}
+D, [2016-12-07T14:27:21.797513 #13234] DEBUG -- : {"operand"=>"HDEL", "args"=>["hash", "f3"]}
+D, [2016-12-07T14:27:21.797700 #13234] DEBUG -- : {"operand"=>"HLEN", "args"=>["hash"]}
+D, [2016-12-07T14:27:21.797933 #13234] DEBUG -- : {"operand"=>"HKEYS", "args"=>["hash"]}
+D, [2016-12-07T14:27:21.798150 #13234] DEBUG -- : {"operand"=>"HVALS", "args"=>["hash"]}
+D, [2016-12-07T14:27:21.798379 #13234] DEBUG -- : {"operand"=>"HGETALL", "args"=>["hash"]}
+D, [2016-12-07T14:27:21.798671 #13234] DEBUG -- : {"operand"=>"FLUSHALL", "args"=>[]}

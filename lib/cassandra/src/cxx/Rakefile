@@ -1,0 +1,50 @@
+
+desc "Setup Library (sudo)"
+task :init do
+  dist = `uname -v`
+  dist.downcase!
+  if(dist.include?("ubuntu"))then
+    ## Ubuntu
+    sh "sudo aptitude -y install g++ make cmake libuv-dev libssl-dev"
+    sh "git clone https://github.com/datastax/cpp-driver.git"
+    sh "mkdir cpp-driver/build"
+    sh "cd cpp-driver/build"
+    sh "cmake .."
+    sh "make"
+    sh "sudo make install"
+  elsif(dist.include?("centos"))then
+    #### Centos
+    sh "sudo yum -y install cassandra-cpp-driver cassandra-cpp-driver-devel"
+  end
+end
+
+desc "Build Cassandra Runner (CXX)"
+task :build do
+  dist = `uname -v`
+  dist.downcase!
+  if(dist.include?("ubuntu"))then
+    sh "ruby extconf_ubuntu.rb"
+  elsif(dist.include?("centos"))then
+    sh "ruby extconf.rb"
+  end
+  sh "make"
+end
+
+desc "Simple Test"
+task :test => [:build] do
+  #sh "cd test; make test dtest"
+  #sh "ruby test/test.rb"
+  sh "ruby test/test02.rb"
+end
+
+task :clean do
+  if(File.exist?("Makefile"))then
+    sh "make clean"
+  end
+  sh "cd test; make clean"
+end
+
+task :distclean => [:clean] do
+  sh "rm -vf Makefile"
+end
+

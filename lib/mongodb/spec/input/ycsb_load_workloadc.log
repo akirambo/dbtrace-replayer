@@ -1,0 +1,282 @@
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten] MongoDB starting : pid=2431 port=27017 dbpath=/data/db 64-bit host=dbs
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten] db version v3.2.10
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten] git version: 79d9b3ab5ce20f51c272b4411202710a082d0317
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1e-fips 11 Feb 2013
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten] allocator: tcmalloc
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten] modules: none
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten] build environment:
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten]     distmod: rhel70
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten]     distarch: x86_64
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten]     target_arch: x86_64
+2016-11-09T15:49:28.763+0000 I CONTROL  [initandlisten] options: { systemLog: { verbosity: 4 } }
+2016-11-09T15:49:28.763+0000 D NETWORK  [initandlisten] fd limit hard:4096 soft:1024 max conn: 819
+2016-11-09T15:49:28.783+0000 I -        [initandlisten] Detected data files in /data/db created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+2016-11-09T15:49:28.783+0000 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=3G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2016-11-09T15:49:29.495+0000 D COMMAND  [WTJournalFlusher] BackgroundJob starting: WTJournalFlusher
+2016-11-09T15:49:29.495+0000 D STORAGE  [WTJournalFlusher] starting WTJournalFlusher thread
+2016-11-09T15:49:29.496+0000 D STORAGE  [initandlisten] WiredTigerSizeStorer::loadFrom table:_mdb_catalog -> { numRecords: 2, dataSize: 630 }
+2016-11-09T15:49:29.496+0000 D STORAGE  [initandlisten] WiredTigerSizeStorer::loadFrom table:collection-0--773859288544310536 -> { numRecords: 15, dataSize: 20019 }
+2016-11-09T15:49:29.496+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:29.496+0000 D STORAGE  [initandlisten] WiredTigerSizeStorer::loadFrom table:collection-0-2405447531245327190 -> { numRecords: 1000, dataSize: 1167877 }
+2016-11-09T15:49:29.496+0000 D STORAGE  [initandlisten] WiredTigerKVEngine::createRecordStore uri: table:_mdb_catalog config: type=file,memory_page_max=10m,split_pct=90,leaf_value_max=64MB,checksum=on,block_compressor=snappy,,key_format=q,value_format=u,app_metadata=(formatVersion=1)
+2016-11-09T15:49:29.496+0000 D STORAGE  [initandlisten] WT begin_transaction
+2016-11-09T15:49:29.498+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:_mdb_catalog ok range 1 -> 1 current: 1
+2016-11-09T15:49:29.499+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.499+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.500+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.501+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:collection-0--773859288544310536 ok range 1 -> 1 current: 1
+2016-11-09T15:49:29.501+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.501+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.501+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.502+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:collection-0-2405447531245327190 ok range 1 -> 1 current: 1
+2016-11-09T15:49:29.503+0000 D STORAGE  [initandlisten] WT commit_transaction
+2016-11-09T15:49:29.503+0000 D STORAGE  [initandlisten] WT begin_transaction
+2016-11-09T15:49:29.510+0000 D STORAGE  [initandlisten] WT rollback_transaction
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten] flushing directory /data/db
+2016-11-09T15:49:29.545+0000 I CONTROL  [initandlisten] ** WARNING: You are running this process as the root user, which is not recommended.
+2016-11-09T15:49:29.545+0000 I CONTROL  [initandlisten] 
+2016-11-09T15:49:29.545+0000 I CONTROL  [initandlisten] 
+2016-11-09T15:49:29.545+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+2016-11-09T15:49:29.545+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2016-11-09T15:49:29.545+0000 I CONTROL  [initandlisten] 
+2016-11-09T15:49:29.545+0000 I CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
+2016-11-09T15:49:29.545+0000 I CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2016-11-09T15:49:29.545+0000 I CONTROL  [initandlisten] 
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten] enter repairDatabases (to check pdfile version #)
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten] WT begin_transaction
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.545+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:index-1--773859288544310536 ok range 6 -> 6 current: 6
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] local.startup_log: clearing plan cache - collection info cache reset
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] Checking node for SERVER-23299 eligibility
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] Checking node for SERVER-23299 applicability - reading startup log
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] Checking node for SERVER-23299 applicability - checking version 3.2.x for x in [0, 4]
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]     Recovering database: local
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] looking up metadata for: local.startup_log @ RecordId(1)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1--773859288544310536" }, ns: "local.startup_log", ident: "collection-0--773859288544310536" }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "local.startup_log", options: { capped: true, size: 10485760 }, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "local.startup_log" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]     Recovering database: ycsb
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.546+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.547+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] WiredTigerUtil::checkApplicationMetadataFormatVersion  uri: table:index-1-2405447531245327190 ok range 6 -> 6 current: 6
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] ycsb.usertable: clearing plan cache - collection info cache reset
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] looking up metadata for: ycsb.usertable @ RecordId(2)
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten]  fetched CCE metadata: { md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }, idxIdent: { _id_: "index-1-2405447531245327190" }, ns: "ycsb.usertable", ident: "collection-0-2405447531245327190" }
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] returning metadata: md: { ns: "ycsb.usertable", options: {}, indexes: [ { spec: { v: 1, key: { _id: 1 }, name: "_id_", ns: "ycsb.usertable" }, ready: true, multikey: false, head: 0 } ] }
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] WT commit_transaction
+2016-11-09T15:49:29.548+0000 D STORAGE  [initandlisten] done repairDatabases
+2016-11-09T15:49:29.548+0000 D QUERY    [initandlisten] Running query: query: {} sort: {} projection: {}
+2016-11-09T15:49:29.548+0000 D QUERY    [initandlisten] Collection admin.system.roles does not exist. Using EOF plan: query: {} sort: {} projection: {}
+2016-11-09T15:49:29.549+0000 I COMMAND  [initandlisten] query admin.system.roles planSummary: EOF ntoreturn:0 ntoskip:0 keysExamined:0 docsExamined:0 cursorExhausted:1 keyUpdates:0 writeConflicts:0 numYields:0 nreturned:0 reslen:20 locks:{ Global: { acquireCount: { r: 10, W: 2 } }, Database: { acquireCount: { r: 4 } }, Collection: { acquireCount: { r: 4 } } } 0ms
+2016-11-09T15:49:29.549+0000 D INDEX    [initandlisten] IndexRebuilder::checkNS: local.startup_log
+2016-11-09T15:49:29.549+0000 D INDEX    [initandlisten] IndexRebuilder::checkNS: ycsb.usertable
+2016-11-09T15:49:29.549+0000 D INDEX    [initandlisten] checking complete
+2016-11-09T15:49:29.549+0000 D COMMAND  [TTLMonitor] BackgroundJob starting: TTLMonitor
+2016-11-09T15:49:29.549+0000 I FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/data/db/diagnostic.data'
+2016-11-09T15:49:29.549+0000 I NETWORK  [HostnameCanonicalizationWorker] Starting hostname canonicalization worker
+2016-11-09T15:49:29.549+0000 D COMMAND  [ClientCursorMonitor] BackgroundJob starting: ClientCursorMonitor
+2016-11-09T15:49:29.549+0000 D COMMAND  [PeriodicTaskRunner] BackgroundJob starting: PeriodicTaskRunner
+2016-11-09T15:49:29.549+0000 D STORAGE  [initandlisten] WT begin_transaction
+2016-11-09T15:49:29.549+0000 D NETWORK  [HostnameCanonicalizationWorker] Hostname Canonicalizer is acquiring host FQDNs
+2016-11-09T15:49:29.551+0000 D STORAGE  [initandlisten] WT commit_transaction
+2016-11-09T15:49:29.551+0000 I NETWORK  [initandlisten] waiting for connections on port 27017
+2016-11-09T15:49:29.564+0000 D NETWORK  [HostnameCanonicalizationWorker] Hostname Canonicalizer acquired FQDNs
+2016-11-09T15:49:29.645+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:29.745+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:29.845+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:29.945+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.046+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.146+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.246+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.346+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.446+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.547+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.647+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.747+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.847+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:30.948+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.048+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.148+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.249+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.349+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.449+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.549+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.650+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.750+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.850+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:31.950+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.051+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.151+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.251+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.351+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.451+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.552+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.652+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.752+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.852+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:32.953+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.053+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.153+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.253+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.354+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.454+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.554+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.654+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.755+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.855+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:33.955+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.055+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.156+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.256+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.356+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.456+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.557+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.657+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.757+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.857+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:34.958+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.058+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.158+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.258+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.358+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.459+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.559+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.659+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.760+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.860+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:35.960+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.060+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.161+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.261+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.361+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.461+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.562+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.662+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.762+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.862+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:36.963+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.063+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.164+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.264+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.364+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.464+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.565+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.606+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:41114 #1 (1 connection now open)
+2016-11-09T15:49:37.621+0000 D COMMAND  [conn1] run command admin.$cmd { ismaster: 1 }
+2016-11-09T15:49:37.621+0000 I COMMAND  [conn1] command admin.$cmd command: isMaster { ismaster: 1 } keyUpdates:0 writeConflicts:0 numYields:0 reslen:178 locks:{} protocol:op_query 0ms
+2016-11-09T15:49:37.631+0000 D COMMAND  [conn1] run command admin.$cmd { buildinfo: 1 }
+2016-11-09T15:49:37.631+0000 I COMMAND  [conn1] command admin.$cmd command: buildInfo { buildinfo: 1 } keyUpdates:0 writeConflicts:0 numYields:0 reslen:1197 locks:{} protocol:op_query 0ms
+2016-11-09T15:49:37.635+0000 D COMMAND  [conn1] run command admin.$cmd { getlasterror: 1 }
+2016-11-09T15:49:37.635+0000 I COMMAND  [conn1] command admin.$cmd command: getLastError { getlasterror: 1 } keyUpdates:0 writeConflicts:0 numYields:0 reslen:94 locks:{} protocol:op_query 0ms
+2016-11-09T15:49:37.636+0000 D COMMAND  [conn1] run command admin.$cmd { ismaster: 1 }
+2016-11-09T15:49:37.636+0000 I COMMAND  [conn1] command admin.$cmd command: isMaster { ismaster: 1 } keyUpdates:0 writeConflicts:0 numYields:0 reslen:178 locks:{} protocol:op_query 0ms
+2016-11-09T15:49:37.640+0000 I NETWORK  [initandlisten] connection accepted from 127.0.0.1:41115 #2 (2 connections now open)
+2016-11-09T15:49:37.640+0000 D COMMAND  [conn2] run command admin.$cmd { ismaster: 1 }
+2016-11-09T15:49:37.640+0000 I COMMAND  [conn2] command admin.$cmd command: isMaster { ismaster: 1 } keyUpdates:0 writeConflicts:0 numYields:0 reslen:178 locks:{} protocol:op_query 0ms
+2016-11-09T15:49:37.641+0000 D COMMAND  [conn2] run command admin.$cmd { buildinfo: 1 }
+2016-11-09T15:49:37.641+0000 I COMMAND  [conn2] command admin.$cmd command: buildInfo { buildinfo: 1 } keyUpdates:0 writeConflicts:0 numYields:0 reslen:1197 locks:{} protocol:op_query 0ms
+2016-11-09T15:49:37.643+0000 D COMMAND  [conn2] run command admin.$cmd { getlasterror: 1 }
+2016-11-09T15:49:37.643+0000 I COMMAND  [conn2] command admin.$cmd command: getLastError { getlasterror: 1 } keyUpdates:0 writeConflicts:0 numYields:0 reslen:94 locks:{} protocol:op_query 0ms
+2016-11-09T15:49:37.664+0000 D COMMAND  [conn2] run command ycsb.$cmd { insert: "usertable", ordered: true, documents: [ { _id: "user6284781860667377211", field5: BinData(0, 21512725292E3C28622E2D3234586736472D262A2A28256E3C337E2F562337536B32452D3937323C2160345B2F214F7B3A5929294E7D20382421462F20466927227C3E237E2E...), field4: BinData(0, 384F6D22503533233E3C29703F422F252D663F3E32254569245C6F23322439437B3A4929245C6936516131486F2E4E713B523F354E372123723E5F79284237282F6E282A6A27...), field3: BinData(0, 23222A20493D2A26243153253E523F31482D3555333949693B3D20303F3A315C2F20562D30532B302E6038443F352C64374E6F3E2B2E2E51352D287833276A2B466529503529...), field2: BinData(0, 2D576B36276E3C3738382334395B6F262B602741352D3226302A642F402B263B6E235F3F3537663249213B503D30473D35516D2A2D3E333868333C38233B203552792850733A...), field9: BinData(0, 3847633222243B336A234B6B274B333C462B374D3F242538263232243D242E5F6B3F3C7428332424336A245D753B54712C303C304F6D2A42213D3C3C2526223D2122213E2A2C...), field8: BinData(0, 2A4D2B204A69233B26244A713A4723213A64205D3D24372A203A6A3F5C7735417D234D793D273C202F7C3C33323436662C5A792743212B2E3625563D2A4D2128277C2D336433...), field7: BinData(0, 25522D3926322D546F2F24382552693E4C7B294F79323B703C49733A3474274079364533263A7223202C35213E245029234B2D244827365A2F302B343A286A2A5639243E2A21...), field6: BinData(0, 28293621326A265A632F393024317C322124365B6B3A416F264E633A3C322A4C6336377233202421353235402D3C3F7E3B28782F356224402D20393E245365372774265B2735...), field1: BinData(0, 342F743E5667313B7A3256653C48672E5F652054653221222A452D3D4B2532493921462F2C35682720362E342C3D4A793B3C22352C2A2C227632526F2A307E2E5223345A3F34...), field0: BinData(0, 2A543129463D262566335C733A2D7023392426523F31212820393628277A303124204A652334623B51793154613E5A3F3726382C4879292722384B37234C7F2A587F223B3238...) } ] }
+2016-11-09T15:49:37.664+0000 D STORAGE  [conn2] WT begin_transaction
+2016-11-09T15:49:37.664+0000 D STORAGE  [conn2] WT rollback_transaction
+2016-11-09T15:49:37.664+0000 D STORAGE  [conn2] CUSTOM ROLLBACK mongo::WiredTigerRecordStore::DataSizeChange
+2016-11-09T15:49:37.664+0000 D STORAGE  [conn2] CUSTOM ROLLBACK mongo::WiredTigerRecordStore::NumRecordsChange
+2016-11-09T15:49:37.664+0000 D WRITE    [conn2]  Caught Assertion in query, continuing  :: caused by :: E11000 duplicate key error collection: ycsb.usertable index: _id_ dup key: { : "user6284781860667377211" }
+2016-11-09T15:49:37.664+0000 I COMMAND  [conn2] command ycsb.usertable command: insert { insert: "usertable", ordered: true, documents: [ { _id: "user6284781860667377211", field5: BinData(0, 21512725292E3C28622E2D3234586736472D262A2A28256E3C337E2F562337536B32452D3937323C2160345B2F214F7B3A5929294E7D20382421462F20466927227C3E237E2E...), field4: BinData(0, 384F6D22503533233E3C29703F422F252D663F3E32254569245C6F23322439437B3A4929245C6936516131486F2E4E713B523F354E372123723E5F79284237282F6E282A6A27...), field3: BinData(0, 23222A20493D2A26243153253E523F31482D3555333949693B3D20303F3A315C2F20562D30532B302E6038443F352C64374E6F3E2B2E2E51352D287833276A2B466529503529...), field2: BinData(0, 2D576B36276E3C3738382334395B6F262B602741352D3226302A642F402B263B6E235F3F3537663249213B503D30473D35516D2A2D3E333868333C38233B203552792850733A...), field9: BinData(0, 3847633222243B336A234B6B274B333C462B374D3F242538263232243D242E5F6B3F3C7428332424336A245D753B54712C303C304F6D2A42213D3C3C2526223D2122213E2A2C...), field8: BinData(0, 2A4D2B204A69233B26244A713A4723213A64205D3D24372A203A6A3F5C7735417D234D793D273C202F7C3C33323436662C5A792743212B2E3625563D2A4D2128277C2D336433...), field7: BinData(0, 25522D3926322D546F2F24382552693E4C7B294F79323B703C49733A3474274079364533263A7223202C35213E245029234B2D244827365A2F302B343A286A2A5639243E2A21...), field6: BinData(0, 28293621326A265A632F393024317C322124365B6B3A416F264E633A3C322A4C6336377233202421353235402D3C3F7E3B28782F356224402D20393E245365372774265B2735...), field1: BinData(0, 342F743E5667313B7A3256653C48672E5F652054653221222A452D3D4B2532493921462F2C35682720362E342C3D4A793B3C22352C2A2C227632526F2A307E2E5223345A3F34...), field0: BinData(0, 2A543129463D262566335C733A2D7023392426523F31212820393628277A303124204A652334623B51793154613E5A3F3726382C4879292722384B37234C7F2A587F223B3238...) } ] } ninserted:0 keyUpdates:0 writeConflicts:0 exception: E11000 duplicate key error collection: ycsb.usertable index: _id_ dup key: { : "user6284781860667377211" } code:11000 numYields:0 reslen:206 locks:{ Global: { acquireCount: { r: 1, w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { w: 1 } } } protocol:op_query 0ms
+2016-11-09T15:49:37.666+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.688+0000 D NETWORK  [conn2] Socket recv() conn closed? 127.0.0.1:41115
+2016-11-09T15:49:37.688+0000 D NETWORK  [conn2] SocketException: remote: 127.0.0.1:41115 error: 9001 socket exception [CLOSED] server [127.0.0.1:41115] 
+2016-11-09T15:49:37.688+0000 I NETWORK  [conn2] end connection 127.0.0.1:41115 (1 connection now open)
+2016-11-09T15:49:37.689+0000 D NETWORK  [conn1] Socket recv() conn closed? 127.0.0.1:41114
+2016-11-09T15:49:37.689+0000 D NETWORK  [conn1] SocketException: remote: 127.0.0.1:41114 error: 9001 socket exception [CLOSED] server [127.0.0.1:41114] 
+2016-11-09T15:49:37.689+0000 I NETWORK  [conn1] end connection 127.0.0.1:41114 (0 connections now open)
+2016-11-09T15:49:37.766+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.866+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:37.967+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.001+0000 D FTDC     [ftdc] full-time diagnostic data capture schema change: field name change - from 'R' to 'w'
+2016-11-09T15:49:38.067+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.167+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.267+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.368+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.468+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.568+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.668+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.769+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.869+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:38.969+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:39.069+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:39.169+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:39.270+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:39.370+0000 D STORAGE  [WTJournalFlusher] flushed journal
+2016-11-09T15:49:39.393+0000 I CONTROL  [signalProcessingThread] got signal 2 (Interrupt), will terminate after current cmd ends
+2016-11-09T15:49:39.393+0000 I FTDC     [signalProcessingThread] Shutting down full-time diagnostic data capture
+2016-11-09T15:49:39.394+0000 I CONTROL  [signalProcessingThread] now exiting
+2016-11-09T15:49:39.394+0000 I NETWORK  [signalProcessingThread] shutdown: going to close listening sockets...
+2016-11-09T15:49:39.394+0000 I NETWORK  [signalProcessingThread] closing listening socket: 5
+2016-11-09T15:49:39.394+0000 I NETWORK  [signalProcessingThread] closing listening socket: 6
+2016-11-09T15:49:39.394+0000 I NETWORK  [signalProcessingThread] removing socket file: /tmp/mongodb-27017.sock
+2016-11-09T15:49:39.394+0000 I NETWORK  [signalProcessingThread] shutdown: going to flush diaglog...
+2016-11-09T15:49:39.394+0000 I NETWORK  [signalProcessingThread] shutdown: going to close sockets...
+2016-11-09T15:49:39.394+0000 D STORAGE  [signalProcessingThread] ~WiredTigerRecordStore for: local.startup_log
+2016-11-09T15:49:39.394+0000 D STORAGE  [signalProcessingThread] ~WiredTigerRecordStore for: ycsb.usertable
+2016-11-09T15:49:39.395+0000 D STORAGE  [signalProcessingThread] ~WiredTigerRecordStore for: _mdb_catalog
+2016-11-09T15:49:39.395+0000 I STORAGE  [signalProcessingThread] WiredTigerKVEngine shutting down
+2016-11-09T15:49:39.395+0000 D STORAGE  [signalProcessingThread] WiredTigerSizeStorer::storeInto table:_mdb_catalog -> { numRecords: 2, dataSize: 630 }
+2016-11-09T15:49:39.395+0000 D STORAGE  [signalProcessingThread] WiredTigerSizeStorer::storeInto table:collection-0--773859288544310536 -> { numRecords: 16, dataSize: 21366 }
+2016-11-09T15:49:39.395+0000 D STORAGE  [signalProcessingThread] WiredTigerSizeStorer::storeInto table:collection-0-2405447531245327190 -> { numRecords: 1000, dataSize: 1167877 }
+2016-11-09T15:49:39.470+0000 D STORAGE  [WTJournalFlusher] stopping WTJournalFlusher thread
+2016-11-09T15:49:39.617+0000 I STORAGE  [signalProcessingThread] shutdown: removing fs lock...
+2016-11-09T15:49:39.617+0000 I CONTROL  [signalProcessingThread] dbexit:  rc: 0
