@@ -34,13 +34,13 @@ task :init do
   yum    = `which yum`
   if(aptget.size > 0)then
     ## Ubuntu
-    sh "sudo apt-get install -y libevent-dev"
+    sh "sudo -E apt-get install -y libevent-dev"
   elsif(yum.size > 0)then
     ## Centos
-    sh "sudo yum -y install libevent"
+    sh "sudo -E yum -y install libevent"
   end
-  sh "git clone  https://github.com/redis/hiredis.git"
-  sh "cd hiredis;make;make install"
+  sh "git clone https://github.com/redis/hiredis.git"
+  sh "cd hiredis;make; sudo -E make install"
 end
 
 desc "Build Redis Runner (CXX)"
