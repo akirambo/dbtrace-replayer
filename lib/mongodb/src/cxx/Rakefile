@@ -31,7 +31,7 @@
 desc "Get Third Party Library (sudo)"
 task :init do
   ## Check Distribution
-  aptget = `which aptget`
+  aptget = `which apt-get`
   yum    = `which yum`
   if(aptget.size > 0)then
     ## Ubuntu
