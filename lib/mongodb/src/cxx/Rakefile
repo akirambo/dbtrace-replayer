@@ -35,7 +35,8 @@ task :init do
   yum    = `which yum`
   if(aptget.size > 0)then
     ## Ubuntu
-    sh "sudo -E apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel gcc-c++ git make cmake"
+    #sh "sudo -E apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel git make cmake"
+    sh "sudo -E apt-get install -y wget curl git automake git g++ make cmake"
     sh "sudo -E apt-get install -y libtool dh-autoreconf"
   elsif(yum.size > 0)then
     ## Centos  
