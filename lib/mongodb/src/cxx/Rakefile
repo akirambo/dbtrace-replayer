@@ -36,8 +36,8 @@ task :init do
   if(aptget.size > 0)then
     ## Ubuntu
     #sh "sudo -E apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel git make cmake"
-    sh "sudo -E apt-get install -y wget curl git automake git g++ make cmake"
-    sh "sudo -E apt-get install -y libtool dh-autoreconf"
+    sh "sudo -E apt-get install -y pkg-config tar wget curl git automake git g++ make cmake"
+    sh "sudo -E apt-get install -y libtool dh-autoreconf libsnappy-dev"
   elsif(yum.size > 0)then
     ## Centos  
     sh "sudo -E yum install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make autoconf cmake "
@@ -45,9 +45,10 @@ task :init do
   ## For mongodb-c-driver
   sh "git clone https://github.com/mongodb/mongo-c-driver.git"
   sh "cd  mongo-c-driver; git checkout -b 1.6.3; ./autogen.sh --with-libbson=bundled; make ; sudo -E make install"
+  #sh "cd  mongo-c-driver; git checkout -b 1.6.3; ./autogen.sh --with-libbson=bundled; make ;"
   ## For mongodb-cxx-driver
   sh "git clone https://github.com/mongodb/mongo-cxx-driver.git --branch releases/stable --depth 1"
-  sh "cd mongo-cxx-driver/build;cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..;sudo -E make EP_mnmlstc_core;make;sudo make install"
+  sh "cd mongo-cxx-driver/build;cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DLIBBSON_DIR=/usr/local/lib/ -DLIBMONGC_DIR=/usr/local/lib/ ..;sudo -E make EP_mnmlstc_core;export LD_LIBRARY_DIR=/usr/local/lib ;make;sudo make install"
 end
 
 desc "Build Redis Runner (CXX)"

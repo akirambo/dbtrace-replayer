@@ -20,14 +20,7 @@ end
 
 desc "Build Cassandra Runner (CXX)"
 task :build do
-  aptget = `which apt-get`
-  yum    = `which yum`
-  if(aptget.size > 0)then
-    sh "ruby extconf_ubuntu.rb"
-  elsif(yum.size > 0)then
-    sh "ruby extconf.rb"
-  end
-  sh "make"
+  sh "ruby extconf.rb ; make"
 end
 
 desc "Simple Test"
