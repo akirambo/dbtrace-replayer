@@ -36,6 +36,7 @@ task :init do
     ## Ubuntu
     sh "sudo apt-get install -y libevent-dev"
   elsif(yum.size > 0)then
+    ## Centos
     sh "sudo yum -y install libevent"
   end
   sh "git clone  https://github.com/redis/hiredis.git"

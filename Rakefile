@@ -10,7 +10,7 @@ namespace :setup do
     sh "bundle install --path vender/bundle"
   end
   task :redis do
-    sh "cd lib/redis/src/cxx; rake init ; rake build"
+    sh "cd lib/redis/src/cxx; rake build"
   end
   task :memcached do
     sh "cd lib/memcached/src/cxx; rake init ; rake build"
@@ -22,6 +22,14 @@ namespace :setup do
     sh "cd lib/cassandra/src/cxx; rake init ; rake build"
   end
 end
+
+desc "Install Packages"
+namespace :install do
+  task :redis do
+    sh "cd lib/redis/src/cxx; rake init"
+  end
+end
+
 
 desc "Clean"
 task :clean do
