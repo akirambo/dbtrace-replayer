@@ -14,7 +14,7 @@ task :init do
 end
 
 desc "Build Redis Runner (CXX)"
-task :build => [:clean,:init] do
+task :build do
   sh "ruby extconf.rb"
   sh "make"
 end

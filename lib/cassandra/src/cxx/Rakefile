@@ -15,11 +15,7 @@ task :init do
     puts "[ERROR] Unsupported OS"
   end
   sh "git clone https://github.com/datastax/cpp-driver.git"
-  sh "mkdir cpp-driver/build"
-  sh "cd cpp-driver/build"
-  sh "cmake .."
-  sh "make"
-  sh "sudo -E make install"
+  sh "mkdir cpp-driver/build ; cd cpp-driver/build ; cmake ..; make ; sudo -E make install"
 end
 
 desc "Build Cassandra Runner (CXX)"
