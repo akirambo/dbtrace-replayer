@@ -33,19 +33,42 @@ task :init do
   ## Check Distribution
   dist = `uname -v`
   dist.downcase!
-  if(dist.include?("ubuntu"))then
+  aptget = `which aptget`
+  yum    = `which yum`
+  if(aptget.size > 0)then
     ## Ubuntu
-    sh "sudo aptitude install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool cmake"
-  elsif(dist.include?("centos"))then
-    #### Centos  
-    sh "sudo yum install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool "
+    if(dist.include?("ubuntu"))then
+      sh "sudo apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool cmake"
+    else
+      ## Dockerfile
+      sh "sudo apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool cmake"
+    end
+  elsif(yum.size > 0)then
+    ## Centos  
+    if(dist.include?("centos"))then
+      sh "sudo yum install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool "
+    else
+      ## Dockerfile
+      sh "yum install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool "
+    end
   end
   ## For mongodb-c-driver
   sh "git clone https://github.com/mongodb/mongo-c-driver.git"
-  sh "cd  mongo-c-driver; git checkout 1.6.3; ./autogen.sh --with-libbson=bundled; make ; sudo make install"
+
+  if(dist.include?("centos") or dist.include?("ubuntu"))then
+    sh "cd  mongo-c-driver; git checkout 1.6.3; ./autogen.sh --with-libbson=bundled; make ; sudo make install"
+  else
+    ## For Dockerfile
+    sh "cd  mongo-c-driver; git checkout 1.6.3; ./autogen.sh --with-libbson=bundled; make ;  make install"
+  end
   ## For mongodb-cxx-driver
   sh "git clone https://github.com/mongodb/mongo-cxx-driver.git --branch releases/stable --depth 1"
-  sh "cd mongo-cxx-driver/build;cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..;sudo make EP_mnmlstc_core;make;sudo make install"
+  if(dist.include?("centos") or dist.include?("ubuntu"))then
+    sh "cd mongo-cxx-driver/build;cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..;sudo make EP_mnmlstc_core;make;sudo make install"
+  else
+    ## For Dockerfile
+    sh "cd mongo-cxx-driver/build;cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..; make EP_mnmlstc_core;make;make install"
+  end
 end
 
 desc "Build Redis Runner (CXX)"
