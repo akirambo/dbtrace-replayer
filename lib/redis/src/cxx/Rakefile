@@ -30,32 +30,16 @@
 
 desc "Get hiredis library"
 task :init do
-  dist = `uname -v`
-  dist.downcase!
   aptget = `which apt-get`
   yum    = `which yum`
   if(aptget.size > 0)then
     ## Ubuntu
-    if(dist.include?("ubuntu"))then
-      sh "sudo apt-get install -y libevent-dev"
-    else
-      ## For Dockerfile
-      sh "apt-get install -y libevent-dev"
-    end
+    sh "sudo apt-get install -y libevent-dev"
   elsif(yum.size > 0)then
-    if(dist.include?("centos"))then
-      sh "sudo yum -y install libevent"
-    else
-      ## for Dockefile
-      sh "yum -y install libevent"
-    end
+    sh "sudo yum -y install libevent"
   end
   sh "git clone  https://github.com/redis/hiredis.git"
-  if(dist.include?("centos") or dist.include?("ubuntu"))then
-    sh "cd hiredis;make; sudo make install"
-  else
-    sh "cd hiredis;make;make install"
-  end
+  sh "cd hiredis;make;make install"
 end
 
 desc "Build Redis Runner (CXX)"

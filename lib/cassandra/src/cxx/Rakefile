@@ -7,30 +7,16 @@ task :init do
   yum    = `which yum`
   if(aptget.size > 0)then
     ## Ubuntu
-    if(dist.include?("ubuntu"))then
-        sh "sudo apt-get -y install g++ make cmake libuv-dev libssl-dev"
-    else
-      ## Dockerfile
-      sh "apt-get -y install g++ make cmake libuv-dev libssl-dev"
-    end
+    sh "sudo apt-get -y install g++ make cmake libuv-dev libssl-dev"
     sh "git clone https://github.com/datastax/cpp-driver.git"
     sh "mkdir cpp-driver/build"
     sh "cd cpp-driver/build"
     sh "cmake .."
     sh "make"
-    if(dist.include?("ubuntu"))then
-      sh "sudo make install"
-    else
-    ## Dockerfile
-      sh "make install"
-    end
+    sh "sudo make install"
   elsif(yum.size > 0)then
     #### Centos
-    if(dist.include?("centos"))then
-      sh "sudo yum -y install cassandra-cpp-driver cassandra-cpp-driver-devel"
-    else
-      sh "yum -y install cassandra-cpp-driver cassandra-cpp-driver-devel"
-    end
+    sh "sudo yum -y install cassandra-cpp-driver cassandra-cpp-driver-devel"
   else
     puts "[ERROR] Unsupported OS"
   end
@@ -38,13 +24,11 @@ end
 
 desc "Build Cassandra Runner (CXX)"
 task :build do
-  dist = `uname -v`
-  dist.downcase!
   aptget = `which apt-get`
   yum    = `which yum`
-  if(dist.include?("ubuntu") or aptget.size > 0)then
+  if(aptget.size > 0)then
     sh "ruby extconf_ubuntu.rb"
-  elsif(dist.include?("centos") or yum.size > 0)then
+  elsif(yum.size > 0)then
     sh "ruby extconf.rb"
   end
   sh "make"
