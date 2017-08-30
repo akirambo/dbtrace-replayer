@@ -35,14 +35,15 @@ task :init do
   yum    = `which yum`
   if(aptget.size > 0)then
     ## Ubuntu
-    sh "sudo -E apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtoolize cmake"
+    sh "sudo -E apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel gcc-c++ git make cmake"
+    sh "sudo -E apt-get install -y libtool dh-autoreconf"
   elsif(yum.size > 0)then
     ## Centos  
-    sh "sudo -E yum install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtoolize cmake "
+    sh "sudo -E yum install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make autoconf cmake "
   end
   ## For mongodb-c-driver
   sh "git clone https://github.com/mongodb/mongo-c-driver.git"
-  sh "cd  mongo-c-driver; git checkout 1.6.3; ./autogen.sh --with-libbson=bundled; make ; sudo -E make install"
+  sh "cd  mongo-c-driver; git checkout -b 1.6.3; ./autogen.sh --with-libbson=bundled; make ; sudo -E make install"
   ## For mongodb-cxx-driver
   sh "git clone https://github.com/mongodb/mongo-cxx-driver.git --branch releases/stable --depth 1"
   sh "cd mongo-cxx-driver/build;cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..;sudo -E make EP_mnmlstc_core;make;sudo make install"
