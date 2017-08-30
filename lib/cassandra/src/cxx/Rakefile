@@ -1,6 +1,8 @@
 
 desc "Setup Library (sudo)"
 task :init do
+  dist = `uname -v`
+  dist.downcase!
   aptget = `which apt-get`
   yum    = `which yum`
   if(aptget.size > 0)then

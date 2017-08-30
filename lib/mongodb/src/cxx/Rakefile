@@ -41,7 +41,7 @@ task :init do
       sh "sudo apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool cmake"
     else
       ## Dockerfile
-      sh "sudo apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtool cmake"
+      sh "sudo apt-get install -y openssl-devel cyrus-sasl-devel pkgconfig wget curl tar git automake boost-devel libtool gcc-c++ git make which autoconf libtoolize cmake"
     end
   elsif(yum.size > 0)then
     ## Centos  

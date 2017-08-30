@@ -12,8 +12,8 @@ task :init do
       sh "sudo apt-get -y install libmemcached-dev"
     else
       ## Dockerfile
-      sh "sudo apt-get -y install autoconf automake make g++ "
-      sh "sudo apt-get -y install libmemcached-dev"
+      sh "apt-get -y install autoconf automake make g++ "
+      sh "apt-get -y install libmemcached-dev"
     end
   elsif(yum.size > 0)then
     ## Centos

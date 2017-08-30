@@ -54,7 +54,7 @@ task :init do
   if(dist.include?("centos") or dist.include?("ubuntu"))then
     sh "cd hiredis;make; sudo make install"
   else
-    sh "cd hiredis;make;make instal"
+    sh "cd hiredis;make;make install"
   end
 end
 
