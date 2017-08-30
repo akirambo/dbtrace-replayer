@@ -5,11 +5,11 @@ task :init do
   yum    = `which yum`
   if(aptget.size > 0)then
     ## Ubuntu
-    sh "sudo apt-get -y install autoconf automake make g++ "
-    sh "sudo apt-get -y install libmemcached-dev"
+    sh "sudo -E apt-get -y install autoconf automake make g++ "
+    sh "sudo -E apt-get -y install libmemcached-dev"
   elsif(yum.size > 0)then
     ## Centos
-    sh "sudo yum -y install autoconf automake make gcc-c++ pcre-devel zlib-devel libmemcached-devel"
+    sh "sudo -E yum -y install autoconf automake make gcc-c++ pcre-devel zlib-devel libmemcached-devel"
   end
 end
 

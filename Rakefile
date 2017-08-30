@@ -13,18 +13,27 @@ namespace :setup do
     sh "cd lib/redis/src/cxx; rake build"
   end
   task :memcached do
-    sh "cd lib/memcached/src/cxx; rake init ; rake build"
+    sh "cd lib/memcached/src/cxx; rake build"
   end
   task :mongodb do
-    sh "cd lib/mongodb/src/cxx; rake init ; rake build"
+    sh "cd lib/mongodb/src/cxx; rake build"
   end
   task :cassandra do
-    sh "cd lib/cassandra/src/cxx; rake init ; rake build"
+    sh "cd lib/cassandra/src/cxx; rake build"
   end
 end
 
 desc "Install Packages"
 namespace :install do
+  task :cassandra do
+    sh "cd lib/cassandra/src/cxx; rake init"
+  end
+  task :memcached do
+    sh "cd lib/memcached/src/cxx; rake init"
+  end
+  task :mongodb do
+    sh "cd lib/mongodb/src/cxx; rake init"
+  end
   task :redis do
     sh "cd lib/redis/src/cxx; rake init"
   end

@@ -7,19 +7,19 @@ task :init do
   yum    = `which yum`
   if(aptget.size > 0)then
     ## Ubuntu
-    sh "sudo apt-get -y install g++ make cmake libuv-dev libssl-dev"
-    sh "git clone https://github.com/datastax/cpp-driver.git"
-    sh "mkdir cpp-driver/build"
-    sh "cd cpp-driver/build"
-    sh "cmake .."
-    sh "make"
-    sh "sudo make install"
+    sh "sudo -E apt-get -y install g++ make cmake libuv-dev libssl-dev"
   elsif(yum.size > 0)then
     #### Centos
-    sh "sudo yum -y install cassandra-cpp-driver cassandra-cpp-driver-devel"
+    sh "sudo -E yum -y install cassandra-cpp-driver cassandra-cpp-driver-devel"
   else
     puts "[ERROR] Unsupported OS"
   end
+  sh "git clone https://github.com/datastax/cpp-driver.git"
+  sh "mkdir cpp-driver/build"
+  sh "cd cpp-driver/build"
+  sh "cmake .."
+  sh "make"
+  sh "sudo -E make install"
 end
 
 desc "Build Cassandra Runner (CXX)"
