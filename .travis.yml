@@ -4,5 +4,14 @@ language:ruby
 rvm:
  - 2.3
 
+addons:
+ apt:
+   packages:
+     - ruby-dev
+     - sudo
+
+install:
+ - gem install bundler rake
+
 script:
  - rake unitTest:all
