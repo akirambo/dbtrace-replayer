@@ -116,15 +116,27 @@ RSpec.describe 'Unit Class TEST' do
   context "changeNumericWhenNumeric" do
     it "Case :: Input Number (simple)" do
       value = @utils.changeNumericWhenNumeric("1324")
-      expect(value.class).to match Integer
+      if (value.class == Integer or value.class == Fixnum)then
+        expect(1).to eq 1
+      else
+        expect(1).to eq 0
+      end
     end
     it "Case :: Input Number (+)" do
       value = @utils.changeNumericWhenNumeric("+1324")
-      expect(value.class).to match Integer
+      if (value.class == Integer or value.class == Fixnum)then
+        expect(1).to eq 1
+      else
+        expect(1).to eq 0
+      end
     end
     it "Case :: Input Number (-)" do
       value = @utils.changeNumericWhenNumeric("-1324")
-      expect(value.class).to match Integer
+      if (value.class == Integer or value.class == Fixnum)then
+        expect(1).to eq 1
+      else
+        expect(1).to eq 0
+      end
     end
     it "Case :: Input Big Number " do
       value = @utils.changeNumericWhenNumeric("2147483649")

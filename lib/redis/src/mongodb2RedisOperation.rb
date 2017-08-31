@@ -169,10 +169,13 @@ module MongoDB2RedisOperation
           query = '"'+k.split(".").last+'":"'+args["query"][k]+'"'
         when "Hash" then
           query = '"'+k.split(".").last+'":'+ args["query"][k].to_json
-        when "Integer" then
-          query = '"'+k.split(".").last+'":'+args["query"][k].to_s
         when "Float" then
           query = '"'+k.split(".").last+'":'+args["query"][k].to_s
+        else
+          if(args["query"][k].class.to_s == "Integer" or
+             args["query"][k].class.to_s == "Fixnum")then
+            query = '"'+k.split(".").last+'":'+args["query"][k].to_s
+          end
         end
         _count_ =  docs.scan(query).size
         if(_count_ == 0)then
@@ -248,7 +251,7 @@ module MongoDB2RedisOperation
             if(tt != conds)then
               return false
             end
-          elsif(value.class == Integer)then
+          elsif(value.class == Integer or value.class == Fixnum)then
             return value == cond.to_i
           elsif(value.class == Float)then
             return value == cond.to_f

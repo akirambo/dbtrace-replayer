@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-require "mongo"
 
 require_relative "../../../spec/spec_helper"
 require_relative "../src/mongodbOperation"
