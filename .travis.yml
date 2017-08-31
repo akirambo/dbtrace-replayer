@@ -11,7 +11,7 @@ addons:
 
 install:
  - gem install bundler rake
- - rake setup:bundler
+ - rake setup:bundle
 
 script:
  - rake unitTest:all
