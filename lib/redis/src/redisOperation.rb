@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -30,301 +31,368 @@
 
 module RedisOperation
   private
+
   ############
   ## String ##
   ############
+
   def SET(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__,command)
+    redisCxxExecuter(__method__, command)
   end
-  def GET(args,atTime=false)
+
+  def GET(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
+
   def SETNX(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def SETEX(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def PSETEX(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def MSET(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def MGET(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true)
+    redisCxxExecuter(__method__, command, true)
   end
+
   def MSETNX(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def INCR(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def INCRBY(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def DECR(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def DECRBY(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def APPEND(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def GETSET(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true)
+    redisCxxExecuter(__method__, command, true)
   end
+
   def STRLEN(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true)
+    redisCxxExecuter(__method__, command, true)
   end
   ###########
   ## Lists ##
   ###########
+
   def LPUSH(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def RPUSH(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def LPOP(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def RPOP(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def LRANGE(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true)
+    redisCxxExecuter(__method__, command, true)
   end
+
   def LREM(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def LINDEX(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true)
+    redisCxxExecuter(__method__, command, true)
   end
+
   def RPOPLPUSH(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true)
+    redisCxxExecuter(__method__, command, true)
   end
+
   def LSET(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def LTRIM(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def LLEN(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true)
+    redisCxxExecuter(__method__, command, true)
   end
   #########
   ## Set ##
   #########
-  def SRANDMEMBER(args,atTime=false)
+
+  def SRANDMEMBER(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
-  end 
-  def SMEMBERS(args, atTime=false)
-    command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def SDIFF(args, atTime=false)
+
+  def SMEMBERS(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
+
+  def SDIFF(args, atTime = false)
+    command = "#{__method__} #{args.join(" ")}"
+    redisCxxExecuter(__method__, command, true, atTime)
+  end
+
   def SDIFFSTORE(args)
     command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
-  def SINTER(args,atTime=false)
+
+  def SINTER(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
-   end
+    redisCxxExecuter(__method__, command, true, atTime)
+  end
+
   def SINTERSTORE(args)
     command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
-  def SUNION(args,atTime=false)
+
+  def SUNION(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
+
   def SUNIONSTORE(args)
     command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
-  def SISMEMBER(args,atTime=false)
+
+  def SISMEMBER(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
+
   def SREM(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def SMOVE(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
-  def SCARD(args,atTime=false)
+
+  def SCARD(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def SADD(args, value=nil)
+
+  def SADD(args)
     command = "#{__method__} #{args["key"]} #{args["args"]}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def SPOP(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true)
+    redisCxxExecuter(__method__, command, true)
   end
-  
   #################
   ## Sorted Sets ##
   #################
+
   def ZADD(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def ZREM(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def ZINCRBY(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
-  def ZRANK(args, atTime=false)
+
+  def ZRANK(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def ZREVRANK(args, atTime=false)
+
+  def ZREVRANK(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def ZRANGE(args,atTime=false)
+
+  def ZRANGE(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def ZREVRANGE(args,atTime=false)
+
+  def ZREVRANGE(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def ZRANGEBYSCORE(args,atTime=false)
+
+  def ZRANGEBYSCORE(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def ZCOUNT(args,atTime=false)
+
+  def ZCOUNT(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def ZCARD(args,atTime=false)
+
+  def ZCARD(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def ZSCORE(args,atTime=false)
+
+  def ZSCORE(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def ZREMRANGEBYSCORE(args,atTime=false)
+
+  def ZREMRANGEBYSCORE(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def ZREMRANGEBYRANK(args,atTime=false)
+
+  def ZREMRANGEBYRANK(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
+
   def ZUNIONSTORE(args)
     command = "#{__method__} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
-    if(args["options"] != {})then
-      command +=  redisOptionHash2Command(args["options"])
+    if args["options"] != {}
+      command += redisOptionHash2Command(args["options"])
     end
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def ZINTERSTORE(args)
     command = "#{__method__} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
-    if(args["options"] != {})then
-      command +=  redisOptionHash2Command(args["options"])
+    if args["options"] != {}
+      command += redisOptionHash2Command(args["options"])
     end
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
   ############
   ## Hashes ##
   ############
+
   def HSET(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
-  def HGET(args,atTime=false)
+
+  def HGET(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def HMGET(args, atTime=false)
+
+  def HMGET(args, atTime = false)
     command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
+
   def HMSET(args)
     command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
+
   def HINCRBY(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
-  def HEXISTS(args,atTime=false)
+
+  def HEXISTS(args, atTime = false)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
+
   def HDEL(args)
     command = "#{__method__} #{args.join(" ")}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
-  def HLEN(args,atTime=false)
+
+  def HLEN(args, atTime = false)
     command = "#{__method__} #{args[0]}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def HKEYS(args,atTime=false)
+
+  def HKEYS(args, atTime = false)
     command = "#{__method__} #{args[0]}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def HVALS(args,atTime=false)
+
+  def HVALS(args, atTime = false)
     command = "#{__method__} #{args[0]}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  def HGETALL(args,atTime=false)
+
+  def HGETALL(args, atTime = false)
     command = "#{__method__} #{args[0]}"
-    return redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, atTime)
   end
-  
+
   ############
   ## OTHRES ##
   ############
-  def FLUSHALL(args,initFlag=false)
+
+  def FLUSHALL(args, initFlag = false)
     @logger.debug("GENERATED QUERY: #{__method__}")
     connect
-    if(@option[:async])then
-      if(args and args.size == 2)then
+    if @option[:async]
+      if args && args.size == 2
         if(!initFlag)then
           addCount(__method__)
         end
@@ -334,146 +402,155 @@ module RedisOperation
         if(!initFlag)then
           addCount(__method__)
         end
-        query = "#{__method__}"
+        query = __method__.to_s
         v = redisAsyncExecuter(query)
       end
     else
-      query = "#{__method__}"
-      if(args and args.size == 2)then
+      query = __method__.to_s
+      if args && args.size == 2
         query += " #{args[0]} #{args[1]}"
       end
       v = @client.syncExecuter(query)
-      if(@metrics and !initFlag)then
-        addDuration(@client.getDuration(),"database",__method__)
+      if @metrics && !initFlag
+        addDuration(@client.getDuration, "database", __method__)
       end
     end
     close
-    return v
+    v
   end
+
   def DEL(args)
     command = "#{__method__} #{args[0]}"
-    return redisCxxExecuter(__method__, command)
+    redisCxxExecuter(__method__, command)
   end
-  def KEYS(pattern,type)
-    keys = @client.keys()
+
+  def KEYS(pattern, type)
+    keys = @client.keys
     targets = []
-    if(type == "keyspace")then
+    if type == "keyspace"
       pattern = "#{pattern}."
-    elsif(type == "table")then
+    elsif type == "table"
       pattern = ".#{pattern}"
     end
-    keys.each{|key|
-      if(key.include?(pattern))then
+    keys.each do |key|
+      if key.include?(pattern)
         targets.push(key)
       end
-    }
-    return targets
+    end
+    targets
   end
+
   #############
   ## PREPARE ##
   #############
-  def prepare_REDIS(operand,args)
+
+  def prepare_REDIS(operand, args)
     result = {}
     result["operand"] = operand
-    result["args"]    = args
-    if(["ZUNIONSTORE","ZINTERSTORE"].include?(operand))then
+    result["args"] = args
+    case1 = %w[ZUNIONSTORE ZINTERSTORE].freeze
+    case2 = %w[MSET MGET MSETNX].freeze
+    case3 = %w[HMSET HMGET SDIFFSTORE SINTERSTORE SUNIONSTORE].freeze
+    if case1.include?(operand)
       result["args"] = @parser.extractZ_X_STORE_ARGS(args)
-    elsif(["MSET","MGET","MSETNX"].include?(operand))then
+    elsif case2.include?(operand)
       result["args"] = @parser.args2hash(args)
-    elsif(["HMSET","HMGET","SDIFFSTORE","SINTERSTORE","SUNIONSTORE"].include?(operand))then
+    elsif case3.include?(operand)
       result["args"] = @parser.args2key_args(args)
-    end        
-    return result
+    end
+    result
   end
   ##################
   ## CXX Executer ##
   ##################
-  def redisCxxReply()
-    if(@option[:async])then
-      return @client.getAsyncReply()
+  
+  def redisCxxReply
+    if @option[:async]
+      @client.getAsyncReply
     else
-      return @client.getReply()
+      @client.getReply
     end
-    return nil
   end
-  def redisCxxExecuter(method,query,getValue=false,atTime=false)
+
+  def redisCxxExecuter(method, query, getValue = false, atTime = false)
     @logger.debug("GENERATED QUERY: #{query}")
     connect
-    if(@option[:async])then
-      v = redisAsyncExecuter(query,atTime)
+    if @option[:async]
+      v = redisAsyncExecuter(query, atTime)
     else
-      if(@client.syncExecuter(query))then
+      if @client.syncExecuter(query)
         v = "OK"
       end
-      addDuration(@client.getDuration(),"database",method)
+      addDuration(@client.getDuration, "database", method)
     end
-    if(getValue and (atTime or !@option[:async]))then
-      v = redisCxxReply()
+    if getValue && (atTime || !@option[:async])
+      v = redisCxxReply
     end
     close
-    return v
+    v
   end
   ###########
   ## Async ##
   ###########
-  def redisAsyncExecuter(query,atTime=false)
+
+  def redisAsyncExecuter(query, atTime = false)
     @poolRequestSize += 1
-    if(query == nil)then
-      if( @client.pooledQuerySize() > 0)then
+    if query.nil?
+      if @client.pooledQuerySize > 0
         @poolRequestSize = 0
         addCount("AsyncExec")
-        @metrics.start_monitor("database","AsyncExec")
-        @client.asyncExecuter()
-        addTotalDuration(@client.getDuration(),"database")
-        @metrics.end_monitor("database","AsyncExec")
+        @metrics.start_monitor("database", "AsyncExec")
+        @client.asyncExecuter
+        addTotalDuration(@client.getDuration, "database")
+        @metrics.end_monitor("database", "AsyncExec")
       end
-    elsif(atTime)then
-      if(@client.pooledQuerySize() > 0)then
+    elsif atTime
+      if @client.pooledQuerySize > 0
         @client.commitQuery(query)
         method = query.split(" ")[0]
         addCount(method.to_sym)
-        @metrics.start_monitor("database","AsyncExec")
-        @client.asyncExecuter()
-        addTotalDuration(@client.getDuration(),"database")
-        @metrics.end_monitor("database","AsyncExec")
+        @metrics.start_monitor("database", "AsyncExec")
+        @client.asyncExecuter
+        addTotalDuration(@client.getDuration, "database")
+        @metrics.end_monitor("database", "AsyncExec")
       else
         method = query.split(" ")[0]
-        monitor("database",method.to_sym)
+        monitor("database", method.to_sym)
         @client.syncConnect(@host, @port.to_i)
         @client.syncExecuter(query)
-        monitor("database",method.to_sym)
-        @client.syncClose()
+        monitor("database", method.to_sym)
+        @client.syncClose
       end
-    elsif(@option[:poolRequestMaxSize] == -1 or
-        @poolRequestSize <= @option[:poolRequestMaxSize])then
+    elsif @option[:poolRequestMaxSize] == -1 || @poolRequestSize <= @option[:poolRequestMaxSize]
       @client.commitQuery(query)
       method = query.split(" ")[0]
       addCount(method.to_sym)
-    elsif(@poolRequestSize > @option[:poolRequestMaxSize])then
+    elsif @poolRequestSize > @option[:poolRequestMaxSize]
       @client.commitQuery(query)
       method = query.split(" ")[0]
       addCount(method.to_sym)
-      @metrics.start_monitor("database","AsyncExec")
-      @client.asyncExecuter()
-      addTotalDuration(@client.getDuration(),"database")
-      @metrics.end_monitor("database","AsyncExec")
+      @metrics.start_monitor("database", "AsyncExec")
+      @client.asyncExecuter
+      addTotalDuration(@client.getDuration, "database")
+      @metrics.end_monitor("database", "AsyncExec")
       @poolRequestSize = 0
     end
-    return "OK"
+    "OK"
   end
 
   ################
   ## Sub Method ##
   ################
+
   def redisOptionHash2Command(hash)
     command = ""
-    hash.each{|k,v|
-      if(v.class == Array)then
-        command += " #{k.to_s} #{v.join(" ")}"
-      elsif(v.class == String)then
-        command += " #{k.to_s} #{v}"
+    hash.each do |k, v|
+      if v.class == Array
+        command += " #{k} #{v.join(" ")}"
+      elsif v.class == String
+        command += " #{k} #{v}"
       end
-    }
-    return command
+    end
+    command
   end
 end
