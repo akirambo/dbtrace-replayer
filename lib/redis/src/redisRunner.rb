@@ -58,7 +58,9 @@ class RedisRunner < AbstractRunner
   ## CASSANDRA TO REDIS OPERATION
   include Cassandra2RedisOperation
   
-  def initialize(logDBName, logger, option)
+  def initialize(logDBName,
+                 logger,
+                 option)
     @host = "127.0.0.1"
     @port = 6379
     if(ENV["REDIS_IPADDRESS"])then

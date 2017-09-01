@@ -1,6 +1,7 @@
 
-
-# Database Trace Replayer[![Build Status](https://travis-ci.org/akirambo/dbtrace-replayer.svg?branch=master)](https://travis-ci.org/akirambo/dbtrace-replayer)
+# Database Trace Replayer 
+[![Test Coverage](https://codeclimate.com/github/akirambo/dbtrace-replayer/badges/coverage.svg)](https://codeclimate.com/github/akirambo/dbtrace-replayer/coverage)
+[![Build Status](https://travis-ci.org/akirambo/dbtrace-replayer.svg?branch=master)](https://travis-ci.org/akirambo/dbtrace-replayer)
 
 ## What is Database Trace Replayer 
  - A Database Trace Replaying Tools For Non-SQL Database.
