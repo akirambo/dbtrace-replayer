@@ -1,0 +1,18 @@
+AllCops:
+ Exclude:
+  - vender/**/*
+  - Rakefile
+  - coverage/**/*
+  - coverage/*
+  
+# Turn OFF :  "Missing top-level class documentation comment."
+Style/Documentation:
+  Enabled: false
+
+# Turn OFF : "Prefer single-quoted strings when you don't need string interpolation or special symbols."
+Style/StringLiterals:
+  Enabled: false
+
+# Turn OFF :"Line is too long"
+Metrics/LineLength:
+  Enabled: false

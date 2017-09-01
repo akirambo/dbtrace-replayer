@@ -39,7 +39,6 @@ namespace :install do
   end
 end
 
-
 desc "Clean"
 task :clean do
   sh "rm -rf vender output *.log *.query *.summary"
@@ -53,15 +52,15 @@ end
 # Replay Trace On Which Database #
 #--------------------------------#
 desc "Replay Trace On Database (traceType,runType,trace,time,async,query,schema,keyspace(only for Cassandra))"
-task :run, [:traceType,:runType,:trace,:times,:async,:query,:schema,:keyspace]  do |env, args|
+task :run, [:traceType, :runType, :trace, :times, :async, :query, :schema, :keyspace]  do |env, args|
   include Runner
-  exec(args,false)
+  exec(args, false)
 end
 
 desc "DEBUG-MODE Replay Trace On Database (traceType,runType,trace,time,async,query,schema)"
-task :debug, [:traceType,:runType,:trace,:times,:async,:query,:schema,:keyspace] => [:setup]  do |env, args|
+task :debug, [:traceType, :runType, :trace, :times, :async, :query, :schema, :keyspace] => [:setup]  do |env, args|
   include Runner
-  exec(args,true)
+  exec(args, true)
 end
 
 
@@ -69,9 +68,14 @@ end
 ## ANALYZING TOOL ##
 ####################
 desc "Make CSV from LOG Files"
-task :log2csv,[:targetDir,:outfile] do |env, args|
+task :log2csv, [:targetDir, :outfile] do |env, args|
   sh "bundle exec ruby ./bin/resultAnalysisMultiTimes.rb #{args[:targetDir]} #{args[:outfile]}"
 end
+desc "Check Code Format with Rubocop"
+task :rubocop do
+  sh "bundle exec rubocop"
+end
+
 
 #############
 ## CLEANER ##
