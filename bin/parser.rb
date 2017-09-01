@@ -38,7 +38,7 @@ path = File.expand_path(File.dirname(__FILE__))
 Dir.glob("#{path}/../lib/*").each do |fullpath|
   dbname = fullpath.split("/").last
   if dbname == "common" ||
-     dbname == "tools"  ||
+     dbname == "tools" ||
      dbname == "cxx" ||
      dbname == "spec" ||
      dbname.include?(".rb")
@@ -61,7 +61,7 @@ SUPPORTED_INPUT_FORMATS = {
   "memcached" => %w[binary basic],
   "hbase10"   => %w[ycsb],
   "cassandra" => %w[cql3 cql java basic],
-  "mongodb"   => %w[basic]
+  "mongodb"   => %w[basic],
 }.freeze
 SUPPORTED_DATAMODEL = %w[KEYVALUE DOCUMENT TABLE].freeze
 PARSEMULTILINES = {
@@ -70,7 +70,7 @@ PARSEMULTILINES = {
   "memcached_binary" => true,
   "hbase10_ycsb"     => false,
   "cassandra_basic"  => false,
-  "mongodb_basic"    => false
+  "mongodb_basic"    => false,
 }.freeze
 SUPPORTED_ANALYSIS_MODES = %w[original primitive].freeze
 SUPPORTED_YCSB_OUTPUT_FORMATS = %w[basic full].freeze
@@ -82,7 +82,7 @@ ARGV_CONFIG = %w[Database TargetFile].freeze
 opt = OptionParser.new
 opt.version = "0.2.0"
 option = {
-  :mode   => SUPPORTED_MODE[0],
+  :mode => SUPPORTED_MODE[0],
   :targetDB => nil,
   :inputFormat  => nil,
   :analysisMode => SUPPORTED_ANALYSIS_MODES[0],
@@ -101,7 +101,7 @@ option = {
   :api => "cxx",
   :async => false,
   :keepalive => true,
-  :poolRequestMaxSize => 250
+  :poolRequestMaxSize => 250,
 }
 
 opt.on("-a API", "--apitype API",
@@ -204,7 +204,7 @@ opt.on("--parse-ycsb-mode PARSE_MODE",
   end
 end
 
-opt.banner  = "Usage: parser DATABASE [options]\n"
+opt.banner = "Usage: parser DATABASE [options]\n"
 opt.banner += "Supported Databases:[#{@supported_databases.join(',')}]"
 
 option[:sourceDB] = ARGV[0]
