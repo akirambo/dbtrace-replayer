@@ -1,3 +1,10 @@
+#########################################################
+# Pending (Please Remove the following items future.)
+#########################################################
+HashSyntax:
+  EnforcedStyle: hash_rockets
+  
+
 ################################################################################
 # Metrics
 ################################################################################
@@ -69,10 +76,10 @@ Style/PredicateName:
   - is_
 
 # We use %w[ ], not %w( ) because the former looks like an array
-#Style/PercentLiteralDelimiters:
-#  PreferredDelimiters:
-#    "%w": []
-#    "%W": []
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    "%w": "[]"
+    "%W": "[]"
 
 # Allow "trivial" accessors when defined as a predicate? method
 Style/TrivialAccessors:
@@ -115,6 +122,7 @@ Metrics/ModuleLength:
   - spec/**/*
 
 Metrics/MethodLength:
+  Max: 30
   Exclude:
   - spec/**/*
 
