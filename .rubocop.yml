@@ -120,16 +120,20 @@ Rails/TimeZone:
 Metrics/ModuleLength:
   Exclude:
   - spec/**/*
+  - lib/**/**/spec/*
 
 Metrics/MethodLength:
   Max: 30
   Exclude:
   - spec/**/*
+  - lib/**/**/spec/*
 
 Style/ClassAndModuleChildren:
   Exclude:
   - spec/**/*
-
+  - lib/**/**/spec/*
+  
 Style/BlockDelimiters:
   Exclude:
   - spec/**/*
+  - lib/**/**/spec/*
