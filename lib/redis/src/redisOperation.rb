@@ -42,8 +42,7 @@ module RedisOperation
   end
 
   def GET(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def SETNX(args)
@@ -173,48 +172,39 @@ module RedisOperation
   #########
 
   def SRANDMEMBER(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def SMEMBERS(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def SDIFF(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def SDIFFSTORE(args)
-    command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    redisCxxExecuter(__method__, command)
+    s_store(__method__, args)
   end
 
   def SINTER(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def SINTERSTORE(args)
-    command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    redisCxxExecuter(__method__, command)
+    s_store(__method__, args)
   end
 
   def SUNION(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def SUNIONSTORE(args)
-    command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    redisCxxExecuter(__method__, command)
+    s_store(__method__, args)
   end
 
   def SISMEMBER(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def SREM(args)
@@ -228,8 +218,7 @@ module RedisOperation
   end
 
   def SCARD(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def SADD(args)
@@ -261,53 +250,43 @@ module RedisOperation
   end
 
   def ZRANK(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZREVRANK(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZRANGE(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZREVRANGE(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZRANGEBYSCORE(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZCOUNT(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZCARD(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZSCORE(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZREMRANGEBYSCORE(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZREMRANGEBYRANK(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    get_type_operation(__method__, args, atTime)
   end
 
   def ZUNIONSTORE(args)
@@ -315,16 +294,7 @@ module RedisOperation
   end
 
   def ZINTERSTORE(args)
-    z_xstore(__method__,args)
-  end
-
-  ## Common method
-  def z_xstore(name, args)
-    command = "#{name} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
-    if args["options"] != {}
-      command += redisOptionHash2Command(args["options"])
-    end
-    redisCxxExecuter(name, command)
+    z_xstore(__method__, args)
   end
   ############
   ## Hashes ##
@@ -346,8 +316,7 @@ module RedisOperation
   end
 
   def HMSET(args)
-    command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    redisCxxExecuter(__method__, command)
+    s_store(__method__, args)
   end
 
   def HINCRBY(args)
@@ -440,7 +409,27 @@ module RedisOperation
     end
     targets
   end
+  ###################
+  ## Common method ##
+  ###################
 
+  def get_type_operation(name, args, atTime)
+    command = "#{name} #{args.join(" ")}"
+    redisCxxExecuter(name, command, true, atTime)
+  end
+  
+  def z_xstore(name, args)
+    command = "#{name} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
+    if args["options"] != {}
+      command += redisOptionHash2Command(args["options"])
+    end
+    redisCxxExecuter(name, command)
+  end
+
+  def s_store(name, args)
+    command = "#{name} #{args["key"]} #{args["args"].join(" ")}"
+    redisCxxExecuter(name, command)
+  end
   #############
   ## PREPARE ##
   #############
@@ -461,10 +450,10 @@ module RedisOperation
     end
     result
   end
+
   ##################
   ## CXX Executer ##
-  ##################
-  
+  ##################  
   def redisCxxReply
     if @option[:async]
       @client.getAsyncReply
