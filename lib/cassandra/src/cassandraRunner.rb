@@ -72,7 +72,7 @@ class CassandraRunner < AbstractRunner
     _schema_ = CassandraArgumentParser.new(logger,option)
     @schemas = _schema_.schemas
     @createQueries = _schema_.schemas
-    @poolRequestSize = 0
+    @pool_request_size = 0
     @poolByteSize = 0
     if(@option[:poolRequestMaxSize] == nil)then
       @option[:poolRequestMaxSize] = 250 ## Cassandra Default 256
@@ -131,7 +131,7 @@ class CassandraRunner < AbstractRunner
       }
     }
     @client.resetQuery()
-    @poolRequestSize = 0    
+    @pool_request_size = 0    
     if(!@option[:keepalive])then
       @client.close()
     end
@@ -153,7 +153,7 @@ class CassandraRunner < AbstractRunner
     addTotalDuration(@client.getDuration(),"database")
     # @metrics.end_monitor("database","AsyncExec")
     @client.resetQuery()
-    @poolRequestSize = 0
+    @pool_request_size = 0
     @poolByteSize = 0
   end 
   def init

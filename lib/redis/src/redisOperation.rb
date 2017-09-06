@@ -311,14 +311,15 @@ module RedisOperation
   end
 
   def ZUNIONSTORE(args)
-    command = "#{__method__} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
-    if args["options"] != {}
-      command += redisOptionHash2Command(args["options"])
-    end
-    redisCxxExecuter(__method__, command)
+    z_xstore(args)
   end
 
   def ZINTERSTORE(args)
+    z_xstore(args)
+  end
+
+  ## Common method
+  def z_xstore(args)
     command = "#{__method__} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
     if args["options"] != {}
       command += redisOptionHash2Command(args["options"])
@@ -393,13 +394,13 @@ module RedisOperation
     connect
     if @option[:async]
       if args && args.size == 2
-        if(!initFlag)then
+        unless initFlag
           addCount(__method__)
         end
         query = "#{__method__} #{args[0]} #{args[1]}"
         v = redisAsyncExecuter(query)
       else
-        if(!initFlag)then
+        unless initFlag
           addCount(__method__)
         end
         query = __method__.to_s
@@ -494,10 +495,10 @@ module RedisOperation
   ###########
 
   def redisAsyncExecuter(query, atTime = false)
-    @poolRequestSize += 1
+    @pool_request_size += 1
     if query.nil?
       if @client.pooledQuerySize > 0
-        @poolRequestSize = 0
+        @pool_request_size = 0
         addCount("AsyncExec")
         @metrics.start_monitor("database", "AsyncExec")
         @client.asyncExecuter
@@ -521,11 +522,11 @@ module RedisOperation
         monitor("database", method.to_sym)
         @client.syncClose
       end
-    elsif @option[:poolRequestMaxSize] == -1 || @poolRequestSize <= @option[:poolRequestMaxSize]
+    elsif @option[:poolRequestMaxSize] == -1 || @pool_request_size <= @option[:poolRequestMaxSize]
       @client.commitQuery(query)
       method = query.split(" ")[0]
       addCount(method.to_sym)
-    elsif @poolRequestSize > @option[:poolRequestMaxSize]
+    elsif @pool_request_size > @option[:poolRequestMaxSize]
       @client.commitQuery(query)
       method = query.split(" ")[0]
       addCount(method.to_sym)
@@ -533,7 +534,7 @@ module RedisOperation
       @client.asyncExecuter
       addTotalDuration(@client.getDuration, "database")
       @metrics.end_monitor("database", "AsyncExec")
-      @poolRequestSize = 0
+      @pool_request_size = 0
     end
     "OK"
   end

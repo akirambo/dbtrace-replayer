@@ -70,7 +70,7 @@ class RedisRunner < AbstractRunner
     @parser = nil
     @logger = logger
     @option = option
-    @poolRequestSize = 0
+    @pool_request_size = 0
     if(@option[:poolRequestMaxSize] == nil)then
       @option[:poolRequestMaxSize] = -1  ## Redis Default 2500
     end
@@ -145,7 +145,7 @@ class RedisRunner < AbstractRunner
       end
     end
     def asyncExec()
-      if(@poolRequestSize > 0)then
+      if(@pool_request_size > 0)then
         redisAsyncExecuter(nil,true)
       end
    end

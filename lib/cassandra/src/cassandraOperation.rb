@@ -63,11 +63,11 @@ module CassandraOperation
           command != "DROP" and command != "CREATE")then
         ## Async Execution
         addCount(query.split(" ")[0])
-        @poolRequestSize += 1
+        @pool_request_size += 1
         @poolByteSize += query.bytesize
         commitCondition = 
           @option[:poolRequestMaxSize] == -1 or
-          (@poolRequestSize < @option[:poolRequestMaxSize] and
+          (@pool_request_size < @option[:poolRequestMaxSize] and
           @poolByteSize < 64000)
         if(!onTime and commitCondition)then
           ####################
@@ -77,7 +77,7 @@ module CassandraOperation
         elsif(!onTime and !commitCondition)then
           value = execBufferedQueries()
           @client.commitQuery(query)
-          @poolRequestSize = query.bytesize
+          @pool_request_size = query.bytesize
           @poolByteSize = 1
         elsif(onTime)then
           execBufferedQueries()
@@ -132,7 +132,7 @@ module CassandraOperation
     addTotalDuration(@client.getDuration(),"database")
     @metrics.end_monitor("database","AsyncExec")
     @client.resetQuery()
-    @poolRequestSize = 0
+    @pool_request_size = 0
     @poolByteSize = 0    
     value = @client.getReply(0)
     return value
