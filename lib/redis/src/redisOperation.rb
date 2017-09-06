@@ -41,8 +41,8 @@ module RedisOperation
     redisCxxExecuter(__method__, command)
   end
 
-  def GET(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def GET(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
   def SETNX(args)
@@ -171,40 +171,40 @@ module RedisOperation
   ## Set ##
   #########
 
-  def SRANDMEMBER(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def SRANDMEMBER(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def SMEMBERS(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def SMEMBERS(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def SDIFF(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def SDIFF(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
   def SDIFFSTORE(args)
     s_store(__method__, args)
   end
 
-  def SINTER(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def SINTER(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
   def SINTERSTORE(args)
     s_store(__method__, args)
   end
 
-  def SUNION(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def SUNION(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
   def SUNIONSTORE(args)
     s_store(__method__, args)
   end
 
-  def SISMEMBER(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def SISMEMBER(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
   def SREM(args)
@@ -217,8 +217,8 @@ module RedisOperation
     redisCxxExecuter(__method__, command)
   end
 
-  def SCARD(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def SCARD(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
   def SADD(args)
@@ -249,44 +249,44 @@ module RedisOperation
     redisCxxExecuter(__method__, command)
   end
 
-  def ZRANK(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZRANK(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def ZREVRANK(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZREVRANK(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def ZRANGE(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZRANGE(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def ZREVRANGE(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZREVRANGE(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def ZRANGEBYSCORE(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZRANGEBYSCORE(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def ZCOUNT(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZCOUNT(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def ZCARD(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZCARD(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def ZSCORE(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZSCORE(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def ZREMRANGEBYSCORE(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZREMRANGEBYSCORE(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def ZREMRANGEBYRANK(args, atTime = false)
-    get_type_operation(__method__, args, atTime)
+  def ZREMRANGEBYRANK(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
   def ZUNIONSTORE(args)
@@ -305,14 +305,13 @@ module RedisOperation
     redisCxxExecuter(__method__, command)
   end
 
-  def HGET(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+  def HGET(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
-  def HMGET(args, atTime = false)
+  def HMGET(args, attime = false)
     command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+    redisCxxExecuter(__method__, command, true, attime)
   end
 
   def HMSET(args)
@@ -324,9 +323,8 @@ module RedisOperation
     redisCxxExecuter(__method__, command)
   end
 
-  def HEXISTS(args, atTime = false)
-    command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true, atTime)
+  def HEXISTS(args, attime = false)
+    get_type_operation(__method__, args, attime)
   end
 
   def HDEL(args)
@@ -334,24 +332,20 @@ module RedisOperation
     redisCxxExecuter(__method__, command)
   end
 
-  def HLEN(args, atTime = false)
-    command = "#{__method__} #{args[0]}"
-    redisCxxExecuter(__method__, command, true, atTime)
+  def HLEN(args, attime = false)
+    hlen_type_operation(__method__, args, attime)
   end
 
-  def HKEYS(args, atTime = false)
-    command = "#{__method__} #{args[0]}"
-    redisCxxExecuter(__method__, command, true, atTime)
+  def HKEYS(args, attime = false)
+    hlen_type_operation(__method__, args, attime)
   end
 
-  def HVALS(args, atTime = false)
-    command = "#{__method__} #{args[0]}"
-    redisCxxExecuter(__method__, command, true, atTime)
+  def HVALS(args, attime = false)
+    hlen_type_operation(__method__, args, attime)
   end
 
-  def HGETALL(args, atTime = false)
-    command = "#{__method__} #{args[0]}"
-    redisCxxExecuter(__method__, command, true, atTime)
+  def HGETALL(args, attime = false)
+    hlen_type_operation(__method__, args, attime)
   end
 
   ############
@@ -412,12 +406,17 @@ module RedisOperation
   ###################
   ## Common method ##
   ###################
-
-  def get_type_operation(name, args, atTime)
+ 
+  def get_type_operation(name, args, attime)
     command = "#{name} #{args.join(" ")}"
-    redisCxxExecuter(name, command, true, atTime)
+    redisCxxExecuter(name, command, true, attime)
   end
-  
+
+  def hlen_type_operation(name, args, attime)
+    command = "#{name} #{args[0]}"
+    redisCxxExecuter(name, command, true, attime)
+  end
+
   def z_xstore(name, args)
     command = "#{name} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
     if args["options"] != {}
@@ -462,18 +461,18 @@ module RedisOperation
     end
   end
 
-  def redisCxxExecuter(method, query, getValue = false, atTime = false)
+  def redisCxxExecuter(method, query, getValue = false, attime = false)
     @logger.debug("GENERATED QUERY: #{query}")
     connect
     if @option[:async]
-      v = redisAsyncExecuter(query, atTime)
+      v = redisAsyncExecuter(query, attime)
     else
       if @client.syncExecuter(query)
         v = "OK"
       end
       addDuration(@client.getDuration, "database", method)
     end
-    if getValue && (atTime || !@option[:async])
+    if getValue && (attime || !@option[:async])
       v = redisCxxReply
     end
     close
@@ -483,7 +482,7 @@ module RedisOperation
   ## Async ##
   ###########
 
-  def redisAsyncExecuter(query, atTime = false)
+  def redisAsyncExecuter(query, attime = false)
     @pool_request_size += 1
     if query.nil?
       if @client.pooledQuerySize > 0
@@ -494,7 +493,7 @@ module RedisOperation
         addTotalDuration(@client.getDuration, "database")
         @metrics.end_monitor("database", "AsyncExec")
       end
-    elsif atTime
+    elsif attime
       if @client.pooledQuerySize > 0
         @client.commitQuery(query)
         method = query.split(" ")[0]
