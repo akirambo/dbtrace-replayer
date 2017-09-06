@@ -311,20 +311,20 @@ module RedisOperation
   end
 
   def ZUNIONSTORE(args)
-    z_xstore(args)
+    z_xstore(__method__, args)
   end
 
   def ZINTERSTORE(args)
-    z_xstore(args)
+    z_xstore(__method__,args)
   end
 
   ## Common method
-  def z_xstore(args)
-    command = "#{__method__} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
+  def z_xstore(name, args)
+    command = "#{name} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
     if args["options"] != {}
       command += redisOptionHash2Command(args["options"])
     end
-    redisCxxExecuter(__method__, command)
+    redisCxxExecuter(name, command)
   end
   ############
   ## Hashes ##

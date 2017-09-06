@@ -33,7 +33,7 @@ class RedisOperationTester
   include RedisOperation
   def initialize()
     @logger = DummyLogger.new
-    @poolRequestSize = 0
+    @pool_request_size = 0
     @metrics = MetricsMock.new
     @option = {
       :async => false,
@@ -55,7 +55,7 @@ class RedisOperationTester
     return @client.queries
   end
   def setPoolRequestSize(size)
-    @poolRequestSize = size
+    @pool_request_size = size
   end
   def setPooledQuerySize(size)
     @client.setPooledQuerySize(size)

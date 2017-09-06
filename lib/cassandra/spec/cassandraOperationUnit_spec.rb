@@ -58,7 +58,7 @@ module CassandraOperationTester
         :async => false,
         :poolRequestMaxSize => -1
       }
-      @poolRequestSize = 0
+      @pool_request_size = 0
       @poolByteSize    = 0
     end
     ## For Mock
