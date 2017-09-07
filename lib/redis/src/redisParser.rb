@@ -68,7 +68,11 @@ class RedisParser < AbstractDBParser
       @command2basic[name] = %w[SCAN INSERT].freeze
     end
     ## Append Pattern #7 READ INSERT
-    %w[SUNIONSTORE SINTERSTORE SDIFFSTORE ZUNIONSTORE ZINTERSTORE RPOPLPUSH].each do |name|
+    %w[SUNIONSTORE SINTERSTORE SDIFFSTORE ZUNIONSTORE ZINTERSTORE].each do |name|
+      @command2basic[name] = %w[READ INSERT].freeze
+    end
+    ## Append Pattern #8 UPDATE INSERT
+    %w[RPOPLPUSH].each do |name|
       @command2basic[name] = %w[UPDATE INSERT].freeze
     end
   end
