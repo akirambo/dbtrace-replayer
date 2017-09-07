@@ -164,56 +164,5 @@ module CassandraTest
         expect(@tester.key).to eq "TARGET_KEYS"
       end
     end
-    context "Private" do
-      it "prepare_CASSANDRA" do
-        ans = {"operand"=>"CASSANDRA_TEST", "args"=>"PARSED"}
-        expect(@tester.send(:prepare_CASSANDRA,"test",{})).to eq ans
-      end
-      it "cassandraQuery (true)" do
-        result = {"c1"=>"v1", "c2"=>"v2"}
-        args  = {"where" =>["c1=v1"]}
-        expect(@tester.send(:cassandraQuery,result,args)).to be true
-      end
-      it "cassandraQuery (false)" do
-        result = {"c1"=>"v1", "c2"=>"v2"}
-        args  = {"where" =>["c1=mm"]}
-        expect(@tester.send(:cassandraQuery,result,args)).to be false
-      end
-      it "selectField (*)" do
-        hash = {"c1"=>"v1", "c2"=>"v2"}
-        args = {"fields" =>["*"]}
-        ans  = {"c1"=>"v1", "c2"=>"v2"}
-        expect(@tester.send(:selectField,hash,args)).to include ans
-      end
-      it "selectField (c1)" do
-        hash = {"c1"=>"v1", "c2"=>"v2"}
-        args = {"fields" =>["c1"]}
-        ans  = {"c1"=>"v1"}
-        expect(@tester.send(:selectField,hash,args)).to include ans
-      end
-    end
-    context "Java API" do
-      it "CASSANDRA_BATCH_MUTATE(counterColumn)" do
-        skip("Unimplemented Test")
-      end
-      it "CASSANDRA_BATCH_MUTATE(NO counterColumn)" do
-        skip("Unimplemented Test")
-      end
-      it "CASSANDRA_GET_SLICE" do
-        skip("Unimplemented Test")
-      end
-      it "CASSANDRA_GET_RANGE_SLICES" do
-        skip("Unimplemented Test")
-      end
-      it "CASSANDRA_MULTIGET_SLICE" do
-        skip("Unimplemented Test")
-      end
-      it "cassandraSerialize" do
-        skip("Unimplemented Test")
-      end
-      it "cassandraDeserialze" do
-        skip("Unimplemented Test")
-      end
-    end
   end
 end

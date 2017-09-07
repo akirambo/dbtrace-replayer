@@ -39,14 +39,14 @@ module Cassandra2RedisOperation
     primarykey = args["primaryKey"]
     if args["schema_fields"] == 2
       ### String (Key-Value)
-      key = "#{args["table"]}--#{args["args"][primaryKey]}"
+      key = "#{args["table"]}--#{args["args"][primarykey]}"
       fieldnames = args["args"].keys
       fieldnames.delete(args["primaryKey"])
       value = args["args"][fieldnames[0]]
       return SET([key, value])
     else
       ### Hash
-      args["key"] = "#{args["table"]}--#{args["args"][primaryKey]}"
+      args["key"] = "#{args["table"]}--#{args["args"][primarykey]}"
       args["args"].delete(primarykey)
       return HMSET(args)
     end
@@ -57,9 +57,9 @@ module Cassandra2RedisOperation
     data = []
     primarykey = args["primaryKey"]
     idx = args["cond_keys"].index(primarykey)
-    key = "#{args["table"]}--#{args["cond_values"][0].delete(/\"/)}"
+    key = "#{args["table"]}--#{args["cond_values"][0].gsub(/\"/, "")}"
     if idx && args["cond_values"][idx]
-      key = "#{args["table"]}--#{args["cond_values"][idx].delete(/\"/)}"
+      key = "#{args["table"]}--#{args["cond_values"][idx].gsub(/\"/, "")}"
     end
     if args["schema_fields"] == 2
       ### String (Key-Value)
@@ -112,32 +112,5 @@ module Cassandra2RedisOperation
     result["operand"] = "CASSANDRA_#{operand.upcase}"
     result["args"] = @parser.exec(operand.upcase, args)
     result
-  end
-
-  def cassandraQuery(result, args)
-    ## where
-    if args["where"]
-      args["where"].each do |cond__|
-        cond__ = cond__.split("=")
-        fieldname = cond__[0]
-        value = cond__[1]
-        if result[fieldname] != value
-          return false
-        end
-      end
-    end
-    true
-  end
-
-  def selectField(hash, args)
-    row = {}
-    if args["fields"][0] == "*"
-      return hash
-    else
-      args["fields"][0].split(",").each do |field|
-        row[field] = hash[field]
-      end
-    end
-    row
   end
 end

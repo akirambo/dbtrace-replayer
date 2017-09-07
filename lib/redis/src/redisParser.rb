@@ -35,12 +35,12 @@ class RedisParser < AbstractDBParser
   def initialize(filename, option, logger)
     @typePosition = [1]
     @skip_types = %w[PING INFO PUBLISH FLUSHALL COMMAND].freeze
-    command2basics
+    command2basics(option)
     logs = RedisLogsSimple.new(@command2basic, option, logger)
-    super(filename, logs, supported_commands, option, logger)
+    super(filename, logs, supported_commands(option), option, logger)
   end
 
-  def command2basics
+  def command2basics(option)
     @command2basic = {}
     ## Append Pattern #1 %w[READ UPDATE]
     %w[GETSET APPEND].each do |name|
@@ -77,7 +77,7 @@ class RedisParser < AbstractDBParser
     end
   end
 
-  def supported_commands
+  def supported_commands(option)
     supported_command = @command2basic.keys
     if option[:mode] == "run"
       supported_command = [
