@@ -47,9 +47,8 @@ require_relative "./memcached2RedisOperation"
 require_relative "./mongodb2RedisOperation"
 require_relative "./cassandra2RedisOperation"
 
-
 class RedisRunner < AbstractRunner
-  ## REDIS OPERATION 
+  ## REDIS OPERATION
   include RedisOperation
   ## MEMCACHED TO REDIS OPERATION
   include Memcached2RedisOperation
@@ -57,13 +56,13 @@ class RedisRunner < AbstractRunner
   include MongoDB2RedisOperation
   ## CASSANDRA TO REDIS OPERATION
   include Cassandra2RedisOperation
-  
-  def initialize(logDBName,
+
+  def initialize(log_db_name,
                  logger,
                  option)
     @host = "127.0.0.1"
     @port = 6379
-    if(ENV["REDIS_IPADDRESS"])then
+    if ENV["REDIS_IPADDRESS"]
       @host = ENV["REDIS_IPADDRESS"]
     end
     ## SETUP
@@ -71,10 +70,70 @@ class RedisRunner < AbstractRunner
     @logger = logger
     @option = option
     @pool_request_size = 0
-    if(@option[:poolRequestMaxSize] == nil)then
-      @option[:poolRequestMaxSize] = -1  ## Redis Default 2500
+    if @option[:poolRequestMaxSize].nil?
+      ## Redis Default 2500
+      @option[:poolRequestMaxSize] = -1
     end
-    
+    ## Setup Parser
+    setup_parser(logger, option)
+    ## Setup Client
+    @client = nil
+    if @option[:keepalive]
+      setup_client
+      super(log_db_name, logger, option)
+    end
+  end
+
+  def connect
+    unless @option[:keepalive]
+      case @option[:api]
+      when "cxx" then
+        @client = RedisCxxRunner.new
+        if @option[:async]
+          @client.asyncConnect(@host, @port.to_i)
+        else
+          @client.syncConnect(@host, @port.to_i)
+        end
+      end
+    end
+  end
+
+  def close
+    unless @option[:keepalive]
+      case @option[:api]
+      when "cxx" then
+        if @option[:async]
+          @client.asyncClose
+        else
+          @client.syncClose
+        end
+      end
+    end
+  end
+
+  def init
+    if @option[:clearDB]
+      refresh
+    end
+  end
+
+  def refresh
+    FLUSHALL(nil, true)
+  end
+
+  def finish
+    if @option[:clearDB]
+      refresh
+    end
+  end
+
+  def asyncExec
+    if @pool_request_size > 0
+      redisAsyncExecuter(nil, true)
+    end
+  end
+
+  def setup_parser(logger, option)
     case @option[:sourceDB].upcase
     when "MONGODB" then
       @parser = MongodbArgumentParser.new(logger)
@@ -83,71 +142,25 @@ class RedisRunner < AbstractRunner
     when "REDIS" then
       @parser = RedisArgumentParser.new(logger)
     when "MEMCACHED" then
-      @parser = MemcachedArgumentParser.new(logger,option)
+      @parser = MemcachedArgumentParser.new(logger, option)
     when "CASSANDRA" then
-      @parser = CassandraArgumentParser.new(logger,option)
+      @parser = CassandraArgumentParser.new(logger, option)
     else
-      if(option[:mode] != "clear")then
-        @logger.error("Unsupported DB Log #{option[:sourceDB].upcase}" )
+      if option[:mode] != "clear"
+        @logger.error("Unsupported DB Log #{option[:sourceDB].upcase}")
       end
     end
-    
-    ## Setup Client
-    @client = nil
-    if(@option[:keepalive])then
-      case @option[:api]
-      when "cxx" then
-        @client = RedisCxxRunner.new()
-        if(@option[:async])then
-          @client.asyncConnect(@host, @port.to_i)
-        else
-          @client.syncConnect(@host, @port.to_i)
-        end
-      end
-      super(logDBName,logger,option)
-    end
-    def connect
-      if(!@option[:keepalive])then
-        case @option[:api] 
-        when "cxx" then
-        @client = RedisCxxRunner.new()
-        if(@option[:async])then
-          @client.asyncConnect(@host, @port.to_i)
-        else
-          @client.syncConnect(@host, @port.to_i)
-        end
-        end
+  end
+
+  def setup_client
+    case @option[:api]
+    when "cxx" then
+      @client = RedisCxxRunner.new
+      if @option[:async]
+        @client.asyncConnect(@host, @port.to_i)
+      else
+        @client.syncConnect(@host, @port.to_i)
       end
     end
-    def close
-      if(!@option[:keepalive])then
-        case @option[:api] 
-        when "cxx" then
-          if(@option[:async])then
-            @client.asyncClose()
-          else
-            @client.syncClose()
-          end
-        end
-      end
-    end
-    def init
-      if(@option[:clearDB])then
-        refresh
-      end
-    end
-    def refresh
-      FLUSHALL(nil,true)
-    end
-    def finish
-      if(@option[:clearDB])then
-        refresh
-      end
-    end
-    def asyncExec()
-      if(@pool_request_size > 0)then
-        redisAsyncExecuter(nil,true)
-      end
-   end
   end
 end

@@ -1,3 +1,4 @@
+
 #########################################################
 # Pending (Please Remove the following items future.)
 #########################################################
@@ -54,9 +55,6 @@ Style/IfUnlessModifier:
 Style/SignalException:
   EnforcedStyle: only_raise
 
-Style/DotPosition:
-  EnforcedStyle: trailing
-
 # Common globals we allow
 Style/GlobalVars:
   AllowedVariables:
@@ -92,10 +90,6 @@ Style/Next:
 Style/ModuleFunction:
   Enabled: false
 
-# Disallow extra spacing for token alignment
-Style/ExtraSpacing:
-  AllowForAlignment: false
-
 ################################################################################
 # Performance
 ################################################################################
@@ -121,19 +115,36 @@ Metrics/ModuleLength:
   Exclude:
   - spec/**/*
   - lib/**/**/spec/*
+  - lib/common/spec/*
 
 Metrics/MethodLength:
   Max: 30
   Exclude:
   - spec/**/*
+  - lib/common/spec/*
   - lib/**/**/spec/*
 
 Style/ClassAndModuleChildren:
   Exclude:
   - spec/**/*
   - lib/**/**/spec/*
+  - lib/common/spec/*
   
 Style/BlockDelimiters:
   Exclude:
   - spec/**/*
   - lib/**/**/spec/*
+  - lib/common/spec/*
+
+
+AllCops:
+  Include:
+   - bin/*.rb
+   - lib/**/src/*.rb
+   - common/*.rb
+  Exclude:
+   - spec/**/*
+   - lib/**/**/spec/*
+   - lib/common/spec/*
+   - vender/**/*
+   - lib/tools/**/*
