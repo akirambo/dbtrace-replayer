@@ -34,10 +34,10 @@ require_relative "../../common/abstractDBParser"
 class RedisParser < AbstractDBParser
   def initialize(filename, option, logger)
     @typePosition = [1]
-    @skipTypes    = ["PING","INFO","PUBLISH", "FLUSHALL","COMMAND"]
+    @skip_types    = %w[PING INFO PUBLISH FLUSHALL COMMAND].freeze
     @command2basic = {
-      "GETSET"  => ["READ","UPDATE"],
-      "APPEND"  => ["READ","UPDATE"],
+      "GETSET"  => %w[READ UPDATE].freeze,
+      "APPEND"  => %w[READ UPDATE].freeze,
       "SET"     => "INSERT",
       "SETEX"   => "INSERT",
       "SETNX"   => "INSERT",
@@ -55,7 +55,7 @@ class RedisParser < AbstractDBParser
       "MSETNX"  => "INSERT",
       "MGET"    => "READ",
       "SADD"    => "INSERT",
-      "SPOP"    => "READ", 
+      "SPOP"    => "READ",
       "STRLEN"  => "READ",
       "SREM"    => "UPDATE",
       "LRANGE"  => "SCAN",
@@ -84,83 +84,84 @@ class RedisParser < AbstractDBParser
       "ZSCORE" => "SCAN",
       "ZREM" => "UPDATE",
       "ZINCRBY" => "UPDATE",
-      "SMOVE" => ["SCAN","INSERT"],
+      "SMOVE" => %w[SCAN INSERT].freeze,
       "SINTER" => "READ",
       "SDIFF"  => "READ",
       "SUNION" => "READ",
-      "SUNIONSTORE" => ["READ","INSERT"],
-      "SINTERSTORE" => ["READ","INSERT"],
-      "SDIFFSTORE"  => ["READ","INSERT"],
-      "ZUNIONSTORE" => ["READ","INSERT"],
-      "ZINTERSTORE" => ["READ","INSERT"],
+      "SUNIONSTORE" => %w[READ INSERT].freeze,
+      "SINTERSTORE" => %w[READ INSERT].freeze,
+      "SDIFFSTORE"  => %w[READ INSERT].freeze,
+      "ZUNIONSTORE" => %w[READ INSERT].freeze,
+      "ZINTERSTORE" => %w[READ INSERT].freeze,
       "LLEN" => "SCAN",
       "LTRIM" => "UPDATE",
       "LINDEX" => "READ",
       "LSET" => "INSERT",
       "LREM" => "UPDATE",
-      "RPOPLPUSH" => ["UPDATE","INSERT"],
-      "ZREMRANGEBYSCORE" => "UPDATE" ,
+      "RPOPLPUSH" => %w[UPDATE INSERT].freeze,
+      "ZREMRANGEBYSCORE" => "UPDATE",
       "ZREMRANGEBYRANK" => "UPDATE",
-      "DEL" => "UPDATE"
+      "DEL" => "UPDATE",
     }
-    supportedCommand = @command2basic.keys()
-    if(option[:mode] == "run")then
-      supportedCommand = [
+    supported_command = @command2basic.keys
+    if option[:mode] == "run"
+      supported_command = [
         ## STRINGS
-        "SET","GET","SETNX","SETEX","PSETEX",
-        "MSET","MGET","MSETNX",
-        "INCR","INCRBY","DECR","DECRBY",
-        "APPEND","GETSET","STRLEN",
+        "SET", "GET", "SETNX", "SETEX", "PSETEX",
+        "MSET", "MGET", "MSETNX",
+        "INCR", "INCRBY", "DECR", "DECRBY",
+        "APPEND", "GETSET", "STRLEN",
         ## SET
-        "SADD","SPOP","SREM","SMOVE","SCARD","SISMEMBER",
-        "SUNION","SUNIONSTORE",
-        "SINTER","SINTERSTORE","SDIFF","SDIFFSTORE",
-        "SMEMBERS","SRANDMEMBER",
-        ## LIST 
-        "LPUSH","RPUSH","LPOP","RPOP",
-        "LLEN","LRANGE","LTRIM","LINDEX","LSET",
-        "LREM","RPOPLPUSH",
+        "SADD", "SPOP", "SREM", "SMOVE", "SCARD", "SISMEMBER",
+        "SUNION", "SUNIONSTORE",
+        "SINTER", "SINTERSTORE", "SDIFF", "SDIFFSTORE",
+        "SMEMBERS", "SRANDMEMBER",
+        ## LIST
+        "LPUSH", "RPUSH", "LPOP", "RPOP",
+        "LLEN", "LRANGE", "LTRIM", "LINDEX", "LSET",
+        "LREM", "RPOPLPUSH",
         ## SORTED SET
-        "ZADD","ZREM","ZINCRBY","ZSCORE","ZCARD",
-        "ZRANK","ZREVRANK","ZRANGE","ZREVRANGE",
-        "ZRANGEBYSCORE","ZCOUNT",
-        "ZREMRANGEBYRANK","ZREMRANGEBYSCORE",
-        "ZUNIONSTORE","ZINTERSTORE",
+        "ZADD", "ZREM", "ZINCRBY", "ZSCORE", "ZCARD",
+        "ZRANK", "ZREVRANK", "ZRANGE", "ZREVRANGE",
+        "ZRANGEBYSCORE", "ZCOUNT",
+        "ZREMRANGEBYRANK", "ZREMRANGEBYSCORE",
+        "ZUNIONSTORE", "ZINTERSTORE",
         ## HASH
-        "HSET","HGET","HMSET","HMGET",
-        "HINCRBY","HEXISTS","HDEL","HLEN",
-        "HKEYS","HVALS","HGETALL",
+        "HSET", "HGET", "HMSET", "HMGET",
+        "HINCRBY", "HEXISTS", "HDEL", "HLEN",
+        "HKEYS", "HVALS", "HGETALL",
         ## OTHERES
-        "FLUSHALL","DEL"
+        "FLUSHALL", "DEL"
       ]
     end
     logs = RedisLogsSimple.new(@command2basic, option, logger)
-    super(filename, logs, supportedCommand, option, logger)
+    super(filename, logs, supported_command, option, logger)
   end
+
   def parse(line)
     data = line.chop.split("\s\"")
-    @typePosition.each{|index|
-      if(data.size > index)then
-        command = data[index].sub(/\"/,"").upcase()
-        if(@supportedCommand.include?(command))then
-          result = Hash.new
+    @typePosition.each do |index|
+      if data.size > index
+        command = data[index].sub(/\"/, "").upcase
+        if @supportedCommand.include?(command)
+          result = {}
           args = data.delete_if(&:empty?)
           ## Skip [time]
           args.shift
           ## Skip [command]
           args.shift
-          result[command] = Array.new
-          args.each{|arg|
-            result[command].push(arg.sub("\"",""))
-          }
+          result[command] = []
+          args.each do |arg|
+            result[command].push(arg.sub("\"", ""))
+          end
           return result
         else
-          if(!@skipTypes.include?(command))then
+          unless @skip_types.include?(command)
             @logger.warn("Unsupported Command #{command}")
           end
         end
       end
-    }
-    return nil
+    end
+    nil
   end
 end
