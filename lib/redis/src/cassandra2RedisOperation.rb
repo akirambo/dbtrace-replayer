@@ -30,13 +30,14 @@
 
 module Cassandra2RedisOperation
   private
+
   ###############
   ## OPERATION ##
   ###############
   # @conv {"INSERT" => ["SET","HMSET"]}
   def CASSANDRA_INSERT(args)
-    primaryKey = args["primaryKey"]
-    if(args["schema_fields"] == 2)then
+    primarykey = args["primaryKey"]
+    if args["schema_fields"] == 2
       ### String (Key-Value)
       key = "#{args["table"]}--#{args["args"][primaryKey]}"
       fieldnames = args["args"].keys
@@ -46,172 +47,97 @@ module Cassandra2RedisOperation
     else
       ### Hash
       args["key"] = "#{args["table"]}--#{args["args"][primaryKey]}"
-      args["args"].delete(primaryKey)
+      args["args"].delete(primarykey)
       return HMSET(args)
     end
   end
+
   # @conv {"SELECT" => ["GET","HMGET"]}
   def CASSANDRA_SELECT(args)
     data = []
-    primaryKey = args["primaryKey"]
-    idx = args["cond_keys"].index(primaryKey)
-    key = "#{args["table"]}--#{args["cond_values"][0].gsub(/\"/,"")}"
-    if(idx and args["cond_values"][idx])then
-      key = "#{args["table"]}--#{args["cond_values"][idx].gsub(/\"/,"")}"
+    primarykey = args["primaryKey"]
+    idx = args["cond_keys"].index(primarykey)
+    key = "#{args["table"]}--#{args["cond_values"][0].delete(/\"/)}"
+    if idx && args["cond_values"][idx]
+      key = "#{args["table"]}--#{args["cond_values"][idx].delete(/\"/)}"
     end
-    if(args["schema_fields"] == 2)then
+    if args["schema_fields"] == 2
       ### String (Key-Value)
       data = [GET([key])]
     else
       ### Hash
       ## create Key
-      _args_ = {
+      args__ = {
         "key"  => key,
-        "args" => args["fields"]
+        "args" => args["fields"],
       }
-      data = HMGET(_args_,false)
+      data = HMGET(args__, false)
     end
-    return data
+    data
   end
+
   # @conv {"UPDATE" => ["INSERT","HMSET"]}
   def CASSANDRA_UPDATE(args)
     ### convert arguments
-    primaryKey = args["primaryKey"]
-    idx = args["cond_keys"].index(primaryKey)
+    primarykey = args["primaryKey"]
+    idx = args["cond_keys"].index(primarykey)
     args["args"] = args["set"]
-    args["args"][primaryKey] = args["cond_values"][idx]
-    return CASSANDRA_INSERT(args)
-  end
-  # @conv {"DELETE" => ["DEL","HDEL"]}
-  def CASSANDRA_DELETE(args)
-    if(args["schema_fields"] == 2 or args["fields"] != "*")then
-      ## Strings(Key-Value )
-      return DEL([args["table"]])
-    else
-      ## Hash
-      return HDEL([args["table"],args["fields"]])
-    end
-  end
-  # @conv {"DROP" => ["SMEMBER","SREM","SADD"]}
-  def CASSANDRA_DROP(args)
-    targetKeys = KEYS(args["key"],args["type"])
-    ## drop Table
-    return DEL(targetKeys)
+    args["args"][primarykey] = args["cond_values"][idx]
+    CASSANDRA_INSERT(args)
   end
 
-  ##############
-  ## JAVA API ##
-  ##############
-=begin
-  # @conv {"BATCH_MUTATE" => ["SADD"]}
-  def CASSANDRA_BATCH_MUTATE(args)
-    if(args["counterColumn"])then
-      args["args"].each{|arg|
-        val = cassandraSerialize(arg)
-        SADD(args["key"], val)
-        ## set key list
-        SADD("__keylist__", args["key"])    
-      }
-    else
-      val = cassandraSerialize(args["args"])
-      SADD(args["key"], val)
-      ## set key list
-      SADD("__keylist__", args["key"])    
+  # @conv {"DELETE" => ["DEL","HDEL"]}
+  def CASSANDRA_DELETE(args)
+    if args["schema_fields"] == 2 || args["fields"] != "*"
+      ## Strings(Key-Value )
+      return DEL([args["table"]])
     end
-    return
+    ## Hash
+    HDEL([args["table"], args["fields"]])
   end
-  # @conv {"GET_SLICE" => ["SMEMBERS"]}
-  def CASSANDRA_GET_SLICE(args)
-    val = SMEMBERS([args["key"]])
-    results = cassandraDeserialize(val)
-    if(args["limit"])then
-      results = results.take(args["limit"].to_i)
-    end
-    data = []
-    results.each{|row|
-      if(cassandraQuery(row, args))then
-        data.push(selectField(row, args))
-      end
-    }
-    #data.each{|r| puts r}
+
+  # @conv {"DROP" => ["SMEMBER","SREM","SADD"]}
+  def CASSANDRA_DROP(args)
+    targetkeys = KEYS(args["key"], args["type"])
+    ## drop Table
+    DEL(targetkeys)
   end
-  # @conv {"GET_RANGE_SLICES" => ["SMEMBERS"]}
-  def CASSANDRA_GET_RANGE_SLICES(args)
-    val = SMEMBERS([args["key"]])
-    results = cassandraDeserialize(val)
-    if(args["limit"])then
-      results = results.take(args["limit"].to_i)
-    end
-    data = []
-    results.each{|row|
-      if(cassandraQuery(row, args))then
-        data.push(selectField(row, args))
-      end
-    }
-    #data.each{|r| puts r}
-  end
- # @conv {"MULTIGET_SLICE" => ["SMEMBERS"]}
-  def CASSANDRA_MULTIGET_SLICE(args)
-    val = SMEMBERS([args["key"]])
-    results = cassandraDeserialize(val)
-    if(args["limit"])then
-      results = results.take(args["limit"].to_i)
-    end
-    data = []
-    results.each{|row|
-      if(cassandraQuery(row, args))then
-        data.push(selectField(row, args))
-      end
-    }
-    #data.each{|r| puts r}
-  end
-=end 
+
   #############
   ## PREPARE ##
   #############
-  def prepare_CASSANDRA(operand,args)
+  def prepare_CASSANDRA(operand, args)
     ## PREPARE OPERATION & ARGS
     result = {}
     result["operand"] = "CASSANDRA_#{operand.upcase}"
-    result["args"]    = @parser.exec(operand.upcase,args)
-    return result
+    result["args"] = @parser.exec(operand.upcase, args)
+    result
   end
-  
+
   def cassandraQuery(result, args)
     ## where
-    if(args["where"])then
-      args["where"].each{|__cond__|
-        __cond__ = __cond__.split("=")
-        fieldname = __cond__[0]
-        value = __cond__[1]
-        if(result[fieldname] != value)then
+    if args["where"]
+      args["where"].each do |cond__|
+        cond__ = cond__.split("=")
+        fieldname = cond__[0]
+        value = cond__[1]
+        if result[fieldname] != value
           return false
         end
-      }
+      end
     end
-    return true
+    true
   end
+
   def selectField(hash, args)
     row = {}
-    if(args["fields"][0] == "*")then
+    if args["fields"][0] == "*"
       return hash
     else
-      args["fields"][0].split(",").each{|field|
+      args["fields"][0].split(",").each do |field|
         row[field] = hash[field]
-      }
+      end
     end
-    return row
+    row
   end
-=begin
-  def cassandraSerialize(hash)
-    return convJSON(hash)
-  end
-  def cassandraDeserialize(array)
-    result = []
-    array.each{|row|
-      result.push(parseJSON(row))
-    }
-    return result
-  end
-=end
 end
