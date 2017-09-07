@@ -34,75 +34,46 @@ require_relative "../../common/abstractDBParser"
 class RedisParser < AbstractDBParser
   def initialize(filename, option, logger)
     @typePosition = [1]
-    @skip_types    = %w[PING INFO PUBLISH FLUSHALL COMMAND].freeze
-    @command2basic = {
-      "GETSET"  => %w[READ UPDATE].freeze,
-      "APPEND"  => %w[READ UPDATE].freeze,
-      "SET"     => "INSERT",
-      "SETEX"   => "INSERT",
-      "SETNX"   => "INSERT",
-      "PSETEX"  => "INSERT",
-      "GET"     => "READ",
-      "INCR"    => "UPDATE",
-      "INCRBY"  => "UPDATE",
-      "DECR"    => "UPDATE",
-      "DECRBY"  => "UPDATE",
-      "LPUSH"   => "INSERT",
-      "RPUSH"   => "INSERT",
-      "LPOP"    => "READ",
-      "RPOP"    => "READ",
-      "MSET"    => "INSERT",
-      "MSETNX"  => "INSERT",
-      "MGET"    => "READ",
-      "SADD"    => "INSERT",
-      "SPOP"    => "READ",
-      "STRLEN"  => "READ",
-      "SREM"    => "UPDATE",
-      "LRANGE"  => "SCAN",
-      "HGETALL" => "SCAN",
-      "ZADD"    => "INSERT",
-      "HMSET"   => "INSERT",
-      "HSET"    => "INSERT",
-      "HGET"    => "READ",
-      "HKEYS"   => "SCAN",
-      "HVALS"   => "SCAN",
-      "HMGET"   => "READ",
-      "HINCRBY" => "UPDATE",
-      "HEXISTS" => "READ",
-      "HDEL"    => "UPDATE",
-      "HLEN"    => "SCAN",
-      "SMEMBERS" => "SCAN",
-      "SRANDMEMBER" => "READ",
-      "SCARD" => "SCAN",
-      "ZCOUNT" => "SCAN",
-      "ZCARD" => "SCAN",
-      "ZRANK" => "SCAN",
-      "ZREVRANK" => "SCAN",
-      "ZRANGE" => "SCAN",
-      "ZRANGEBYSCORE" => "SCAN",
-      "ZREVRANGE" => "SCAN",
-      "ZSCORE" => "SCAN",
-      "ZREM" => "UPDATE",
-      "ZINCRBY" => "UPDATE",
-      "SMOVE" => %w[SCAN INSERT].freeze,
-      "SINTER" => "READ",
-      "SDIFF"  => "READ",
-      "SUNION" => "READ",
-      "SUNIONSTORE" => %w[READ INSERT].freeze,
-      "SINTERSTORE" => %w[READ INSERT].freeze,
-      "SDIFFSTORE"  => %w[READ INSERT].freeze,
-      "ZUNIONSTORE" => %w[READ INSERT].freeze,
-      "ZINTERSTORE" => %w[READ INSERT].freeze,
-      "LLEN" => "SCAN",
-      "LTRIM" => "UPDATE",
-      "LINDEX" => "READ",
-      "LSET" => "INSERT",
-      "LREM" => "UPDATE",
-      "RPOPLPUSH" => %w[UPDATE INSERT].freeze,
-      "ZREMRANGEBYSCORE" => "UPDATE",
-      "ZREMRANGEBYRANK" => "UPDATE",
-      "DEL" => "UPDATE",
-    }
+    @skip_types = %w[PING INFO PUBLISH FLUSHALL COMMAND].freeze
+    command2basics
+    logs = RedisLogsSimple.new(@command2basic, option, logger)
+    super(filename, logs, supported_commands, option, logger)
+  end
+
+  def command2basics
+    @command2basic = {}
+    ## Append Pattern #1 %w[READ UPDATE]
+    %w[GETSET APPEND].each do |name|
+      @command2basic[name] = %w[READ UPDATE].freeze
+    end
+    ## Append Pattern #2 INSERT
+    %w[SET SETEX SETNX PSETEX LPUSH RPUSH MSET MSETNX SADD ZADD HMSET HSET LSET].each do |name|
+      @command2basic[name] = "INSERT"
+    end
+    ## Append Pattern #3 READ
+    %w[GET LPOP RPOP MGET SPOP STRLEN HGET HMGET HEXISTS SRANDMEMBER SINTER SDIFF SUNION LINDEX].each do |name|
+      @command2basic[name] = "READ"
+    end
+    ## Append Pattern #4 UPDATE
+    %w[INCR INCRBY DECR DECRBY SREM HINCRBY HDEL ZREM ZINCRBY LTRIM LREM ZREMRANGEBYSCORE ZREMRANGEBYRANK DEL].each do |name|
+      @command2basic[name] = "UPDATE"
+    end
+
+    ## Append Pattern #5 SCAN
+    %w[LRANGE HGETALL HKEYS HVALS HLEN SMEMBERS SCARD ZCOUNT ZCARD ZRANK ZREVRANK ZRANGE ZRANGEBYSCORE ZREVRANGE ZSCORE LLEN].each do |name|
+      @command2basic[name] = "SCAN"
+    end
+    ## Append Pattern #6 SCAN INSERT
+    %w[SMOVE].each do |name|
+      @command2basic[name] = %w[SCAN INSERT].freeze
+    end
+    ## Append Pattern #7 READ INSERT
+    %w[SUNIONSTORE SINTERSTORE SDIFFSTORE ZUNIONSTORE ZINTERSTORE RPOPLPUSH].each do |name|
+      @command2basic[name] = %w[UPDATE INSERT].freeze
+    end
+  end
+
+  def supported_commands
     supported_command = @command2basic.keys
     if option[:mode] == "run"
       supported_command = [
@@ -134,8 +105,7 @@ class RedisParser < AbstractDBParser
         "FLUSHALL", "DEL"
       ]
     end
-    logs = RedisLogsSimple.new(@command2basic, option, logger)
-    super(filename, logs, supported_command, option, logger)
+    supported_command
   end
 
   def parse(line)
