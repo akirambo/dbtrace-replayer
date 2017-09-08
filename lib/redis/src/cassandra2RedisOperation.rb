@@ -57,9 +57,9 @@ module Cassandra2RedisOperation
     data = []
     primarykey = args["primaryKey"]
     idx = args["cond_keys"].index(primarykey)
-    key = "#{args["table"]}--#{args["cond_values"][0].gsub(/\"/, "")}"
+    key = "#{args["table"]}--#{args["cond_values"][0].delete("\"")}"
     if idx && args["cond_values"][idx]
-      key = "#{args["table"]}--#{args["cond_values"][idx].gsub(/\"/, "")}"
+      key = "#{args["table"]}--#{args["cond_values"][idx].delete("\"")}"
     end
     if args["schema_fields"] == 2
       ### String (Key-Value)

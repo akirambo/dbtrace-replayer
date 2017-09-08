@@ -30,95 +30,107 @@
 
 module Memcached2RedisOperation
   private
+
   # @conv {"SET(args x3)" => ["SETEX"]}
   # @conv {"SET(args x2)" => ["SET"]}
   def MEMCACHED_SET(args)
     v = "NG"
-    if(args.size == 3 )then
+    if args.size == 3
       v = SETEX(args)
-    elsif(args.size == 2)then
+    elsif args.size == 2
       v = SET(args)
     else
       @logger.error("Unsupported Arguments #{args} @#{__method__}")
     end
-    return v
+    v
   end
+
   # @conv {"GET" => ["GET"]}
   def MEMCACHED_GET(args)
-    return GET(args)
+    GET(args)
   end
+
   # @conv {"ADD(args x3)" => ["GET","SETEX"]}
   # @conv {"ADD(args x2)" => ["GET","SET"]}
   def MEMCACHED_ADD(args)
     v = "NG"
-    if(GET([args[0]]) == nil)then
+    if GET([args[0]]).nil?
       v = MEMCACHED_SET(args)
     end
-    return v
+    v
   end
+
   # @conv {"REPLACE" => ["GET","SET"]}
   def MEMCACHED_REPLACE(args)
     v = "NG"
-    if(GET([args[0]]) != nil)then
+    unless GET([args[0]]).nil?
       v = MEMCACHED_SET(args)
     end
-    return v
+    v
   end
+
   # @conv {"GETS" => ["GET"]}
   def MEMCACHED_GETS(args)
     GET(args)
   end
+
   # @conv {"APPEND(args x3)" => ["GET","SETEX"]}
   # @conv {"APPEND(args x2)" => ["GET","SET"]}
   def MEMCACHED_APPEND(args)
-    str = GET(args)
-    str +=  args.last.to_s
-    args[args.length-1] = str
-    return MEMCACHED_SET(args)
+    str = GET(args) + args.last.to_s
+    args[args.length - 1] = str
+    MEMCACHED_SET(args)
   end
+
   # @conv {"PREPEND(args x3)" => ["GET","SETEX"]}
   # @conv {"PREPEND(args x2)" => ["GET","SET"]}
   def MEMCACHED_PREPEND(args)
     str = GET(args)
-    args[args.length-1] = args[args.length-1].to_s + str
-    return MEMCACHED_SET(args)
+    pos = args.length - 1
+    args[pos] = args[pos].to_s + str
+    MEMCACHED_SET(args)
   end
+
   # @conv {"CAS(args x4)" => ["SETEX"]}
   # @conv {"CAS(args x3)" => ["SET"]}
   def MEMCACHED_CAS(args)
     args.pop
-    return MEMCACHED_SET(args)
+    MEMCACHED_SET(args)
   end
+
   # @conv {"INCR" => ["INCRBY"]}
   def MEMCACHED_INCR(args)
-    return INCRBY(args)
+    INCRBY(args)
   end
+
   # @conv {"DECR" => ["DECRBY"]}
   def MEMCACHED_DECR(args)
-    return DECRBY(args)
+    DECRBY(args)
   end
+
   # @conv {"DELETE" => ["DEL"]}
   def MEMCACHED_DELETE(args)
-    return DEL(args)
+    DEL(args)
   end
+
   # @conv {"FLUSH" => ["FLUSHALL"]}
   def MEMCACHED_FLUSH(args)
-    return FLUSHALL(args)
+    FLUSHALL(args)
   end
+
   #############
   ## PREPARE ##
   #############
-  def prepare_MEMCACHED(operand,args)
+  def prepare_MEMCACHED(operand, args)
     result = {}
     ## PREPARE SPECIAL OPERATION
-    if(["FLUSHALL"].include?(operand))then
+    if ["FLUSHALL"].include?(operand)
       result["operand"] = operand
       return result
     end
-    
     ## PREPARE OPERATION & ARGS
     result["operand"] = "MEMCACHED_#{operand.upcase}"
     result["args"] = @parser.exec(operand.upcase, args)
-    return result
+    result
   end
 end

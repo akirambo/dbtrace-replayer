@@ -30,248 +30,260 @@
 
 
 module MongoDB2RedisOperation
-  MONGODB_NUMERIC_QUERY = ["$gt","$gte","$lt","$lte"]
-  MONGODB_STRING_QUERY  = ["$eq","$ne","$in","$nin"]
+  MONGODB_NUMERIC_QUERY = ["$gt", "$gte", "$lt", "$lte"].freeze
+  MONGODB_STRING_QUERY  = ["$eq", "$ne", "$in", "$nin"].freeze
+
   private
+
   # @conv {"INSERT" => ["SET"]}
   ## args[0] --> skip, args[1] = {_id => xx, value => xx, ...}
   def MONGODB_INSERT(args)
     v = "NG"
-    if(@options[:datamodel] == "DOCUMENT")then
+    if @options[:datamodel] == "DOCUMENT"
       ## Documents [SADD]
-      if(args[0] and args[0][0] and args[0][1][0])then
+      if args[0] && args[0][0] && args[0][1][0]
         doc = {
           "key"  => args[0][0],
-          "args" => args[0][1][0].to_json
+          "args" => args[0][1][0].to_json,
         }
-        doc["args"].gsub!("'","")
-        doc["args"].gsub!(/\s/,"")
+        doc["args"].delete!("'")
+        doc["args"].delete!(" ")
       end
       v = SADD(doc)
     else
       @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
     end
-    return v
+    v
   end
+
   # @conv {"UPDATE" => ["SMEMBERS","QUERY@client","DEL","SADD"]}
   def MONGODB_UPDATE(args)
     results = []
-    if(@options[:datamodel] == "DOCUMENT")then
-      ## Documents
-      if(args["update"] and args["update"]["$set"])then
-        newVals = args["update"]["$set"]
-        data = GET([args["key"]])
-        docs = eval("["+data+"]")
-        replaceFlag = true
-        docs.each_index{|index|
-          if(replaceFlag)then
-            doc = parseJSON(docs[index])
-            if(args["query"] == nil or args["query"] = {} or mongodbQuery(doc,args["query"]))then
-              newVals.each{|k,v|
-                doc[k.to_sym] = v.gsub(/\s/,"")
-              }
-            end
-            results.push(doc)
-            if(!args["multi"])then
-              replaceFlag = false
-            end
-          else
-            results.push(docs[index])
-          end
-        }
-      else
-        @logger.error("Not Set update $set query @ mongodb2redis")
-        return "NG"
-      end
-      r = SET([args["key"], results.to_json])
-      return r
-    else
+    if @options[:datamodel] != "DOCUMENT"
       @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
+      return "NG"
     end
-    return "NG"
+    if args["update"].nil? || args["update"]["$set"].nil?
+      @logger.error("Not Set update $set query @ mongodb2redis")
+      return "NG"
+    end
+    ## Documents
+    new_vals = args["update"]["$set"]
+    data = GET([args["key"]])
+    docs = eval("[" + data + "]")
+    replace_flag = true
+    docs.each_index do |index|
+      if replace_flag
+        doc = parseJSON(docs[index])
+        if args["query"].nil? || args["query"] == {} || mongodbQuery(doc, args["query"])
+          new_vals.each do |k, v|
+            doc[k.to_sym] = v.delete(" ")
+          end
+        end
+        results.push(doc)
+        unless args["multi"]
+          replace_flag = false
+        end
+      else
+        results.push(docs[index])
+      end
+    end
+    SET([args["key"], results.to_json])
   end
+
   # @conv {"FIND" => ["GET,"QUERY@client"]}
   def MONGODB_FIND(args)
     results = []
     case @options[:datamodel]
     when "DOCUMENT" then
       ## Documents
-      data = SMEMBERS([args["key"]],true)
+      data = SMEMBERS([args["key"]], true)
       docs = []
-      if(data)then
-        docs = eval("["+data+"]")
+      unless data.nil?
+        docs = eval("[" + data + "]")
       end
-      results =[]
-      if(args["filter"] == nil or args["filter"] == {})then
+      results = []
+      if args["filter"].nil? || args["filter"] == {}
         results = docs
       else
-        docs.each{|doc|
-          if(mongodbQuery(doc,args["filter"]))then
+        docs.each do |doc|
+          if mongodbQuery(doc, args["filter"])
             results.push(doc)
           end
-        }
+        end
       end
     else
       @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
       return "NG"
     end
-    return results
+    results
   end
+
   # @conv {"DELETE" => ["SMEMBERS","QUERY@client","SREM"]}
   def MONGODB_DELETE(args)
     v = "NG"
     case @options[:datamodel]
     when "DOCUMENT"
-      if(args["filter"].size == 0)then
+      if args["filter"].size.zero?
         v = DEL([args["key"]])
       else
         data = GET([args["key"]])
-        newDocs = []
-        docs = eval("["+data+"]")
-        docs.each_index{|index|
+        new_docs = []
+        docs = eval("[" + data + "]")
+        docs.each_index do |index|
           doc = parseJSON(docs[index])
-          if(!mongodbQuery(doc,args["filter"]))then
-            newDocs.push(convJSON(doc))
+          unless mongodbQuery(doc, args["filter"])
+            new_docs.push(convJSON(doc))
           end
-        }
-        if(newDocs.size == 0)then
+        end
+        if new_docs.size.zero?
           v = DEL(args["key"])
         else
-          value = newDocs.to_json
-          v = SET([args["key"],value])
+          value = new_docs.to_json
+          v = SET([args["key"], value])
         end
       end
     else
       @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
     end
-    return v
+    v
   end
+
   # @conv {"FINDANDMODIFY" => ["undefined"]}
   def MONGODB_FINDANDMODIFY(args)
-    @logger.debug("MONGODB_FINDANDMODIFY is not implemented")
-    return "NG"
+    @logger.debug("MONGODB_FINDANDMODIFY is not implemented [#{args}]")
+    "NG"
   end
+
   # @conv {"COUNT" => ["SMEMBERS","QUERY@client","COUNT@client"]}
   def MONGODB_COUNT(args)
-    count  = 0
-    case @options[:datamodel] 
+    count = 0
+    case @options[:datamodel]
     when "DOCUMENT" then
-      docs = SMEMBERS([args["key"]],true)
-      monitor("client","count")
-      args["query"].each_key{|k|
-        query = ""
-        case args["query"][k].class.to_s 
-        when "FalseClass" then
-          query = '"'+k.split(".").last+'":false'
-        when "TrueClass" then
-          query = '"'+k.split(".").last+'":true'
-        when "String" then
-          query = '"'+k.split(".").last+'":"'+args["query"][k]+'"'
-        when "Hash" then
-          query = '"'+k.split(".").last+'":'+ args["query"][k].to_json
-        when "Float" then
-          query = '"'+k.split(".").last+'":'+args["query"][k].to_s
-        else
-          if(args["query"][k].class.to_s == "Integer" or
-             args["query"][k].class.to_s == "Fixnum")then
-            query = '"'+k.split(".").last+'":'+args["query"][k].to_s
-          end
-        end
-        _count_ =  docs.scan(query).size
-        if(_count_ == 0)then
+      docs = SMEMBERS([args["key"]], true)
+      monitor("client", "count")
+      args["query"].each_key do |k|
+        query = generate_query(k, args["query"][k])
+        count__ = docs.scan(query).size
+        if count__.zero?
           count = 0
           break
-        else
-          if(count == 0  or count > _count_)then
-            count = _count_
-          end
+        elsif count.zero? || count > count__
+          count = count__
         end
-      }
-      monitor("client","count")
+      end
+      monitor("client", "count")
     else
       @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
     end
-    return count
+    count
   end
+
   # @conv {"AGGREGATE" => ["SMEMBERS","ACCUMULATION@client"]}
   def MONGODB_AGGREGATE(args)
     @logger.debug("MONGODB_AGGREGATE")
-    docs = SMEMBERS([args["key"]],true)
+    docs = SMEMBERS([args["key"]], true)
     result = {}
     params = @queryParser.getParameter(args)
-    docs = eval("["+docs+"]")
-    firstFlag = true
+    docs = eval("[" + docs + "]")
+    firstflag = true
     key2realkey = nil
-    docs.each{|doc|
+    docs.each do |doc|
       monitor("client", "match")
-      flag = mongodbQuery(doc,args["match"])
+      flag = mongodbQuery(doc, args["match"])
       monitor("client", "match")
-      if(flag)then
-        if(firstFlag)then
-          key2realkey = @queryParser.createKey2RealKey(doc,params["cond"])
-          firstFlag = false
+      if flag
+        if firstflag
+          key2realkey = @queryParser.createKey2RealKey(doc, params["cond"])
+          firstflag = false
         end
         # create group key
-        key = @queryParser.createGroupKey(doc,params["cond"])
-        if(result[key] == nil)then
+        key = @queryParser.createGroupKey(doc, params["cond"])
+        if result[key].nil?
           result[key] = {}
         end
         # do aggregation
-        params["cond"].each{|k,v|
-          monitor("client","aggregate")
-          result[key][k] = @queryProcessor.aggregation(result[key][k],doc,v,key2realkey)
-          monitor("client","aggregate")
-        }
+        params["cond"].each do |k, v|
+          monitor("client", "aggregate")
+          result[key][k] = @queryProcessor.aggregation(result[key][k], doc, v, key2realkey)
+          monitor("client", "aggregate")
+        end
       end
-    }
-    return result
+    end
+    result
   end
   # @conv {"MAPREDUCE" => ["undefined"]}
   def MONGODB_MAPREDUCE(args)
-    @logger.warn("Unsupported MapReduce")
-    return "NG"
+    @logger.warn("Unsupported MapReduce :#{args}")
+    "NG"
   end
+
   ###################
   ## QUERY PROCESS ##
   ###################
-  def mongodbQuery(doc,query)
-    if(query and query.class == Hash and query.keys.size > 0)then
-      query.each{|_key, cond|
-        key = _key.to_sym
-        if(doc[key])then
-          value = doc[key]
-          if(cond.kind_of?(Hash))then
-            if(!@queryProcessor.query(cond,value))then
-              return false
-            end
-          elsif(value.class == String)then
-            ## Field Matching
-            tt = value.gsub("\"","").gsub(" ","")
-            conds = cond.gsub(" ","")
-            if(tt != conds)then
-              return false
-            end
-          elsif(value.class == Integer or value.class == Fixnum)then
-            return value == cond.to_i
-          elsif(value.class == Float)then
-            return value == cond.to_f
+  def mongodbQuery(doc, query)
+    if query && query.class == Hash && !query.keys.empty?
+      query.each do |key__, cond|
+        key = key__.to_sym
+        if doc[key]
+          return_value = mongo_query_fieldmatching(doc[key], cond)
+          if return_value != true
+            return return_value
           end
         else
           return false
         end
         return true
-      }
+      end
     end
-    return false
+    false
+  end
+
+  def mongo_query_fieldmatching(value, cond)
+    if cond.kind_of?(Hash) && !@queryProcessor.query(cond, value)
+      return false
+    end
+    case value.class.to_s
+    when "String"
+      ## Field Matching
+      if value.delete("\"").delete(" ") != cond.delete(" ")
+        return false
+      end
+    when "Float"
+      return value == cond.to_f
+    else
+      if %w[Integer Fixnum].include?(value.class.to_s)
+        return value == cond.to_i
+      end
+    end
+    true
+  end
+
+  def generate_query(k, val)
+    query = ""
+    case val.class.to_s
+    when "FalseClass" then
+      query = '"' + k.split(".").last + '":false'
+    when "TrueClass" then
+      query = '"' + k.split(".").last + '":true'
+    when "String" then
+      query = '"' + k.split(".").last + '":"' + val + '"'
+    when "Hash" then
+      query = '"' + k.split(".").last + '":' + val.to_json
+    else
+      if %w[Float Integer Fixnum].include?(val.class.to_s)
+        query = '"' + k.split(".").last + '":' + val.to_s
+      end
+    end
+    query
   end
 
   #############
   ## PREPARE ##
   #############
   def prepare_MONGODB(operand, args)
-    result = {"operand" => "MONGODB_#{operand}", "args" => nil}
-    result["args"] = @parser.exec(operand,args)
-    return result
+    result = { "operand" => "MONGODB_#{operand}", "args" => nil }
+    result["args"] = @parser.exec(operand, args)
+    result
   end
 end
-
