@@ -361,14 +361,13 @@ module RedisOperation
           addCount(__method__)
         end
         query = "#{__method__} #{args[0]} #{args[1]}"
-        v = redisAsyncExecuter(query)
       else
         unless initFlag
           addCount(__method__)
         end
         query = __method__.to_s
-        v = redisAsyncExecuter(query)
       end
+      v = redisAsyncExecuter(query)
     else
       query = __method__.to_s
       if args && args.size == 2
@@ -406,7 +405,7 @@ module RedisOperation
   ###################
   ## Common method ##
   ###################
- 
+
   def get_type_operation(name, args, attime)
     command = "#{name} #{args.join(" ")}"
     redisCxxExecuter(name, command, true, attime)
