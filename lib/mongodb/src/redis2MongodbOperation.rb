@@ -209,11 +209,7 @@ module Redis2MongodbOperation
 
   # @conv {"LRANGE" => ["FIND"]}
   def REDIS_LRANGE(args_)
-    args = {
-      "key" => args_[0],
-      "filter" => { "index" => { "$gte" => args_[1].to_i,
-                                 "$lte" => args_[2].to_i } },
-    }
+    args = build_ltrimtype_args(args_)
     result = []
     FIND(args).each do |val|
       result.push(val["value"])
@@ -223,13 +219,7 @@ module Redis2MongodbOperation
 
   # @conv {"LTRIM" => ["DELETE","UPDATE"]}
   def REDIS_LTRIM(args_)
-    args = {
-      "key" => args_[0],
-      "filter" => {
-        "index" => { "$gte" => args_[1].to_i,
-                     "$lte" => args_[2].to_i },
-      },
-    }
+    args = build_ltrimtype_args(args_)
     v = DELETE(args)
     opt = { "start" => args_[1].to_i,
             "end" => args_[2].to_i }
@@ -722,11 +712,7 @@ module Redis2MongodbOperation
   ## args = [key,min,max]
   def REDIS_ZREMRANGEBYSCORE(args)
     # DELETE VALEUS
-    hash = {
-      "key" => args[0],
-      "filter" => { "score" => { "$gte" => args[1].to_i,
-                                 "$lte" => args[2].to_i } },
-    }
+    hash = build_ltrimtype_args(args)
     DELETE(hash)
   end
 
@@ -744,11 +730,7 @@ module Redis2MongodbOperation
         unless data[doc["value"].to_s]
           data[doc["value"].to_s] = []
         end
-        weight = 1
-        if args["options"] && args["options"][:weights] &&
-           args["options"][:weights][index]
-          weight = args["options"][:weights][index].to_i
-        end
+        weight = get_weight(args["options"], index)
         data[doc["value"].to_s].push(doc["score"].to_i * weight)
       end
     end
@@ -776,11 +758,7 @@ module Redis2MongodbOperation
           data[doc["value"].to_s] = []
         end
         if data[doc["value"].to_s]
-          weight = 1
-          if args["options"] && args["options"][:weights] &&
-             args["options"][:weights][index]
-            weight = args["options"][:weights][index].to_i
-          end
+          weight = get_weight(args["options"], index)
           data[doc["value"].to_s].push(doc["score"].to_i * weight)
         end
       end
@@ -816,20 +794,18 @@ module Redis2MongodbOperation
 
   def createDocsWithAggregate(dstkey, data, aggregate)
     docs = []
-    case aggregate.upcase
-    when "SUM" then
+    operand = aggregate.upcase
+    if %w[SUM MAX MIN].include?(operand)
       data.each_key do |key|
-        doc = { "value" => key, "score" => data[key].inject(:+) }
-        docs.push([dstkey, doc])
-      end
-    when "MAX" then
-      data.each_key do |key|
-        doc = { "value" => key, "score" => data[key].max }
-        docs.push([dstkey, doc])
-      end
-    when "MIN" then
-      data.each_key do |key|
-        doc = { "value" => key, "score" => data[key].min }
+        doc = { "value" => key }
+        doc["score"] = case operand
+                       when "SUM"
+                         data[key].inject(:+)
+                       when "MAX"
+                         data[key].max
+                       when "MIN"
+                         data[key].min
+                       end
         docs.push([dstkey, doc])
       end
     else
@@ -1040,5 +1016,22 @@ module Redis2MongodbOperation
       score = v0 + v1 * weight
     end
     score
+  end
+
+  def build_ltrimtype_args(args_)
+    args = {
+      "key" => args_[0],
+      "filter" => { "index" => { "$gte" => args_[1].to_i,
+                                 "$lte" => args_[2].to_i } },
+    }
+    args
+  end
+
+  def get_weight(hash, index)
+    weight = 1
+    if hash && hash[:weights] && hash[:weights][index]
+      weight = hash[:weights][index].to_i
+    end
+    return weight
   end
 end

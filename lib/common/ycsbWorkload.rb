@@ -33,7 +33,7 @@ class YCSBWorkload
     @config = nil
     @log    = log
     initConfig()
-    updates(@log.ycsbFormat())
+    updates(@log.ycsb_format())
   end
   def updates(hash)
     if(check)then

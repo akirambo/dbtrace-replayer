@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -28,159 +29,156 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-
 class AbstractDBLog
   def initialize(command2basic, option, logger)
-    @operationCount = 0
-    @basicMetrics = {}
-    @commands         = []
+    @operation_count = 0
+    @basic_metrics = {}
+    @commands = []
     @command2basic = command2basic
-    @basicCommands = []
+    @basic_commands = []
     @option = option
     @logger = logger
-    setup()
+    setup
   end
+
   def push(hash)
     @commands.push(hash)
   end
-  def ycsbFormat
+
+  def ycsb_format
     ## Calculation
     case @option[:analysisMode]
     when "original" then
-      originalOperationCount()
+      original_operation_count
     when "primitive" then
-      primitiveOperationCount()
+      primitive_operation_count
     else
       @logger.error("Unsupported ANALYSIS MODE #{@option[:analysisMode]}")
     end
-    calcTotalOperationCount()
-
-    ## Update 
+    calc_total_operation_count
+    ## Update
     case @option[:ycsbOutputFormat]
     when "basic" then
       ### Only For Updated Parameters
       result = {}
-      result["operationcount"] = @operationCount
-      ["read","update","scan","insert"].each{|type|
+      result["operationcount"] = @operation_count
+      %w[read update scan insert].each do |type|
         result["#{type}proportion"] = proportion(type)
-      }
+      end
     when "full" then
       @logger.error("Not Implemented :: #{@option[:ycsbOutputFormat]}")
     else
       @logger.error("Unsupported OUTPUT FORMAT #{@option[:ycsbOutputFormat]}")
     end
-    return result
+    result
   end
+
   def proportion(type)
-    calcProportion(type)
+    calc_proportion(type)
   end
+
   def log
     @commands
   end
-protected
+
+  protected
+
   ## Initialize
   def setup
-    @command2basic.each{|key,value|
-      if(!@basicCommands.include?(value))then
-        @basicCommands.push(value)
+    @command2basic.each do |_, value|
+      unless @basic_commands.include?(value)
+        @basic_commands.push(value)
       end
-    }
-    @basicCommands.each{|command|
-      @basicMetrics[command] = 0
-    }
+    end
+    @basic_commands.each do |command|
+      @basic_metrics[command] = 0
+    end
   end
 
   ## Primitive Operation Analysis
-  def primitiveOperationCount
-    multiAccessCommand = @primitiveOperationForMultiData.keys()
-    @commands.each{|commandWithArgs|
-      commandWithArgs.each{|command, args|
-        if(multiAccessCommand.include?(command))then
-          ## Multi Accesses In One Operation
-          if(@command2basic[command].kind_of?(Array))then
-            @command2basic[command].each{|com|
-              @basicMetrics[com] += 
-              calcPrimitiveOperationForMultiData(command, args, com)
-            }
-          else
-            @basicMetrics[@command2basic[command]] += 
-              calcPrimitiveOperationForMultiData(command, args)
+  def primitive_operation_count
+    multi_access_command = @primitiveOperationForMultiData.keys
+    @commands.each do |command_with_args|
+      command_with_args.each do |command, args|
+        if @command2basic[command].is_a?(Array) && multi_access_command.include?(command)
+          @command2basic[command].each do |com|
+            @basic_metrics[com] +=
+              calc_primitiveoperation_for_multidata(command, args, com)
           end
-        else
-          ## Single Access In Oon Operation 
-          if(@command2basic[command].kind_of?(Array))then
-            @command2basic[command].each{|com|
-              @basicMetrics[com] += 1
-            }
-          else
-            @basicMetrics[@command2basic[command]] += 1
+        elsif @command2basic[command].is_a?(Array) && !multi_access_command.include?(command)
+          @command2basic[command].each do |com|
+            @basic_metrics[com] += 1
           end
-        end
-      }
-    }
-  end
-  def calcPrimitiveOperationForMultiData(command, args, com=nil)
-    operationCount = 0
-    if(@primitiveOperationForMultiData.key?(command))then
-      if(@primitiveOperationForMultiData[command]["operation"] == "range")then
-        firstPlace =  args[@primitiveOperationForMultiData[command]["arg0"]].to_i
-        endPlace =  args[@primitiveOperationForMultiData[command]["arg1"]].to_i
-        operationCount = endPlace + 1 - firstPlace
-      elsif(@primitiveOperationForMultiData[command]["operation"] == "fromArgument")then
-        operationCount = args[@primitiveOperationForMultiData[command]["arg"]].to_i
-      else
-        keyValueCount  = args.size 
-        keyValueCount -=  @primitiveOperationForMultiData[command]["prefixCount"] 
-        keyValueCount -=  @primitiveOperationForMultiData[command]["postfixCount"]
-        if(com)then
-          operationCount = 
-            keyValueCount / @primitiveOperationForMultiData[command]["argNumEachPrimitiveCommand"][com].to_i
+        elsif multi_access_command.include?(command)
+          @basic_metrics[@command2basic[command]] +=
+            calc_primitiveoperation_for_multidata(command, args)
         else
- operationCount = 
-            keyValueCount / @primitiveOperationForMultiData[command]["argNumEachPrimitiveCommand"]
+          @basic_metrics[@command2basic[command]] += 1
         end
       end
-    else
-      @logger.error("Unsupported Multi Command #{command}")
-      abort()
     end
-    return operationCount
   end
-  
-  ## Database Original Operation Analysis
-  def originalOperationCount
-    @commands.each{|commandWithArgs|
-      commandWithArgs.each{|command__, args|
-        command = @command2basic[command__]
-        @basicMetrics[command] += 1
-      }
-    }
-  end
-  def calcTotalOperationCount()
-    @operationCount = 0
-    @basicMetrics.each{|command, value|
-      @operationCount += value.to_i
-    }
-  end
-  def calcProportion(type)
-    if(@basicMetrics.include?(type.upcase()))then
-      result = @basicMetrics[type.upcase()].to_f / @operationCount
-      if(result.nan?)then
-        return 0.0
-      end      
-      return result
+
+  def calc_primitiveoperation_for_multidata(command, args, com = nil)
+    operation_count = 0
+    unless @primitiveOperationForMultiData.key?(command)
+      @logger.error("Unsupported Multi Command #{command}")
+      abort
+    end
+    if @primitiveOperationForMultiData[command]["operation"] == "range"
+      first_place = args[@primitiveOperationForMultiData[command]["arg0"]].to_i
+      end_place = args[@primitiveOperationForMultiData[command]["arg1"]].to_i
+      operation_count = end_place + 1 - first_place
+    elsif @primitiveOperationForMultiData[command]["operation"] == "fromArgument"
+      operation_count = args[@primitiveOperationForMultiData[command]["arg"]].to_i
     else
-      if(type == "all")then
-        total = 0.0
-        @basicMetrics.each{|key, value|
-          if(@basicCommands.include?(key))then
+      keyvalue_count = args.size
+      keyvalue_count -= @primitiveOperationForMultiData[command]["prefixCount"]
+      keyvalue_count -= @primitiveOperationForMultiData[command]["postfixCount"]
+      operation_count = if com
+                          keyvalue_count / @primitiveOperationForMultiData[command]["argNumEachPrimitiveCommand"][com].to_i
+                        else
+                          keyvalue_count / @primitiveOperationForMultiData[command]["argNumEachPrimitiveCommand"]
+                        end
+    end
+    operation_count
+  end
+
+  ## Database Original Operation Analysis
+  def original_operation_count
+    @commands.each do |command_with_args|
+      command_with_args.each do |command__, _|
+        command = @command2basic[command__]
+        @basic_metrics[command] += 1
+      end
+    end
+  end
+
+  def calc_total_operation_count
+    @operation_count = 0
+    @basic_metrics.each do |_, value|
+      @operation_count += value.to_i
+    end
+  end
+
+  def calc_proportion(type)
+    if @basic_metrics.include?(type.upcase)
+      result = @basic_metrics[type.upcase].to_f / @operation_count
+      if result.nan?
+        return 0.0
+      end
+      result
+    else
+      total = 0.0
+      if type == "all"
+        @basic_metrics.each do |key, value|
+          if @basic_commands.include?(key)
             total += value.to_f
           end
-        }
-        return total / @operationCount
-      else
-        return 0.0
+        end
+        return total / @operation_count
       end
+      total
     end
   end
 end
