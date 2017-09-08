@@ -79,7 +79,7 @@ module Redis2MongodbTester
       @command = "#{__method__}"
       return @queryReturn
     end
-    def changeNumericWhenNumeric(input)
+    def change_numeric_when_numeric(input)
       if(/^[+-]?[0-9]*[\.]?[0-9]+$/ =~ input.to_s)then
         number = input.to_i
         if(number < 2147483648 and number > -2147483648)then

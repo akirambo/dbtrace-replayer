@@ -67,11 +67,11 @@ module MongodbTest
       @queryProcessor.setQueryFlag(bool)
     end
     private
-    def parseJSON(doc)
-      @utils.parseJSON(doc)
+    def parse_json(doc)
+      @utils.parse_json(doc)
     end
-    def convJSON(doc)
-      @utils.convJSON(doc)
+    def convert_json(doc)
+      @utils.convert_json(doc)
     end
     def monitor(a,b)
       # Do nothing 

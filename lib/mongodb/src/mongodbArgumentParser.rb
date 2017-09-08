@@ -88,12 +88,12 @@ class MongodbArgumentParser
       doc.to_i.times do
         hash = {}
         KeyValueNum.times do
-          hash[@utils.createString(ByteSize)] = @utils.createString(ByteSize)
+          hash[@utils.create_string(ByteSize)] = @utils.create_string(ByteSize)
         end
         if(noString)then
           result.push([key,hash,true])
         else
-          result.push([key,@utils.convJSON(hash),true])
+          result.push([key,@utils.convert_json(hash),true])
         end
       end
     end
@@ -111,7 +111,7 @@ class MongodbArgumentParser
     result["key"] = _data[0].gsub(/\"/,"").gsub(/\s/,"").sub(/,\Z/,"")
     data = _data[1].split("]")[0]
     begin
-      hash = @utils.parseJSON(data)
+      hash = @utils.parse_json(data)
     rescue => e
       @logger.error(e.message)
       @logger.error(__FILE__)
@@ -133,7 +133,7 @@ class MongodbArgumentParser
     result["key"] = args.split(",")[0].gsub("\"","").gsub(/\s/, "")
     str = "{" + args.sub(",","").sub(result["key"],"").sub(/\"/,"").sub(/\"/,"")
     ## query
-    hash = @utils.parseJSON(str)
+    hash = @utils.parse_json(str)
     result["query"] = hash["query"]
     ## field
     result["fields"] = hash["fields"]
@@ -152,7 +152,7 @@ class MongodbArgumentParser
     result["key"] = args.split(",")[0].gsub("\"","").gsub(/\s/, "")
     str = "{" + args.sub(",","").sub(result["key"],"").sub(/\"/,"").sub(/\"/,"")
     ## filter
-    hash = @utils.parseJSON(str)
+    hash = @utils.parse_json(str)
     if(hash["filter"])then
       result["filter"] = hash["filter"]
     elsif(hash["deletes"] and hash["deletes"][0]["q"])then
@@ -172,7 +172,7 @@ class MongodbArgumentParser
     }
     result["key"] = args.split(",")[0].gsub("\"","").gsub(/\s/, "")
     str = "{" + args.sub(",","").sub(result["key"],"").sub(/\"/,"").sub(/\"/,"")
-    @utils.parseJSON(str)["pipeline"].each{|elem|
+    @utils.parse_json(str)["pipeline"].each{|elem|
       MONGODB_AGGREGATE_OPERATORS.each{|ope|
         if(elem[ope])then
           case ope

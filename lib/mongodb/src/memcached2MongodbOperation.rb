@@ -37,7 +37,7 @@ module Memcached2MongodbOperation
   # @conv {"SET" => ["INSERT"]}
   def MEMCACHED_SET(args)
     r = false
-    value = changeNumericWhenNumeric(args[1])
+    value = change_numeric_when_numeric(args[1])
     if(args.size == 3 )then
       r = INSERT([["testdb.col",{"_id" => args[0],"value"=>value,"expire"=>args[2]}]])
     elsif(args.size == 2)then
@@ -66,7 +66,7 @@ module Memcached2MongodbOperation
   end
   # @conv {"REPLACE" => ["UPDATE"]}
   def MEMCACHED_REPLACE(args)
-    value = changeNumericWhenNumeric(args[1])
+    value = change_numeric_when_numeric(args[1])
     cond = {
       "key" => "testdb.col",
       "query" => {"_id" => args[0]},
@@ -109,7 +109,7 @@ module Memcached2MongodbOperation
   end
   # @conv {"INCR" => ["UPDATE"]}
   def MEMCACHED_INCR(args)
-    value = changeNumericWhenNumeric(args[1])
+    value = change_numeric_when_numeric(args[1])
     cond = {
       "key" => "testdb.col",
       "query" => {"_id" => args[0]},
@@ -120,7 +120,7 @@ module Memcached2MongodbOperation
   end
   # @conv {"DECR" => ["UPDATE"]}
   def MEMCACHED_DECR(args)
-    value = changeNumericWhenNumeric(args[1])*-1
+    value = change_numeric_when_numeric(args[1])*-1
     cond = {
       "key" => "testdb.col",
       "query" => {"_id" => args[0]},

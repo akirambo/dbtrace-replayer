@@ -52,7 +52,7 @@ class MemcachedArgumentParser
     when "basic" then
       ## CHECK ARGUMENTS
       ### 1.create
-      value = @utils.createNumberValue(args[5])
+      value = @utils.create_numbervalue(args[5])
       ### 2. setup arguments considering EXPIRE_TIME
       if(args[4] == "0")then
         ## EXPIRE_TIME == 0

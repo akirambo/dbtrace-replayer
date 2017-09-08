@@ -47,7 +47,7 @@ module Cassandra2MemcachedOperation
       return SET([key,value])
     else
       ### Value is JSON
-      str = convJSON(values)
+      str = convert_json(values)
       return SET([key,str])
     end
   end
@@ -65,7 +65,7 @@ module Cassandra2MemcachedOperation
       strJSON = GET([key])
       docs = []
       if(strJSON.size > 0)then
-        docs = parseJSON(strJSON)
+        docs = parse_json(strJSON)
       end
       docs.each{|field,value|
         if(args["fields"].include?(field))then
@@ -94,11 +94,11 @@ module Cassandra2MemcachedOperation
       key = "#{args["table"]}--#{args["cond_values"][index]}"
       ## Key-JSON Partical Update
       strJSON = GET([key])
-      docs = parseJSON(strJSON)
+      docs = parse_json(strJSON)
       args["set"].each{|f,v|
         docs[f] = v
       }
-      str = convJSON(docs)
+      str = convert_json(docs)
       return SET([key,str])
     end
   end
@@ -138,7 +138,7 @@ module Cassandra2MemcachedOperation
     docs = cassandraDeserialize(data)
     if(args["counterColumn"])then 
       args["args"].each{|arg|
-        docs.push(convJSON(arg))
+        docs.push(convert_json(arg))
         value = cassandraSerialize(docs)
         SET([args["key"],value])
         value = GET(["__keyslist__"],false)
@@ -147,7 +147,7 @@ module Cassandra2MemcachedOperation
         SET(["__keylist__",value])
       }
     else
-      docs.push(convJSON(args["args"]))
+      docs.push(convert_json(args["args"]))
       value = cassandraSerialize(docs)
       SET([args["key"],value])
       value = GET(["__keyslist__"],false)
@@ -163,7 +163,7 @@ module Cassandra2MemcachedOperation
     docs = cassandraDeserialize(data)
     docs = docs.take(args["limit"].to_i)
     docs.each{|doc|
-      row = parseJSON(doc)
+      row = parse_json(doc)
       if(CASSANDRA_JUDGE(row, args))then
         results.push(selectField(row, args))
       end
@@ -180,7 +180,7 @@ module Cassandra2MemcachedOperation
     docs = cassandraDeserialize(data)
     docs = docs.take(args["limit"].to_i)
     docs.each{|doc|
-      row = parseJSON(doc)
+      row = parse_json(doc)
       if(CASSANDRA_JUDGE(row, args))then
         results.push(selectField(row, args))
       end
@@ -199,7 +199,7 @@ module Cassandra2MemcachedOperation
       docs = docs.take(args["limit"].to_i)
     end
     docs.each{|doc|
-      row = parseJSON(doc)
+      row = parse_json(doc)
       if(CASSANDRA_JUDGE(row, args))then
         results.push(selectField(row, args))
       end

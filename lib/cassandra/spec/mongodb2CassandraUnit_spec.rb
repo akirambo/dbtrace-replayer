@@ -78,13 +78,13 @@ module Mongodb2CassandraOperationTester
       end
       return @value
     end
-    def changeNumericWhenNumeric(str)
+    def change_numeric_when_numeric(str)
       return str
     end
     def setTargetKeysValue(a)
       @queryParser.targetKeysValue = a
     end
-    def parseJSON(a)
+    def parse_json(a)
       if(@raiseParseJSONError)then
         raise ArgumentError, "Error"
       end
@@ -145,7 +145,7 @@ module Mongodb2CassandraOperationTester
         args = [["k.f"]]
         expect(@tester.send(:MONGODB_INSERT,args)).to eq false
       end
-      it "MONGODB_INSERT(error case :: parseJSON Error)" do
+      it "MONGODB_INSERT(error case :: parse_json Error)" do
         @tester.raiseError = false
         @tester.raiseParseJSONError = true
         @tester.schemas = {"k.f" => CassandraSchemaMock.new}

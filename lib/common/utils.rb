@@ -32,127 +32,148 @@ require "json"
 require "securerandom"
 
 class Utils
-  def initialize
-  end
-  def createString(bytesize)
-    val = SecureRandom.urlsafe_base64(bytesize,false)
+  def create_string(bytesize)
+    val = SecureRandom.urlsafe_base64(bytesize, false)
     val[0] = "T"
-    return val
+    val
   end
 
-  def createNumberValue(bytesize)
-    n =  bytesize.to_i
-    return format("%0#{n}d", SecureRandom.random_number(10**n)).to_i
+  def create_numbervalue(bytesize)
+    n = bytesize.to_i
+    format("%0#{n}d", SecureRandom.random_number(10**n)).to_i
   end
-  def parseJSON(data)
-    key = ""
-    keys = []
-    if(data.class == Hash or data.class == Array)then
+
+  def parse_json(data)
+    if data.class == Hash || data.class == Array
       return data
     end
-    data.chars{|char|
-      if(char != " " and char != "{" and char != "}" and char != ":" and 
-          char != "[" and char != "]" and char != ",")then
+    keys = parse_chars(data)
+    keys.each do |key_|
+      if key_[0] != "\""
+        data = data.sub("#{key_}:", "\"#{key_}\":")
+      end
+    end
+    hash = JSON.parse(data)
+    hash
+  end
+
+  def convert_json(hash)
+    str = hash.to_json
+    hash.each_key do |key|
+      str = str.sub("\"#{key}\":", " #{key}:")
+    end
+    str
+  end
+
+  def change_numeric_when_numeric(input)
+    if /^[+-]?[0-9]*[\.]?[0-9]+$/ =~ input.to_s
+      number = input.to_i
+      if number < 2_147_483_648 && number > -2_147_483_648
+        return number
+      else
+        return input.to_s
+      end
+    end
+    input
+  end
+
+  def add_doublequotation(hash)
+    str = hash.to_json
+    hash.each do |_, v|
+      if v.class == String && v.include?(":")
+        return str
+      end
+    end
+    str.delete!("\"")
+    str.gsub!("{", "{\"")
+    str.gsub!(":", "\":\"")
+    str.gsub!("http\":\"", "http:")
+    str.gsub!("https\":\"", "https:")
+    str.gsub!(",", "\",\"")
+    str.gsub!("}", "\"}")
+    str.gsub!(/\"(\d+)\"/, '\1')
+    str.gsub!("\"{", "{")
+    str.gsub!("}\"", "}")
+    str.gsub!(":\"[", ":[\"")
+    str.gsub!("]\"", "\"]")
+    str.gsub!("[\"{", "\[{")
+    str.gsub!("}\"]", "}]")
+    if str == "{\"\"}"
+      str = "{}"
+    end
+    str
+  end
+
+  ## Convert {"a"=>"b"} to {:a => "b"}
+  def stringhash2symbolhash(docs)
+    convert_hash(docs, "string2symbol")
+  end
+
+  ## Convert {:a =>"b"} to {"a" => "b"}
+  def symbolhash2stringhash(docs)
+    convert_hash(docs, "symbol2string")
+  end
+
+  def convert_hash(docs, type)
+    if docs.class == Hash
+      return convert_hash_from_hash(docs, type)
+    elsif docs.class == Array
+      return convert_hash_from_array(docs, type)
+    end
+    nil
+  end
+
+  def convert_hash_from_hash(docs, type)
+    ret = {}
+    docs.each do |k, v|
+      ret[change_typekey(k, type)] = case v.class.to_s
+                                     when "Hash"
+                                       convert_hash(v, type)
+                                     else
+                                       v
+                                     end
+    end
+    ret
+  end
+
+  def convert_hash_from_array(docs, type)
+    rets = []
+    docs.each do |doc|
+      ret = {}
+      doc.each do |k, v|
+        ret[change_typekey(k, type)] = case v.class.to_s
+                                       when "Hash"
+                                         convert_hash(v, type)
+                                       else
+                                         v
+                                       end
+      end
+      rets.push(ret)
+    end
+    rets
+  end
+
+  def parse_chars(data)
+    keys = []
+    key = ""
+    error_strings = %w[{ } : [ ] ,].freeze
+    data.chars do |char|
+      if error_strings.none? { |m| char.include?(m) } && char != " "
         key += char
-      elsif(key.size > 0 and (char == ":" or char == " "))then
+      elsif !key.empty? && (char == ":" || char == " ")
         keys.push(key)
         key = ""
       end
-    }
-    keys.each{|key_|
-      if(key_[0] != "\"")then
-        data = data.sub("#{key_}:","\"#{key_}\":")
-      end
-    }
-    hash = {}
-    hash = JSON.parse(data)
-    return hash
-  end
-  def convJSON(hash)
-    str = hash.to_json
-    hash.each_key{|key|
-      str = str.sub("\"#{key}\":"," #{key}:")
-    }
-    return str
-  end
-  def changeNumericWhenNumeric(input)
-    if(/^[+-]?[0-9]*[\.]?[0-9]+$/ =~ input.to_s)then
-      number = input.to_i
-      if(number < 2147483648 and number > -2147483648)then
-        return number
-      end
-      return input.to_s
     end
-    return input
+    keys
   end
-  def addDoubleQuotation(hash)
-    str = hash.to_json
-    hash.each{|k,v|
-      if(v.class == String and v.include?(":"))then
-        return str
-      end
-    }
-    str.gsub!(/\"/,"")
-    str.gsub!("{","{\"")
-    str.gsub!(":","\":\"")
-    str.gsub!("http\":\"","http:")
-    str.gsub!("https\":\"","https:")
-    str.gsub!(",","\",\"")
-    str.gsub!("}","\"}")
-    str.gsub!(/\"(\d+)\"/,'\1')
-    str.gsub!("\"{","{")
-    str.gsub!("}\"","}")
-    str.gsub!(":\"[",":[\"")
-    str.gsub!("]\"","\"]")
-    str.gsub!("[\"{","\[{")
-    str.gsub!("}\"]","}]")
-    if(str == "{\"\"}")then
-      str = "{}"
-    end
-    return str
-  end
-  ## Convert {"a"=>"b"} to {:a => "b"}
-  def stringHash2symbolHash(docs)
-    return convertHash(docs,"string2symbol")
-  end
-  ## Convert {:a =>"b"} to {"a" => "b"}
-  def symbolHash2stringHash(docs)
-    return convertHash(docs,"symbol2string")
-  end
-  def convertHash(docs, type)
-    if(docs.class == Hash)then
-      ret = {}
-      docs.each{|k,v|
-        if(v.class == Hash)then
-          ret[changeTypeKey(k,type)] = convertHash(v,type)
-        else
-          ret[changeTypeKey(k,type)] = v
-        end
-      }
-      return ret
-    elsif(docs.class == Array)then
-      rets = []
-      docs.each{|doc|
-        ret = {}
-        doc.each{|k,v|
-          if(v.class == Hash)then
-            ret[changeTypeKey(k,type)] = convertHash(v,type)
-          else
-            ret[changeTypeKey(k,type)] = v
-          end
-        }
-        rets.push(ret)
-      }
-      return rets
-    end
-    return nil
-  end
-  ## only for convertHash
-  def changeTypeKey(k,type)
-    if(type == "symbol2string")then
-      return k.to_s
-    elsif(type == "string2symbol")then
-      return k.to_sym
+
+  ## only for convert_hash
+  def change_typekey(k, type)
+    if type == "symbol2string"
+      k.to_s
+    elsif type == "string2symbol"
+      k.to_sym
     end
   end
 end

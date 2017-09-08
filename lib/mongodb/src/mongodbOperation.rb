@@ -46,7 +46,7 @@ module MongodbOperation
       end
       @client.setDatabaseName(names[0])
       @client.setCollectionName(names[1])
-      json = @utils.addDoubleQuotation(arg[1])
+      json = @utils.add_doublequotation(arg[1])
       if(@option[:async])then
         v = @client.commitDocument(json)
         addCount("INSERT")
@@ -68,8 +68,8 @@ module MongodbOperation
     names = args["key"].split(".")
     @client.setDatabaseName(names[0])
     @client.setCollectionName(names[1])
-    query = @utils.addDoubleQuotation(args["query"])
-    doc   = @utils.addDoubleQuotation(args["update"])
+    query = @utils.add_doublequotation(args["query"])
+    doc   = @utils.add_doublequotation(args["update"])
     v     = @client.update(query,doc,args["multi"])
     close
     return v
@@ -81,7 +81,7 @@ module MongodbOperation
     names = args["key"].split(".")
     @client.setDatabaseName(names[0])
     @client.setCollectionName(names[1])
-    json = @utils.addDoubleQuotation(args["filter"])
+    json = @utils.add_doublequotation(args["filter"])
     v = @client.find("#{json}")
     addDuration(@client.getDuration(),"database",__method__)
     close
@@ -104,7 +104,7 @@ module MongodbOperation
     names = args["key"].split(".")
     @client.setDatabaseName(names[0])
     @client.setCollectionName(names[1])
-    filter = @utils.addDoubleQuotation(args["filter"])
+    filter = @utils.add_doublequotation(args["filter"])
     v = @client.deleteExecuter(filter,true)
     addDuration(@client.getDuration(),"database",__method__)
     close
@@ -116,7 +116,7 @@ module MongodbOperation
     names = args["key"].split(".")
     @client.setDatabaseName(names[0])
     @client.setCollectionName(names[1])
-    filter = @utils.addDoubleQuotation(args["query"])
+    filter = @utils.add_doublequotation(args["query"])
     count = @client.count(filter)
     addDuration(@client.getDuration(),"database",__method__)
     close

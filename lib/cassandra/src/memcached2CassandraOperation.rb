@@ -78,7 +78,7 @@ module Memcached2CassandraOperation
     str = MEMCACHED_GET(args)
     monitor("client","Processing")
     str += args[args.length-1].to_s
-    args[args.length-1] = changeNumericWhenNumeric(str)
+    args[args.length-1] = change_numeric_when_numeric(str)
     monitor("client","Processing")
     return  MEMCACHED_SET(args)
   end
@@ -87,7 +87,7 @@ module Memcached2CassandraOperation
     str = MEMCACHED_GET(args).to_s 
     monitor("client","Processing")
     str = args[args.length-1].to_s + str
-    args[args.length-1] = changeNumericWhenNumeric(str)
+    args[args.length-1] = change_numeric_when_numeric(str)
     monitor("client","Processing")
     MEMCACHED_SET(args)
   end

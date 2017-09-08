@@ -51,10 +51,10 @@ module Cassandra2MemcachedOperationUnitTest
     def FLUSH(a)
       return execQuery("#{__method__}",a)
     end
-    def parseJSON(d)
+    def parse_json(d)
       return {"pkey"=>"p0","f0"=>"v0","f1"=>"v1"}
     end
-    def convJSON(d)
+    def convert_json(d)
       return "{\"_id\":\"001\",\"v\":\"00\"}"
     end
     def execQuery(operand,args)

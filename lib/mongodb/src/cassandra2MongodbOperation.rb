@@ -203,12 +203,12 @@ module Cassandra2MongodbOperation
     return row
   end
   def cassandraSerialize(hash)
-    return convJSON(hash)
+    return convert_json(hash)
   end
   def cassandraDeserialize(array)
     result = []
     array.each{|row|
-      result.push(parseJSON(row))
+      result.push(parse_json(row))
     }
     return result
   end

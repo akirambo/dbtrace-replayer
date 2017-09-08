@@ -41,7 +41,7 @@ module Mongodb2CassandraOperation
         return false
       elsif(arg[1].class == String)then
         begin
-          keyValue  = parseJSON(arg[1])
+          keyValue  = parse_json(arg[1])
         rescue => e
           @logger.error(e.message)
           return false
@@ -49,7 +49,7 @@ module Mongodb2CassandraOperation
       elsif(arg[1].class == Hash)then
         keyValue = arg[1]
       elsif(arg[1].class == Array)then
-        keyValue = parseJSON(arg[1][0])
+        keyValue = parse_json(arg[1][0])
       end
       
       if(keyValue == nil or keyValue.keys.size == 0)then

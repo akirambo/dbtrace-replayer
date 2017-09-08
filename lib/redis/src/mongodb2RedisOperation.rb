@@ -74,7 +74,7 @@ module MongoDB2RedisOperation
     replace_flag = true
     docs.each_index do |index|
       if replace_flag
-        doc = parseJSON(docs[index])
+        doc = parse_json(docs[index])
         if args["query"].nil? || args["query"] == {} || mongodbQuery(doc, args["query"])
           new_vals.each do |k, v|
             doc[k.to_sym] = v.delete(" ")
@@ -131,9 +131,9 @@ module MongoDB2RedisOperation
         new_docs = []
         docs = eval("[" + data + "]")
         docs.each_index do |index|
-          doc = parseJSON(docs[index])
+          doc = parse_json(docs[index])
           unless mongodbQuery(doc, args["filter"])
-            new_docs.push(convJSON(doc))
+            new_docs.push(convert_json(doc))
           end
         end
         if new_docs.size.zero?

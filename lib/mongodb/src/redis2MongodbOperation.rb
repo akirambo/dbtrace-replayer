@@ -799,7 +799,7 @@ module Redis2MongodbOperation
   # @conv {"HSET" => ["INSERT"]}
   ## args = [key, field, value]
   def REDIS_HSET(args)
-    value = changeNumericWhenNumeric(args[2])
+    value = change_numeric_when_numeric(args[2])
     doc = {"redisKey" => args[0], "field" => args[1], "value" => value}
     INSERT([["test",doc]])
   end
@@ -830,7 +830,7 @@ module Redis2MongodbOperation
     docs = []
     json = {}
     args["args"].each{|field,value_|
-      value = changeNumericWhenNumeric(value_)
+      value = change_numeric_when_numeric(value_)
       json[field] = value
     }
     json["redisKey"] = args["key"]

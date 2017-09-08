@@ -56,7 +56,7 @@ module MongodbOperationTester
     end
   end
   class UtilsMock
-    def addDoubleQuotation(hash)
+    def add_doublequotation(hash)
       str = hash.to_json
       str.gsub!(/\"/,"")
       str.gsub!("{","{\"")

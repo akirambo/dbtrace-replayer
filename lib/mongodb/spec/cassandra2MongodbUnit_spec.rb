@@ -53,10 +53,10 @@ module Cassandra2MongodbTester
       @command = "#{__method__}"
       return @findReturn
     end
-    def convJSON(a)
+    def convert_json(a)
       return  "{f1:\"v1\",f2:\"v2\"}"
     end
-    def parseJSON(row)
+    def parse_json(row)
       return {"f1"=>"v1","f2"=>"v2"}
     end
   end

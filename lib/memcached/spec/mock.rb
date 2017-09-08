@@ -63,10 +63,10 @@ module MemcachedUnitTest
     def initialize
       @docs = []
     end
-    def symbolHash2stringHash(a)
+    def symbolhash2stringhash(a)
       return @docs
     end
-    def stringHash2symbolHash(a)
+    def stringhash2symbolhash(a)
       return @docs
     end
   end

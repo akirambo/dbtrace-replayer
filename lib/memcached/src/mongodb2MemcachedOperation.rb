@@ -100,7 +100,7 @@ module MongoDB2MemcachedOperation
     addCount(:match)
     addCount(:aggregate)
     data = GET([args["key"]],false)
-    docs = @utils.symbolHash2stringHash(eval(data))
+    docs = @utils.symbolhash2stringhash(eval(data))
     params = @queryParser.getParameter(args)
     firstFlag = true
     key2realkey = nil
@@ -163,7 +163,7 @@ module MongoDB2MemcachedOperation
   end
 
   def MONGODB_REPLACE(doc,args)
-    hashedDoc = parseJSON(doc)
+    hashedDoc = parse_json(doc)
     args["update"].each{|operation, values|
       case operation
       when "$set" then
@@ -178,7 +178,7 @@ module MongoDB2MemcachedOperation
         #@logger.warn("Unsupported UPDATE Operation '#{operation}' !!")
       end
     }
-    return convJSON(hashedDoc)
+    return convert_json(hashedDoc)
   end
   #############
   ## PREPARE ##
@@ -226,7 +226,7 @@ module MongoDB2MemcachedOperation
   def mongodbInsertDocument(args)
     ## Create New Data
     key = args[0][0]
-    docs = @utils.stringHash2symbolHash(args[0][1])
+    docs = @utils.stringhash2symbolhash(args[0][1])
     docs.each{|doc|
       doc[:_id].sub!(/ObjectId\(\'(\w+)\'\)/,'\1')
     }
@@ -296,7 +296,7 @@ module MongoDB2MemcachedOperation
     results =[]
     if(args["filter"] == nil or args["filter"] == {})then
       docs.each{|doc|
-        results.push(@utils.symbolHash2stringHash(doc))
+        results.push(@utils.symbolhash2stringhash(doc))
       }
     else
       docs.each_index{|index|
@@ -304,12 +304,12 @@ module MongoDB2MemcachedOperation
         if(doc.class == Array)then
           doc.each_index{|idx|
             if(mongodbQuery(doc[idx],args["filter"],"filter"))then
-              results.push(@utils.symbolHash2stringHash(doc[idx]))
+              results.push(@utils.symbolhash2stringhash(doc[idx]))
             end
           }
         else
           if(mongodbQuery(doc,args["filter"],"filter"))then
-            results.push(@utils.symbolHash2stringHash(doc))
+            results.push(@utils.symbolhash2stringhash(doc))
           end
         end
       }

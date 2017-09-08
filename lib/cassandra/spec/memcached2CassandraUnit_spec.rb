@@ -43,7 +43,7 @@ module Memcached2CassandraOperationTester
       end
       return @value
     end
-    def changeNumericWhenNumeric(str)
+    def change_numeric_when_numeric(str)
       return str
     end
   end

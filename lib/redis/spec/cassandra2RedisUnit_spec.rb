@@ -60,11 +60,11 @@ module CassandraTest
     def KEYS(a,b)
       return ["TARGET_KEYS"]
     end
-    def parseJSON(doc)
-      @utils.parseJSON(doc)
+    def parse_json(doc)
+      @utils.parse_json(doc)
     end
-    def convJSON(doc)
-      @utils.convJSON(doc)
+    def convert_json(doc)
+      @utils.convert_json(doc)
     end
   end
   

@@ -95,20 +95,20 @@ class AbstractRunner
   def fatal(operand,args)
     @logger.fatal("Illegal Arguments @ #{operand} --> #{args}")
   end
-  def parseJSON(data)
-    @utils.parseJSON(data)
+  def parse_json(data)
+    @utils.parse_json(data)
   end
-  def convJSON(hash)
-    @utils.convJSON(hash)
+  def convert_json(hash)
+    @utils.convert_json(hash)
   end
-  def createNumberValue(bytesize)
-    @utils.createNumberValue(bytesize)
+  def create_numbervalue(bytesize)
+    @utils.create_numbervalue(bytesize)
   end
-  def createString(bytesize)
-    @utils.createString(bytesize)
+  def create_string(bytesize)
+    @utils.create_string(bytesize)
   end 
-  def changeNumericWhenNumeric(input)
-    @utils.changeNumericWhenNumeric(input)
+  def change_numeric_when_numeric(input)
+    @utils.change_numeric_when_numeric(input)
   end
   #########################
   ## Performance Monitor ##
