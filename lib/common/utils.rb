@@ -139,16 +139,7 @@ class Utils
   def convert_hash_from_array(docs, type)
     rets = []
     docs.each do |doc|
-      ret = {}
-      doc.each do |k, v|
-        ret[change_typekey(k, type)] = case v.class.to_s
-                                       when "Hash"
-                                         convert_hash(v, type)
-                                       else
-                                         v
-                                       end
-      end
-      rets.push(ret)
+      rets.push(convert_hash_from_hash(doc, type))
     end
     rets
   end
