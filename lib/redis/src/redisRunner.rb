@@ -30,7 +30,7 @@
 
 require "json"
 
-require_relative "../../common/abstractRunner"
+require_relative "../../common/abstract_runner"
 require_relative "./cxx/redisCxxRunner"
 
 ## Parser
@@ -127,7 +127,7 @@ class RedisRunner < AbstractRunner
     end
   end
 
-  def asyncExec
+  def async_exec
     if @pool_request_size > 0
       redisAsyncExecuter(nil, true)
     end

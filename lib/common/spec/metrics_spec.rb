@@ -45,14 +45,14 @@ RSpec.describe 'Unit Class TEST' do
   context "output" do
     it "Case :: Async" do
       @metrics.start_monitor("test","query")
-      @metrics.addDuration(0.4,"test","query")
+      @metrics.add_duration(0.4,"test","query")
       @metrics.end_monitor("test","query")
       @metrics.output()
     end
     it "Case :: Sync" do
       @metrics.instance_variable_set("@options",{:async =>false})
       @metrics.start_monitor("test","query")
-      @metrics.addDuration(0.4,"test","query")
+      @metrics.add_duration(0.4,"test","query")
       @metrics.end_monitor("test","query")
       @metrics.output()
     end
@@ -69,7 +69,7 @@ RSpec.describe 'Unit Class TEST' do
   context "end_monitor" do
     it "Case :: Simple" do
       @metrics.start_monitor("test","query")
-      @metrics.addDuration(0.4,"test","query")
+      @metrics.add_duration(0.4,"test","query")
       @metrics.end_monitor("test","query")
       time = @metrics.instance_variable_get("@time")["test"]["query"][0]
       proc = @metrics.instance_variable_get("@processing")["test"]
@@ -77,7 +77,7 @@ RSpec.describe 'Unit Class TEST' do
       expect(proc).to eq nil
     end
     it "Case :: Error" do
-      @metrics.addDuration(0.4,"test","query")
+      @metrics.add_duration(0.4,"test","query")
       @metrics.end_monitor("test","query")
       time = @metrics.instance_variable_get("@time")["test"]["query"][0]
       proc = @metrics.instance_variable_get("@processing")["test"]
@@ -85,42 +85,42 @@ RSpec.describe 'Unit Class TEST' do
       expect(proc).to eq nil
     end
   end
-  context "addDuration" do
+  context "add_duration" do
     it "Case :: Simple" do
       ## #1
-      @metrics.addDuration(0.1,"test","query")
+      @metrics.add_duration(0.1,"test","query")
       ans = {"test" => 0.1}
       expect(@metrics.instance_variable_get("@processing")).to eq ans
       ans = {"query" => 1}
       expect(@metrics.instance_variable_get("@queriesOnTargetDB")).to eq ans
       ## #2
-      @metrics.addDuration(0.1,"test","query")
+      @metrics.add_duration(0.1,"test","query")
       ans = {"test" => 0.2}
       expect(@metrics.instance_variable_get("@processing")).to eq ans
       ans = {"query" => 2}
       expect(@metrics.instance_variable_get("@queriesOnTargetDB")).to eq ans
     end
   end
-  context "addCount" do
+  context "add_count" do
     it "Case :: Simple" do
       ## #1
-      @metrics.addCount("query")
+      @metrics.add_count("query")
       ans = {"query" => 1}
       expect(@metrics.instance_variable_get("@queriesOnTargetDB")).to eq ans
       ## #2
-      @metrics.addCount("query")
+      @metrics.add_count("query")
       ans = {"query" => 2}
       expect(@metrics.instance_variable_get("@queriesOnTargetDB")).to eq ans
     end
   end
-  context "addTotalDuration" do
+  context "add_total_duration" do
     it "Case :: Simple" do
       #1 
-      @metrics.addTotalDuration(0.1,"test")
+      @metrics.add_total_duration(0.1,"test")
       ans = {"test" => 0.1}
       expect(@metrics.instance_variable_get("@processing")).to eq ans
       #2
-      @metrics.addTotalDuration(0.1,"test")
+      @metrics.add_total_duration(0.1,"test")
       ans = {"test" => 0.2}
       expect(@metrics.instance_variable_get("@processing")).to eq ans
     end

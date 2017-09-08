@@ -21,9 +21,9 @@ module MemcachedOperationUnitTest
     end
     def close
     end
-    def addCount(a)
+    def add_count(a)
     end
-    def addDuration(a,b,c)
+    def add_duration(a,b,c)
     end
     ## For Test
     def async

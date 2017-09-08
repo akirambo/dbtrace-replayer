@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -32,103 +33,119 @@ require_relative "./utils"
 require_relative "./metrics"
 
 class AbstractRunner
-  def initialize(dbname,logger, option)
-    @logDBName = dbname.upcase
+  def initialize(dbname, logger, option)
+    @log_dbname = dbname.upcase
     ## REMOVE START
-    @logger    = logger
-    @options   = option
+    @logger = logger
+    @options = option
     ## REMOVE END
-    @utils     = Utils.new()
-    @monitorName = nil
-    @metrics   = Metrics.new(logger,@options)
+    @utils = Utils.new
+    @monitor_name = nil
+    @metrics = Metrics.new(logger, @options)
   end
+
   def exec(workload)
     init
-    workload.each{|ope|
-      ope.keys().each{|command|
-        cmd = command.upcase().sub("_*","")
-        @logger.debug( " -- #{cmd} --")
+    workload.each do |ope|
+      ope.keys.each do |command|
+        cmd = command.upcase.sub("_*", "")
+        @logger.debug(" -- #{cmd} --")
         operation(cmd, ope[command])
-      }
-    }
-    if(@options[:async])then
-      asyncExec()
+      end
     end
-    @metrics.output()
+    if @options[:async]
+      async_exec
+    end
+    @metrics.output
     finish
   end
+
   def init
     @logger.warn("Database Init Function is NOT implemented.")
   end
+
   def refresh
     @logger.warn("Database Reset Function is NOT implemented.")
   end
+
   def finish
     @logger.warn("Database Finish Function is NOT implemented.")
   end
+
   def operation(operand, args)
     ## prepare
-    begin 
-      conv = send("prepare_#{@logDBName}",operand,args)
+    begin
+      conv = send("prepare_#{@log_dbname}", operand, args)
     rescue => e
-      @logger.fatal("Crash @ prepare_#{@logDBName}")
+      @logger.fatal("Crash @ prepare_#{@log_dbname}")
       @logger.error(e.message)
       @logger.error(args)
     end
     ## run
-    begin 
-      @monitorName = operand.downcase()
-      @metrics.start_monitor("database",@monitorName)
-      @metrics.start_monitor("client",@monitorName)
+    begin
+      @monitor_name = operand.downcase
+      @metrics.start_monitor("database", @monitor_name)
+      @metrics.start_monitor("client", @monitor_name)
       send(conv["operand"], conv["args"])
-      @metrics.end_monitor("database",@monitorName)
-      @metrics.end_monitor("client",@monitorName)
+      @metrics.end_monitor("database", @monitor_name)
+      @metrics.end_monitor("client", @monitor_name)
     rescue => e
       @logger.error("[#{operand}] Operation([#{@options[:sourceDB]}] TO [#{@options[:targetDB]}] is not supported @ #{__FILE__}")
-      if(conv != nil and conv["operand"] != nil)then
+      if !conv.nil? && !conv["operand"].nil?
         @logger.error("Operator :: #{conv["operand"]}")
       end
       @logger.error(e.message)
       @logger.error(args)
     end
   end
-  def fatal(operand,args)
+
+  def fatal(operand, args)
     @logger.fatal("Illegal Arguments @ #{operand} --> #{args}")
   end
+
   def parse_json(data)
     @utils.parse_json(data)
   end
+
   def convert_json(hash)
     @utils.convert_json(hash)
   end
+
   def create_numbervalue(bytesize)
     @utils.create_numbervalue(bytesize)
   end
+
   def create_string(bytesize)
     @utils.create_string(bytesize)
-  end 
+  end
+
   def change_numeric_when_numeric(input)
     @utils.change_numeric_when_numeric(input)
   end
+
   #########################
   ## Performance Monitor ##
   #########################
-  def monitor(type,targetQuery="all")
+  def monitor(type, targetQuery = "all")
     @metrics.monitor(type, targetQuery)
   end
-  def addDuration(duration,type,targetQuery="all")
-    @metrics.addDuration(duration,type,targetQuery)
+
+  def add_duration(duration, type, targetQuery = "all")
+    @metrics.add_duration(duration, type, targetQuery)
   end
-  def addTotalDuration(duration,type)
-    @metrics.addTotalDuration(duration,type)
+
+  def add_total_duration(duration, type)
+    @metrics.add_total_duration(duration, type)
   end
-  def addCount(targetQuery="all")
-    @metrics.addCount(targetQuery)
+
+  def add_count(targetQuery = "all")
+    @metrics.add_count(targetQuery)
   end
+
   ###################
   # Async Execution #
   ###################
-  def asyncExec()
+  def async_exec
     puts "Please Implement #{__method__}"
   end
 end

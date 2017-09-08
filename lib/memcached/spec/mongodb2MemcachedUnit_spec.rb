@@ -21,9 +21,9 @@ module Mongodb2MemcachedOperationUnitTest
       @options = {:datamodel => "KEYVALUE"}
     end
     ## Mock
-    def addCount(a)
+    def add_count(a)
     end
-    def addDuration(a,b,c)
+    def add_duration(a,b,c)
     end
     def monitor(a,b)
     end

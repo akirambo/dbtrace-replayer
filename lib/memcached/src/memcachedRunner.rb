@@ -31,7 +31,7 @@
 require "dalli"
 require "json"
 
-require_relative "../../common/abstractRunner"
+require_relative "../../common/abstract_runner"
 require_relative "./cxx/memcachedCxxRunner"
 
 require_relative "../../mongodb/src/mongodbArgumentParser"
@@ -116,11 +116,11 @@ class MemcachedRunner < AbstractRunner
       refresh
     end
   end
-  def asyncExec()
+  def async_exec
     if(@mget)then
       @metrics.start_monitor("database","mget")
       @client.mget()
-      addTotalDuration(@client.getDuration(),"database")
+      add_total_duration(@client.getDuration(),"database")
       @metrics.end_monitor("database","mget")
       @mget = false
     end

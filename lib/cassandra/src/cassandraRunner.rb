@@ -30,7 +30,7 @@
 
 require 'cassandra'
 
-require_relative "../../common/abstractRunner"
+require_relative "../../common/abstract_runner"
 require_relative "./cxx/cassandraCxxRunner"
 
 require_relative "../../mongodb/src/mongodbArgumentParser"
@@ -147,10 +147,10 @@ class CassandraRunner < AbstractRunner
       @client.close()
     end
   end
-  def asyncExec()
+  def async_exec
     # @metrics.start_monitor("database","AsyncExec")
-    @client.asyncExecuter()
-    addTotalDuration(@client.getDuration(),"database")
+    @client.asyncExecuter
+    add_total_duration(@client.getDuration(),"database")
     # @metrics.end_monitor("database","AsyncExec")
     @client.resetQuery()
     @pool_request_size = 0

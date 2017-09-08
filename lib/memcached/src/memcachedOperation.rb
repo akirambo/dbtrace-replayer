@@ -40,11 +40,11 @@ module MemcachedOperation
     connect
     if(@options[:async] and asyncable)then
       @mget = true
-      addCount(__method__)
+      add_count(__method__)
       @client.commitGetKey(args[0])
     else
       ret = @client.syncExecuter("#{__method__}",args[0].to_s,"",0)
-      addDuration(@client.getDuration(),"database",__method__)
+      add_duration(@client.getDuration(),"database",__method__)
       if(ret)then
         value = @client.getReply()
       end
@@ -113,7 +113,7 @@ module MemcachedOperation
     connect
     r = @client.syncExecuter(operand,arg0.to_s,arg1.to_s,ttl)
     if(operand != "FLUSH" or (@metrics and !initFlag))then
-      addDuration(@client.getDuration(),"database",__method__)
+      add_duration(@client.getDuration(),"database",__method__)
     end
     close
     return r

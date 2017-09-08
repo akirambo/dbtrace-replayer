@@ -97,8 +97,8 @@ module MongoDB2MemcachedOperation
     newhash   = {}
     matchDuration  = 0.0
     aggregateDuration  = 0.0
-    addCount(:match)
-    addCount(:aggregate)
+    add_count(:match)
+    add_count(:aggregate)
     data = GET([args["key"]],false)
     docs = @utils.symbolhash2stringhash(eval(data))
     params = @queryParser.getParameter(args)
@@ -126,8 +126,8 @@ module MongoDB2MemcachedOperation
         }
       end
     }
-    addDuration(matchDuration,"client","match")
-    addDuration(aggregateDuration,"client","aggregate")
+    add_duration(matchDuration,"client","match")
+    add_duration(aggregateDuration,"client","aggregate")
     return result
   end
 

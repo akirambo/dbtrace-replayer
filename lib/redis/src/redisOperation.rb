@@ -358,12 +358,12 @@ module RedisOperation
     if @option[:async]
       if args && args.size == 2
         unless initFlag
-          addCount(__method__)
+          add_count(__method__)
         end
         query = "#{__method__} #{args[0]} #{args[1]}"
       else
         unless initFlag
-          addCount(__method__)
+          add_count(__method__)
         end
         query = __method__.to_s
       end
@@ -375,7 +375,7 @@ module RedisOperation
       end
       v = @client.syncExecuter(query)
       if @metrics && !initFlag
-        addDuration(@client.getDuration, "database", __method__)
+        add_duration(@client.getDuration, "database", __method__)
       end
     end
     close
@@ -469,7 +469,7 @@ module RedisOperation
       if @client.syncExecuter(query)
         v = "OK"
       end
-      addDuration(@client.getDuration, "database", method)
+      add_duration(@client.getDuration, "database", method)
     end
     if getValue && (attime || !@option[:async])
       v = redisCxxReply
@@ -486,20 +486,20 @@ module RedisOperation
     if query.nil?
       if @client.pooledQuerySize > 0
         @pool_request_size = 0
-        addCount("AsyncExec")
+        add_count("AsyncExec")
         @metrics.start_monitor("database", "AsyncExec")
         @client.asyncExecuter
-        addTotalDuration(@client.getDuration, "database")
+        add_total_duration(@client.getDuration, "database")
         @metrics.end_monitor("database", "AsyncExec")
       end
     elsif attime
       if @client.pooledQuerySize > 0
         @client.commitQuery(query)
         method = query.split(" ")[0]
-        addCount(method.to_sym)
+        add_count(method.to_sym)
         @metrics.start_monitor("database", "AsyncExec")
         @client.asyncExecuter
-        addTotalDuration(@client.getDuration, "database")
+        add_total_duration(@client.getDuration, "database")
         @metrics.end_monitor("database", "AsyncExec")
       else
         method = query.split(" ")[0]
@@ -512,14 +512,14 @@ module RedisOperation
     elsif @option[:poolRequestMaxSize] == -1 || @pool_request_size <= @option[:poolRequestMaxSize]
       @client.commitQuery(query)
       method = query.split(" ")[0]
-      addCount(method.to_sym)
+      add_count(method.to_sym)
     elsif @pool_request_size > @option[:poolRequestMaxSize]
       @client.commitQuery(query)
       method = query.split(" ")[0]
-      addCount(method.to_sym)
+      add_count(method.to_sym)
       @metrics.start_monitor("database", "AsyncExec")
       @client.asyncExecuter
-      addTotalDuration(@client.getDuration, "database")
+      add_total_duration(@client.getDuration, "database")
       @metrics.end_monitor("database", "AsyncExec")
       @pool_request_size = 0
     end

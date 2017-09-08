@@ -30,7 +30,7 @@
 
 require "mongo"
 
-require_relative "../../common/abstractRunner"
+require_relative "../../common/abstract_runner"
 require_relative "./cxx/mongodbCxxRunner"
 
 require_relative "../../mongodb/src/mongodbArgumentParser"
@@ -91,11 +91,11 @@ class MongodbRunner < AbstractRunner
       @client.close()
     end
   end
-  def asyncExec()
+  def async_exec
     @metrics.start_monitor("database","INSERT")
     @client.insertMany()
-    #addCount("INSERT_MANY")
-    addTotalDuration(@client.getDuration(),"database")
+    #add_count("INSERT_MANY")
+    add_total_duration(@client.getDuration(),"database")
     #@metrics.end_monitor("database","INSERT_MANY")
     @metrics.end_monitor("database","INSERT")
   end 

@@ -49,10 +49,10 @@ module MongodbOperation
       json = @utils.add_doublequotation(arg[1])
       if(@option[:async])then
         v = @client.commitDocument(json)
-        addCount("INSERT")
+        add_count("INSERT")
       else
         v = @client.syncExecuter("#{__method__}","#{json}")
-        addDuration(@client.getDuration(),"database",__method__)
+        add_duration(@client.getDuration(),"database",__method__)
       end
       if(!v)then
         close
@@ -83,7 +83,7 @@ module MongodbOperation
     @client.setCollectionName(names[1])
     json = @utils.add_doublequotation(args["filter"])
     v = @client.find("#{json}")
-    addDuration(@client.getDuration(),"database",__method__)
+    add_duration(@client.getDuration(),"database",__method__)
     close
     if(v)then
       rows = reply2rows(@client.getReply())
@@ -106,7 +106,7 @@ module MongodbOperation
     @client.setCollectionName(names[1])
     filter = @utils.add_doublequotation(args["filter"])
     v = @client.deleteExecuter(filter,true)
-    addDuration(@client.getDuration(),"database",__method__)
+    add_duration(@client.getDuration(),"database",__method__)
     close
     return v
   end
@@ -118,7 +118,7 @@ module MongodbOperation
     @client.setCollectionName(names[1])
     filter = @utils.add_doublequotation(args["query"])
     count = @client.count(filter)
-    addDuration(@client.getDuration(),"database",__method__)
+    add_duration(@client.getDuration(),"database",__method__)
     close
     return count
   end
@@ -131,7 +131,7 @@ module MongodbOperation
       end
     }
     v = @client.aggregate()
-    addDuration(@client.getDuration(),"database",__method__)
+    add_duration(@client.getDuration(),"database",__method__)
     close
     if(v)then
       return @client.getReply()
@@ -157,7 +157,7 @@ module MongodbOperation
       end
       r = @client.drop()
       if(@metrics and !initFlag)then
-        addDuration(@client.getDuration(),"database",__method__)
+        add_duration(@client.getDuration(),"database",__method__)
       end
     end
     close

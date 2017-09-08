@@ -100,9 +100,9 @@ module MongodbOperationTester
     end
     def close
     end
-    def addDuration(a,b,c)
+    def add_duration(a,b,c)
     end
-    def addCount(a)
+    def add_count(a)
     end
     def async
       @option[:async] = true

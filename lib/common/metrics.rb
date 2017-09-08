@@ -115,7 +115,7 @@ class Metrics
       @processing[type] = nil
     end
   end
-  def addDuration(duration,type,targetQuery)
+  def add_duration(duration,type,targetQuery)
     if(@processing[type] == nil)then
       @processing[type] = 0
     end
@@ -125,13 +125,13 @@ class Metrics
     end
     @queriesOnTargetDB[targetQuery] += 1
   end
-  def addCount(targetQuery)
+  def add_count(targetQuery)
     if(!@queriesOnTargetDB[targetQuery])then
       @queriesOnTargetDB[targetQuery] = 0
     end
     @queriesOnTargetDB[targetQuery] += 1
   end
-  def addTotalDuration(duration,type)
+  def add_total_duration(duration,type)
     if(@processing[type] == nil)then
       @processing[type] = 0
     end

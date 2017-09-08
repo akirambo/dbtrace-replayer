@@ -80,11 +80,11 @@ module CassandraOperationTester
     def setParserReturnValue(hash)
       @parser.value = hash
     end
-    def addDuration(a,b,c)
+    def add_duration(a,b,c)
     end
-    def addCount(a)
+    def add_count(a)
     end
-    def addTotalDuration(a,b)
+    def add_total_duration(a,b)
     end
     def connect
     end

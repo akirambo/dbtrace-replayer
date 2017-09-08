@@ -41,7 +41,7 @@ module CassandraOperation
     if(@client.syncExecuter(query))then
       value = @client.getReply(0)
     end
-    addDuration(@client.getDuration(),"database", "SELECT")
+    add_duration(@client.getDuration(),"database", "SELECT")
     close
     return value
   end
@@ -62,7 +62,7 @@ module CassandraOperation
       if(@option[:async] and
           command != "DROP" and command != "CREATE")then
         ## Async Execution
-        addCount(query.split(" ")[0])
+        add_count(query.split(" ")[0])
         @pool_request_size += 1
         @poolByteSize += query.bytesize
         commitCondition = 
@@ -87,7 +87,7 @@ module CassandraOperation
       else
         ## Sync Execution
         @client.syncExecuter(query)
-        addDuration(@client.getDuration(),"database", query.split(" ")[0].upcase)
+        add_duration(@client.getDuration(),"database", query.split(" ")[0].upcase)
         if(query.split(" ")[0].upcase == "SELECT")then
           value = @client.getReply(0)
         end
@@ -129,7 +129,7 @@ module CassandraOperation
   def execBufferedQueries()
     @metrics.start_monitor("database","AsyncExec")
     @client.asyncExecuter()
-    addTotalDuration(@client.getDuration(),"database")
+    add_total_duration(@client.getDuration(),"database")
     @metrics.end_monitor("database","AsyncExec")
     @client.resetQuery()
     @pool_request_size = 0

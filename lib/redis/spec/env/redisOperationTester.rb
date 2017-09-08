@@ -71,13 +71,13 @@ class RedisOperationTester
   def monitor(a,b)
     # do nothing (dummy)
   end
-  def addCount(m)
+  def add_count(m)
     # do nothing (dummy)
   end
-  def addDuration(a,b,c)
+  def add_duration(a,b,c)
     # do nothing (dummy)
   end
-  def addTotalDuration(a,b)
+  def add_total_duration(a,b)
     # do nothing (dummy)
   end
 end
