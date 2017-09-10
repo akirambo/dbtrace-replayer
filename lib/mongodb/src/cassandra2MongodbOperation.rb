@@ -30,194 +30,128 @@
 
 module Cassandra2MongodbOperation
   private
+
   ###############
   ## OPERATION ##
   ###############
-=begin
-  collection => column family
-  doc => {"fieldname"=> "value",....}
-=end
+  # collection => column family
+  #  doc => {"fieldname"=> "value",....}
   # @conv {"INSERT" => ["INSERT"]}
   def CASSANDRA_INSERT(args)
     docname = args["table"]
     doc = args["args"]
-    primaryKey = args["primaryKey"]
-    doc["_id"] = doc[primaryKey]
-    doc.delete(primaryKey)
-    return INSERT([[docname, doc]])
+    primarykey = args["primaryKey"]
+    doc["_id"] = doc[primarykey]
+    doc.delete(primarykey)
+    INSERT([[docname, doc]])
   end
+
   # @conv {"SELECT" => ["FIND"]}
   def CASSANDRA_SELECT(args)
     cond = {
-      "key"  => args["table"],
-      "filter" => { "_id" => getPrimaryKey(args)},
-      "projection" => nil
+      "key" => args["table"],
+      "filter" => { "_id" => get_primarykey(args) },
+      "projection" => nil,
     }
-    if(args["fields"] != ["*"])then
-      if(!cond["projection"])then
+    if args["fields"] != ["*"]
+      unless cond["projection"]
         cond["projection"] = {}
       end
-      args["fields"].each{|field|
+      args["fields"].each do |field|
         cond["projection"][field] = 1
-      }
+      end
     end
     result = []
-    FIND(cond).each{|doc|
+    FIND(cond).each do |doc|
       doc.delete("_id")
       result = doc.values
-    }
-    return result
+    end
+    result
   end
+
   # @conv {"UPDATE" => ["UPDATE"]}
   def CASSANDRA_UPDATE(args)
     cond = {
       "key" => args["table"],
-      "query" => {"_id" => getPrimaryKey(args)},
-      "update" => {"$set" => args["set"]}
+      "query" => { "_id" => get_primarykey(args) },
+      "update" => { "$set" => args["set"] },
     }
-    return UPDATE(cond)
+    UPDATE(cond)
   end
+
   # @conv {"DELETE" => ["UPDATE"]}
   def CASSANDRA_DELETE(args)
     cond = {
       "key" => args["table"],
-      "query" => {"_id" => getPrimaryKey(args)},
-      "update" => {"$unset" => {}}
+      "query" => { "_id" => get_primarykey(args) },
+      "update" => { "$unset" => {} },
     }
-    args["fields"].each{|field|
+    args["fields"].each do |field|
       cond["update"]["$unset"][field] = 1
-    }
-    return UPDATE(cond)
+    end
+    UPDATE(cond)
   end
+
   # @conv {"DROP" => [""]}
   def CASSANDRA_DROP(args)
-    return DROP([])
-  end
-  
-  ##############
-  ## JAVA API ##
-  ##############
-=begin
-  # @conv {"BATCH_MUTATE" => ["INSERT"]}
-  def CASSANDRA_BATCH_MUTATE(args)
-    if(args["counterColumn"])then
-      args["args"].each{|arg|
-        INSERT([[args["key"], arg]])
-      }
-    else
-      INSERT([[args["key"], args["args"]]])
+    unless args.empty?
+      @logger.warn("Unsupported CASSANDRA_DROP with #{args}.")
     end
+    DROP([])
   end
-  # @conv {"GET_SLICE" => ["FIND"]}
-  def CASSANDRA_GET_SLICE(args)
-    cond = {
-      "key"  => args["key"],
-      "filter" => nil,
-      "projection" => {}
-    }
-    if(args["fields"] != ["*"])then
-      args["fields"][0].split(",").each{|field|
-        cond["projection"][field] = 1
-      }
-    end
-    FIND(cond,false).each{|doc|
-      doc.delete("_id")
-      #puts doc
-    }
-  end
-  # @conv {"MULTIGET_SLICE" => ["FIND"]}
-  def CASSANDRA_MULTIGET_SLICE(args)
-    cond = {
-      "key"  => args["key"],
-      "filter" => nil,
-      "projection" => {}
-    }
-    if(args["fields"] != ["*"])then
-      args["fields"][0].split(",").each{|field|
-        cond["projection"][field] = 1
-      }
-    end
-    counter = 0
-    FIND(cond,false).each{|doc|
-      doc.delete("_id")
-      counter += 1
-      if(counter <= args["limit"].to_i)then
-        #puts doc
-      end
-    }
-  end
-  # @conv {"GET_RANGE_SLICES" => ["FIND"]}
-  def CASSANDRA_GET_RANGE_SLICES(args)
-    cond = {
-      "key"  => args["key"],
-      "filter" => nil,
-      "projection" => {}
-    }
-    if(args["fields"] != ["*"])then
-      args["fields"][0].split(",").each{|field|
-        cond["projection"][field] = 1
-      }
-    end
-    counter = 0
-    FIND(cond,false).each{|doc|
-      doc.delete("_id")
-      counter += 1
-      if(counter <= args["limit"].to_i)then
-        #puts doc
-      end
-    }
-  end
-=end  
+
   #############
   ## PREPARE ##
   #############
-  def prepare_cassandra(operand,args)
+  def prepare_cassandra(operand, args)
     ## PREPARE OPERATION & ARGS
     result = {}
     result["operand"] = "CASSANDRA_#{operand.upcase}"
-    result["args"]    = @parser.exec(operand.upcase,args)
-    return result
+    result["args"] = @parser.exec(operand.upcase, args)
+    result
   end
-  
+
   def CASSANDRA_JUDGE(result, args)
     ## where
-    args["where"].each{|__cond__|
-      __cond__ = __cond__.split("=")
-      fieldname = __cond__[0]
-      value = __cond__[1]
-      if(result[fieldname] != value)then
+    args["where"].each do |cond__|
+      cond__ = cond__.split("=")
+      fieldname = cond__[0]
+      value = cond__[1]
+      if result[fieldname] != value
         return false
       end
-    }
-    return true
+    end
+    true
   end
-  def selectField(hash, args)
+
+  def select_field(hash, args)
     row = {}
-    if(args["fields"][0] == "*")then
+    if args["fields"][0] == "*"
       return hash
     else
-      args["fields"][0].split(",").each{|field|
+      args["fields"][0].split(",").each do |field|
         row[field] = hash[field]
-      }
+      end
     end
-    return row
+    row
   end
+
   def cassandraSerialize(hash)
-    return convert_json(hash)
+    convert_json(hash)
   end
+
   def cassandraDeserialize(array)
     result = []
-    array.each{|row|
+    array.each do |row|
       result.push(parse_json(row))
-    }
-    return result
+    end
+    result
   end
-  def getPrimaryKey(args)
-    primaryKey = args["primaryKey"]
-    index = args["cond_keys"].index(primaryKey)
+
+  def get_primarykey(args)
+    primarykey = args["primaryKey"]
+    index = args["cond_keys"].index(primarykey)
     id = args["cond_values"][index]
-    return id
+    id
   end
 end
-  
-

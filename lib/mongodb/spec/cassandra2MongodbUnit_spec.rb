@@ -125,13 +125,13 @@ module Cassandra2MongodbTester
         arg    = {"where"=>["f1=v1"]}
         expect(@tester.send(:CASSANDRA_JUDGE,result,arg)).to be false
       end
-      it "selectedField" do
+      it "selected_field" do
         ans  = {"f1"=>"v1","f2"=>"v2"}
         args = {"fields"=>["*"]}
-        expect(@tester.send(:selectField,ans,args)).to include ans
+        expect(@tester.send(:select_field,ans,args)).to include ans
         ans  = {"f1"=>"v1","f2"=>"v2"}
         args = {"fields"=>["f1,f2"]}
-        expect(@tester.send(:selectField,ans,args)).to include ans
+        expect(@tester.send(:select_field,ans,args)).to include ans
       end
       it "cassandraSerialize" do
         dummy = {}
@@ -140,8 +140,6 @@ module Cassandra2MongodbTester
       it "cassandraDeserialize" do
         dummy = ["d1"]
         expect(@tester.send(:cassandraDeserialize,dummy)).to eq [{"f1"=>"v1","f2"=>"v2"}]
-      end
-      it "getPrimaryKey" do
       end
     end
   end
