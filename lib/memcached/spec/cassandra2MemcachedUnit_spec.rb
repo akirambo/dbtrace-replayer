@@ -168,9 +168,9 @@ module Cassandra2MemcachedOperationUnitTest
       end
     end
     context "Private Method" do
-      it "prepare_CASSANDRA" do
+      it "prepare_cassandra" do
         ans = {"operand" => "CASSANDRA_TEST", "args" => "OK"}
-        expect(@tester.send(:prepare_CASSANDRA,"test","OK")).to include ans
+        expect(@tester.send(:prepare_cassandra,"test","OK")).to include ans
       end
       it "CASSANDRA_JUDGE" do
         doc  = {"f0"=>"v0","f1"=>"v1"}

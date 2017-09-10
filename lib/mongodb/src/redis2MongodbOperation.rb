@@ -965,7 +965,7 @@ module Redis2MongodbOperation
   #############
   ## PREPARE ##
   #############
-  def prepare_REDIS(operand, args)
+  def prepare_redis(operand, args)
     result = {}
     result["operand"] = "REDIS_#{operand}"
     result["args"] = if %w[ZUNIONSTORE ZINTERSTORE].include?(operand)

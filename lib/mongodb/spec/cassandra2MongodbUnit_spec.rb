@@ -113,9 +113,9 @@ module Cassandra2MongodbTester
       end
     end
     context "Private Method" do
-      it "prepare_CASSANDRA" do
+      it "prepare_cassandra" do
         ans = {"operand"=>"CASSANDRA_TEST","args"=>"test_args"}
-        expect(@tester.send(:prepare_CASSANDRA,"test","test_args")).to include ans
+        expect(@tester.send(:prepare_cassandra,"test","test_args")).to include ans
       end
       it "CASSANDRA_JUDGE" do
         result = {"f1"=>"v1"} 

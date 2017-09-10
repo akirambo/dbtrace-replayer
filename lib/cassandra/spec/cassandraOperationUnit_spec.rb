@@ -160,16 +160,16 @@ module CassandraOperationTester
       end
     end
     context "Private Method" do
-      it "prepare_CASSANDRA (CQL)" do
+      it "prepare_cassandra (CQL)" do
         ope = "DIRECT_EXECUTER"
         args = ["a","b","c"]
         ans = {
           "operand" => "DIRECT_EXECUTER",
           "args" => "a b c"
         }
-        expect(@tester.send(:prepare_CASSANDRA,ope,args)).to include ans
+        expect(@tester.send(:prepare_cassandra,ope,args)).to include ans
       end
-      it "prepare_CASSANDRA (BATCH_MUTATE)" do
+      it "prepare_cassandra (BATCH_MUTATE)" do
         ope = "BATCH_MUTATE"
         ans = {
           "operand" => "DIRECT_EXECUTER",
@@ -183,7 +183,7 @@ module CassandraOperationTester
           "table"    => "t1"    
         }
         @tester.setParserReturnValue(hash)
-        expect(@tester.send(:prepare_CASSANDRA,ope,"")).to include ans
+        expect(@tester.send(:prepare_cassandra,ope,"")).to include ans
       end
       it "prepare_BATCH_MUTATE (error case)" do
         hash = {

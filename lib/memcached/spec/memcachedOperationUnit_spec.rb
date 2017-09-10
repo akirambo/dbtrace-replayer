@@ -112,9 +112,9 @@ module MemcachedOperationUnitTest
       end
     end
     context  "Private Method" do
-      it "prepare_MEMCACHED" do
+      it "prepare_memcached" do
         ans = {"operand" => "TEST", "args"=> "OK"}
-        expect(@tester.send(:prepare_MEMCACHED,"test","arg")).to include ans
+        expect(@tester.send(:prepare_memcached,"test","arg")).to include ans
       end
     end
   end

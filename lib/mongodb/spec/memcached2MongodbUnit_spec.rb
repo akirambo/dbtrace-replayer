@@ -163,14 +163,14 @@ module Memcahed2MongodbTester
       end
     end
     context " Private Method" do
-      it "prepare_MEMCACHED (FLUSHALL)" do
+      it "prepare_memcached (FLUSHALL)" do
         ans = {"operand" => "FLUSHALL"}
-        expect(@tester.send(:prepare_MEMCACHED,"flushall","test_args")).to include ans
+        expect(@tester.send(:prepare_memcached,"flushall","test_args")).to include ans
       end
 
-      it "prepare_MEMCACHED (others)" do
+      it "prepare_memcached (others)" do
         ans = {"operand" => "MEMCACHED_TEST","args" => "test_args"}
-        expect(@tester.send(:prepare_MEMCACHED,"test","test_args")).to include ans
+        expect(@tester.send(:prepare_memcached,"test","test_args")).to include ans
       end
     end
   end

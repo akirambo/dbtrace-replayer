@@ -38,7 +38,7 @@ module RedisOperation
 
   def SET(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def GET(args, attime = false)
@@ -47,67 +47,67 @@ module RedisOperation
 
   def SETNX(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def SETEX(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def PSETEX(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def MSET(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def MGET(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true)
+    redis_cxx_executer(__method__, command, true)
   end
 
   def MSETNX(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def INCR(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def INCRBY(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def DECR(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def DECRBY(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def APPEND(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def GETSET(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true)
+    redis_cxx_executer(__method__, command, true)
   end
 
   def STRLEN(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true)
+    redis_cxx_executer(__method__, command, true)
   end
   ###########
   ## Lists ##
@@ -115,57 +115,57 @@ module RedisOperation
 
   def LPUSH(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def RPUSH(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def LPOP(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def RPOP(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def LRANGE(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true)
+    redis_cxx_executer(__method__, command, true)
   end
 
   def LREM(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def LINDEX(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true)
+    redis_cxx_executer(__method__, command, true)
   end
 
   def RPOPLPUSH(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true)
+    redis_cxx_executer(__method__, command, true)
   end
 
   def LSET(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def LTRIM(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def LLEN(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true)
+    redis_cxx_executer(__method__, command, true)
   end
   #########
   ## Set ##
@@ -209,12 +209,12 @@ module RedisOperation
 
   def SREM(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def SMOVE(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def SCARD(args, attime = false)
@@ -223,12 +223,12 @@ module RedisOperation
 
   def SADD(args)
     command = "#{__method__} #{args["key"]} #{args["args"]}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def SPOP(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command, true)
+    redis_cxx_executer(__method__, command, true)
   end
   #################
   ## Sorted Sets ##
@@ -236,17 +236,17 @@ module RedisOperation
 
   def ZADD(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def ZREM(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def ZINCRBY(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def ZRANK(args, attime = false)
@@ -302,7 +302,7 @@ module RedisOperation
 
   def HSET(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def HGET(args, attime = false)
@@ -311,7 +311,7 @@ module RedisOperation
 
   def HMGET(args, attime = false)
     command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
-    redisCxxExecuter(__method__, command, true, attime)
+    redis_cxx_executer(__method__, command, true, attime)
   end
 
   def HMSET(args)
@@ -320,7 +320,7 @@ module RedisOperation
 
   def HINCRBY(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def HEXISTS(args, attime = false)
@@ -329,7 +329,7 @@ module RedisOperation
 
   def HDEL(args)
     command = "#{__method__} #{args.join(" ")}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def HLEN(args, attime = false)
@@ -367,7 +367,7 @@ module RedisOperation
         end
         query = __method__.to_s
       end
-      v = redisAsyncExecuter(query)
+      v = redis_async_executer(query)
     else
       query = __method__.to_s
       if args && args.size == 2
@@ -384,7 +384,7 @@ module RedisOperation
 
   def DEL(args)
     command = "#{__method__} #{args[0]}"
-    redisCxxExecuter(__method__, command)
+    redis_cxx_executer(__method__, command)
   end
 
   def KEYS(pattern, type)
@@ -408,31 +408,31 @@ module RedisOperation
 
   def get_type_operation(name, args, attime)
     command = "#{name} #{args.join(" ")}"
-    redisCxxExecuter(name, command, true, attime)
+    redis_cxx_executer(name, command, true, attime)
   end
 
   def hlen_type_operation(name, args, attime)
     command = "#{name} #{args[0]}"
-    redisCxxExecuter(name, command, true, attime)
+    redis_cxx_executer(name, command, true, attime)
   end
 
   def z_xstore(name, args)
     command = "#{name} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
     if args["options"] != {}
-      command += redisOptionHash2Command(args["options"])
+      command += redis_optionhash2command(args["options"])
     end
-    redisCxxExecuter(name, command)
+    redis_cxx_executer(name, command)
   end
 
   def s_store(name, args)
     command = "#{name} #{args["key"]} #{args["args"].join(" ")}"
-    redisCxxExecuter(name, command)
+    redis_cxx_executer(name, command)
   end
   #############
   ## PREPARE ##
   #############
 
-  def prepare_REDIS(operand, args)
+  def prepare_redis(operand, args)
     result = {}
     result["operand"] = operand
     result["args"] = args
@@ -451,8 +451,8 @@ module RedisOperation
 
   ##################
   ## CXX Executer ##
-  ##################  
-  def redisCxxReply
+  ##################
+  def redis_cxx_reply
     if @option[:async]
       @client.getAsyncReply
     else
@@ -460,11 +460,11 @@ module RedisOperation
     end
   end
 
-  def redisCxxExecuter(method, query, getValue = false, attime = false)
+  def redis_cxx_executer(method, query, getValue = false, attime = false)
     @logger.debug("GENERATED QUERY: #{query}")
     connect
     if @option[:async]
-      v = redisAsyncExecuter(query, attime)
+      v = redis_async_executer(query, attime)
     else
       if @client.syncExecuter(query)
         v = "OK"
@@ -472,7 +472,7 @@ module RedisOperation
       add_duration(@client.getDuration, "database", method)
     end
     if getValue && (attime || !@option[:async])
-      v = redisCxxReply
+      v = redis_cxx_reply
     end
     close
     v
@@ -481,34 +481,12 @@ module RedisOperation
   ## Async ##
   ###########
 
-  def redisAsyncExecuter(query, attime = false)
+  def redis_async_executer(query, attime = false)
     @pool_request_size += 1
     if query.nil?
-      if @client.pooledQuerySize > 0
-        @pool_request_size = 0
-        add_count("AsyncExec")
-        @metrics.start_monitor("database", "AsyncExec")
-        @client.asyncExecuter
-        add_total_duration(@client.getDuration, "database")
-        @metrics.end_monitor("database", "AsyncExec")
-      end
+      redis_async_executer_non_query
     elsif attime
-      if @client.pooledQuerySize > 0
-        @client.commitQuery(query)
-        method = query.split(" ")[0]
-        add_count(method.to_sym)
-        @metrics.start_monitor("database", "AsyncExec")
-        @client.asyncExecuter
-        add_total_duration(@client.getDuration, "database")
-        @metrics.end_monitor("database", "AsyncExec")
-      else
-        method = query.split(" ")[0]
-        monitor("database", method.to_sym)
-        @client.syncConnect(@host, @port.to_i)
-        @client.syncExecuter(query)
-        monitor("database", method.to_sym)
-        @client.syncClose
-      end
+      redis_async_executer_attime(query)
     elsif @option[:poolRequestMaxSize] == -1 || @pool_request_size <= @option[:poolRequestMaxSize]
       @client.commitQuery(query)
       method = query.split(" ")[0]
@@ -526,11 +504,40 @@ module RedisOperation
     "OK"
   end
 
+  def redis_async_executer_non_query
+    if @client.pooledQuerySize > 0
+      @pool_request_size = 0
+      add_count("AsyncExec")
+      @metrics.start_monitor("database", "AsyncExec")
+      @client.asyncExecuter
+      add_total_duration(@client.getDuration, "database")
+      @metrics.end_monitor("database", "AsyncExec")
+    end
+  end
+
+  def redis_async_executer_attime(query)
+    if @client.pooledQuerySize > 0
+      @client.commitQuery(query)
+      method = query.split(" ")[0]
+      add_count(method.to_sym)
+      @metrics.start_monitor("database", "AsyncExec")
+      @client.asyncExecuter
+      add_total_duration(@client.getDuration, "database")
+      @metrics.end_monitor("database", "AsyncExec")
+    else
+      method = query.split(" ")[0]
+      monitor("database", method.to_sym)
+      @client.syncConnect(@host, @port.to_i)
+      @client.syncExecuter(query)
+      monitor("database", method.to_sym)
+      @client.syncClose
+    end
+  end
   ################
   ## Sub Method ##
   ################
 
-  def redisOptionHash2Command(hash)
+  def redis_optionhash2command(hash)
     command = ""
     hash.each do |k, v|
       if v.class == Array

@@ -602,17 +602,17 @@ module MemcachedOperationUnitTest
       end
     end
     context  "Private Method" do
-      it "prepare_MEMCACHED" do
+      it "prepare_redis" do
         ans = {"operand"=>"REDIS_ZUNIONSTORE","args"=>"OK"}
-        expect(@tester.send(:prepare_REDIS,"ZUNIONSTORE","")).to include ans
+        expect(@tester.send(:prepare_redis,"ZUNIONSTORE","")).to include ans
         ans = {"operand"=>"REDIS_MSET","args"=>"OK"}
-        expect(@tester.send(:prepare_REDIS,"MSET","")).to include ans
+        expect(@tester.send(:prepare_redis,"MSET","")).to include ans
         ans = {"operand"=>"REDIS_HMGET","args"=>"OK"}
-        expect(@tester.send(:prepare_REDIS,"HMGET","")).to include ans
+        expect(@tester.send(:prepare_redis,"HMGET","")).to include ans
         ans = {"operand"=>"REDIS_HMSET","args"=>"OK"}
-        expect(@tester.send(:prepare_REDIS,"HMSET","")).to include ans
+        expect(@tester.send(:prepare_redis,"HMSET","")).to include ans
         ans = {"operand"=>"REDIS_OTHER","args"=>"OK"}
-        expect(@tester.send(:prepare_REDIS,"OTHER","OK")).to include ans
+        expect(@tester.send(:prepare_redis,"OTHER","OK")).to include ans
       end
       it "sortedArrayGetRange" do
         args = ["v0","v1","v2","v3","v4"]

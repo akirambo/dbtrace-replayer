@@ -91,7 +91,7 @@ module MemcachedOperation
   #############
   ## PREPARE ##
   #############
-  def prepare_MEMCACHED(operand,args)
+  def prepare_memcached(operand,args)
     result = {}
     result["operand"] = operand.upcase
     result["args"]    = @parser.exec(operand.upcase,args)

@@ -100,7 +100,7 @@ module CassandraOperation
   #############
   ## PREPARE ##
   #############
-  def prepare_CASSANDRA(operand,args)
+  def prepare_cassandra(operand, args)
     ## PREPARE OPERATION & ARGS
     result = {"operand" => "DIRECT_EXECUTER"}
     if(operand.upcase == "BATCH_MUTATE" or 

@@ -786,25 +786,25 @@ module Redis2CassandraOperationTester
         @tester.schemas = {"k"=> CassandraSchemaMock.new}
         expect(@tester.send(:REDIS_FLUSHALL)).to be false
       end
-      it "prepare_REDIS (ZUNIONSTORE)" do
+      it "prepare_redis (ZUNIONSTORE)" do
         ans = {"operand" => "REDIS_ZUNIONSTORE", "args" => "OK"}
-        expect(@tester.send(:prepare_REDIS,"ZUNIONSTORE","")).to include ans
+        expect(@tester.send(:prepare_redis,"ZUNIONSTORE","")).to include ans
       end
-      it "prepare_REDIS (MSET)" do
+      it "prepare_redis (MSET)" do
         ans = {"operand" => "REDIS_MSET", "args" => "OK"}
-        expect(@tester.send(:prepare_REDIS,"MSET","")).to include ans
+        expect(@tester.send(:prepare_redis,"MSET","")).to include ans
       end
-      it "prepare_REDIS (HMGET)" do
+      it "prepare_redis (HMGET)" do
         ans = {"operand" => "REDIS_HMGET", "args" => "OK"}
-        expect(@tester.send(:prepare_REDIS,"HMGET","")).to include ans
+        expect(@tester.send(:prepare_redis,"HMGET","")).to include ans
       end
-      it "prepare_REDIS (HMSET)" do
+      it "prepare_redis (HMSET)" do
         ans = {"operand" => "REDIS_HMSET", "args" => "OK"}
-        expect(@tester.send(:prepare_REDIS,"HMSET","")).to include ans
+        expect(@tester.send(:prepare_redis,"HMSET","")).to include ans
       end
-      it "prepare_REDIS (HGET)" do
+      it "prepare_redis (HGET)" do
         ans = {"operand" => "REDIS_HGET", "args" => ""}
-        expect(@tester.send(:prepare_REDIS,"HGET","")).to include ans
+        expect(@tester.send(:prepare_redis,"HGET","")).to include ans
       end
     end
   end

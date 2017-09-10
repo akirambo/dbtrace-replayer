@@ -522,17 +522,17 @@ module Redis2MongodbTester
         expect(@tester.command).to eq "DROP"
       end
 
-      it "prepare_REDIS" do
+      it "prepare_redis" do
         ans = {"operand"=>"REDIS_test","args"=>"test"}
-        expect(@tester.send(:prepare_REDIS,"test","test")).to include ans
+        expect(@tester.send(:prepare_redis,"test","test")).to include ans
         ans = {"operand"=>"REDIS_ZUNIONSTORE","args"=>"extractZ_X_STORE_ARGS"}
-        expect(@tester.send(:prepare_REDIS,"ZUNIONSTORE","test")).to include ans
+        expect(@tester.send(:prepare_redis,"ZUNIONSTORE","test")).to include ans
         ans = {"operand"=>"REDIS_MSET","args"=>"args2hash"}
-        expect(@tester.send(:prepare_REDIS,"MSET","test")).to include ans
+        expect(@tester.send(:prepare_redis,"MSET","test")).to include ans
         ans = {"operand"=>"REDIS_HMGET","args"=>"args2key_args"}
-        expect(@tester.send(:prepare_REDIS,"HMGET","test")).to include ans
+        expect(@tester.send(:prepare_redis,"HMGET","test")).to include ans
         ans = {"operand"=>"REDIS_HMSET","args"=>"args2key_hash"}
-        expect(@tester.send(:prepare_REDIS,"HMSET","test")).to include ans
+        expect(@tester.send(:prepare_redis,"HMSET","test")).to include ans
       end
     end
     context "Private Method (SET/sortedSET)" do

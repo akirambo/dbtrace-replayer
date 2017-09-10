@@ -124,11 +124,11 @@ module MemcachedTest
         expect(@tester.send(:MEMCACHED_FLUSH,[])).to eq "OK"
         expect(@tester.command).to eq "FLUSHALL"
       end
-      it "prepare_MEMCACHED" do
+      it "prepare_memcached" do
         ans = {"operand" => "FLUSHALL"}
-        expect(@tester.send(:prepare_MEMCACHED,"FLUSHALL",[""])).to include ans
+        expect(@tester.send(:prepare_memcached,"FLUSHALL",[""])).to include ans
         ans = {"operand" => "MEMCACHED_TEST", "args"=>"PARSED"}
-        expect(@tester.send(:prepare_MEMCACHED,"TEST",[""])).to include ans
+        expect(@tester.send(:prepare_memcached,"TEST",[""])).to include ans
       end
     end
   end

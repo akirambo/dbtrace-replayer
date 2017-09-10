@@ -129,7 +129,7 @@ class RedisRunner < AbstractRunner
 
   def async_exec
     if @pool_request_size > 0
-      redisAsyncExecuter(nil, true)
+      redis_async_executer(nil, true)
     end
   end
 

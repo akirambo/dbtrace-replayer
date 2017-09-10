@@ -318,9 +318,9 @@ module Mongodb2MemcachedOperationUnitTest
       end
     end
     context "Private Method" do
-      it "prepare_MONGODB" do
+      it "prepare_mongodb" do
         ans = {"operand" => "MONGODB_TEST", "args" => "OK"}
-        expect(@tester.send(:prepare_MONGODB,"TEST","dummy")).to include ans
+        expect(@tester.send(:prepare_mongodb,"TEST","dummy")).to include ans
       end
       it "mongodbQuery (return TRUE)" do
         doc = {:_id => "001" , :value => "test"}

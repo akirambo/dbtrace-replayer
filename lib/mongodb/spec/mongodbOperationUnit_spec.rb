@@ -232,9 +232,9 @@ module MongodbOperationTester
         cond = ["a.b","c"]
         expect(@tester.send("DROP", cond)).to be false
       end
-      it "prepare_MONGODB" do
+      it "prepare_mongodb" do
         ans = { "operand" => "test", "args"=>"ARGS"}
-        expect(@tester.send("prepare_MONGODB", "test","")).to include ans 
+        expect(@tester.send("prepare_mongodb", "test","")).to include ans 
       end
       it "MAPREDUCE" do
         @tester.send("MAPREDUCE", {})

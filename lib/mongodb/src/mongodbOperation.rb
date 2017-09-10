@@ -170,7 +170,7 @@ module MongodbOperation
   ###########
   # PREPARE #
   ###########
-  def prepare_MONGODB(operand,args)
+  def prepare_mongodb(operand, args)
     result = {}
     result["operand"] = operand
     result["args"] = @parser.exec(operand,args,true)

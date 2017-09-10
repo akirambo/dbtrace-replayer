@@ -183,7 +183,7 @@ module MongoDB2MemcachedOperation
   #############
   ## PREPARE ##
   #############
-  def prepare_MONGODB(operand, args)
+  def prepare_mongodb(operand, args)
     result = {"operand" => "MONGODB_#{operand}", "args" => nil}
     result["args"] = @parser.exec(operand,args)
     return result

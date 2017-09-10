@@ -673,7 +673,7 @@ module Redis2MemcachedOperation
   #############
   ## PREPARE ##
   #############
-  def prepare_REDIS(operand,args)
+  def prepare_redis(operand,args)
     result = {}
     result["operand"] = "REDIS_#{operand}"
     if(["ZUNIONSTORE","ZINTERSTORE"].include?(operand))then

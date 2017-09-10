@@ -121,7 +121,7 @@ module Memcached2RedisOperation
   #############
   ## PREPARE ##
   #############
-  def prepare_MEMCACHED(operand, args)
+  def prepare_memcached(operand, args)
     result = {}
     ## PREPARE SPECIAL OPERATION
     if ["FLUSHALL"].include?(operand)

@@ -106,7 +106,7 @@ module Cassandra2RedisOperation
   #############
   ## PREPARE ##
   #############
-  def prepare_CASSANDRA(operand, args)
+  def prepare_cassandra(operand, args)
     ## PREPARE OPERATION & ARGS
     result = {}
     result["operand"] = "CASSANDRA_#{operand.upcase}"

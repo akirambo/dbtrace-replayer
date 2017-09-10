@@ -168,13 +168,13 @@ module Memcached2CassandraOperationTester
       end
     end
     context "Private Method" do
-      it "prepare_MEMCACHED (FLUSHALL)" do
+      it "prepare_memcached (FLUSHALL)" do
         ans = {"operand"=>"FLUSHALL"}
-        expect(@tester.send(:prepare_MEMCACHED,"FLUSHALL","OK")).to include ans
+        expect(@tester.send(:prepare_memcached,"FLUSHALL","OK")).to include ans
       end
-      it "prepare_MEMCACHED (OTHERS)" do
+      it "prepare_memcached (OTHERS)" do
         ans = {"operand"=>"MEMCACHED_OTHERS","args" => "OK"}
-        expect(@tester.send(:prepare_MEMCACHED,"others","OK")).to include ans
+        expect(@tester.send(:prepare_memcached,"others","OK")).to include ans
       end
     end
   end

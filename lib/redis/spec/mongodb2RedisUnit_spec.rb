@@ -355,9 +355,9 @@ module MongodbTest
         query = nil
         expect(@tester.send(:mongodbQuery,doc,query)).to be false
       end
-      it "prepare_MONGODB" do
+      it "prepare_mongodb" do
         ans = {"operand" => "MONGODB_test", "args" => "PARSED"}
-        expect(@tester.send(:prepare_MONGODB,"test",{})).to include ans
+        expect(@tester.send(:prepare_mongodb,"test",{})).to include ans
       end
     end
   end

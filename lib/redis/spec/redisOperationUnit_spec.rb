@@ -525,60 +525,60 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       @tester.sync
       expect(@tester.send("KEYS","t1","table")).to match_array ["k1.t1","k2.t1"]
     end
-    it "prepare_REDIS" do
-      expect(@tester.send("prepare_REDIS","ZUNIONSTORE",[])["args"]).to eq "extractZ_X_STORE_ARGS"
-      expect(@tester.send("prepare_REDIS","MSET",[])["args"]).to eq "args2hash"
-      expect(@tester.send("prepare_REDIS","HMGET",[])["args"]).to eq "args2key_args"
+    it "prepare_redis" do
+      expect(@tester.send("prepare_redis","ZUNIONSTORE",[])["args"]).to eq "extractZ_X_STORE_ARGS"
+      expect(@tester.send("prepare_redis","MSET",[])["args"]).to eq "args2hash"
+      expect(@tester.send("prepare_redis","HMGET",[])["args"]).to eq "args2key_args"
     end
   end
   context "CXX Executer" do
-    it "redisCxxReply" do
+    it "redis_cxx_reply" do
       @tester.sync
-      expect(@tester.send("redisCxxReply")).to eq "syncReply"
+      expect(@tester.send("redis_cxx_reply")).to eq "syncReply"
       @tester.async
-      expect(@tester.send("redisCxxReply")).to eq "asyncReply"
+      expect(@tester.send("redis_cxx_reply")).to eq "asyncReply"
     end
-    it "redisCxxExecuter (sync)" do
+    it "redis_cxx_executer (sync)" do
       @tester.sync
-      expect(@tester.send("redisCxxExecuter","dummy","dummy",false,false)).to eq "OK"
-      expect(@tester.send("redisCxxExecuter","dummy","dummy",false,true)).to eq "OK"
-      expect(@tester.send("redisCxxExecuter","dummy","dummy",true,false)).to eq "syncReply"
-      expect(@tester.send("redisCxxExecuter","dummy","dummy",true,true)).to eq "syncReply"
+      expect(@tester.send("redis_cxx_executer","dummy","dummy",false,false)).to eq "OK"
+      expect(@tester.send("redis_cxx_executer","dummy","dummy",false,true)).to eq "OK"
+      expect(@tester.send("redis_cxx_executer","dummy","dummy",true,false)).to eq "syncReply"
+      expect(@tester.send("redis_cxx_executer","dummy","dummy",true,true)).to eq "syncReply"
     end
-    it "redisCxxExecuter (async)" do
+    it "redis_cxx_executer (async)" do
       @tester.async
-      expect(@tester.send("redisCxxExecuter","dummy","dummy",false,false)).to eq "OK"
-      expect(@tester.send("redisCxxExecuter","dummy","dummy",false,true)).to eq "OK"
-      expect(@tester.send("redisCxxExecuter","dummy","dummy",true,false)).to eq "OK"
-      expect(@tester.send("redisCxxExecuter","dummy","dummy",true,true)).to eq "asyncReply"
+      expect(@tester.send("redis_cxx_executer","dummy","dummy",false,false)).to eq "OK"
+      expect(@tester.send("redis_cxx_executer","dummy","dummy",false,true)).to eq "OK"
+      expect(@tester.send("redis_cxx_executer","dummy","dummy",true,false)).to eq "OK"
+      expect(@tester.send("redis_cxx_executer","dummy","dummy",true,true)).to eq "asyncReply"
     end
-    it "redisAsyncExecuter" do
+    it "redis_async_executer" do
       # Pattern 1
       @tester.async
       @tester.setPooledQuerySize(2)
-      expect(@tester.send("redisAsyncExecuter",nil,false)).to eq "OK"
+      expect(@tester.send("redis_async_executer",nil,false)).to eq "OK"
       # Pattern 2
       @tester.async
       @tester.setPooledQuerySize(2)
-      expect(@tester.send("redisAsyncExecuter","dummy",true)).to eq "OK"
+      expect(@tester.send("redis_async_executer","dummy",true)).to eq "OK"
       # Pattern 3
       @tester.async
       @tester.setPooledQuerySize(2)
-      expect(@tester.send("redisAsyncExecuter","dummy",false)).to eq "OK"
+      expect(@tester.send("redis_async_executer","dummy",false)).to eq "OK"
       # Pattern 4
       @tester.async
       @tester.setPoolRequestSize(256)
-      expect(@tester.send("redisAsyncExecuter","dummy",false)).to eq "OK"
+      expect(@tester.send("redis_async_executer","dummy",false)).to eq "OK"
       # Pattern 5
       @tester.async
       @tester.setPooledQuerySize(-1)
-      expect(@tester.send("redisAsyncExecuter","dummy",true)).to eq "OK"
+      expect(@tester.send("redis_async_executer","dummy",true)).to eq "OK"
     end
-    it "redisOptionHash2Command" do
+    it "redis_optionhash2command" do
       # Pattern 1 
       hash = {:test => "a", "test2" => "b", "test3" => ["c","d"], :test4 => ["e","f"]}
       ans = " test a test2 b test3 c d test4 e f"
-      expect(@tester.send("redisOptionHash2Command",hash)).to eq ans
+      expect(@tester.send("redis_optionhash2command",hash)).to eq ans
     end
   end
 end

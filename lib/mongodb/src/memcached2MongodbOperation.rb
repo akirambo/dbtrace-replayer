@@ -144,7 +144,7 @@ module Memcached2MongodbOperation
   #############
   ## PREPARE ##
   #############
-  def prepare_MEMCACHED(operand,args)
+  def prepare_memcached(operand,args)
     result = {}
     ## PREPARE SPECIAL OPERATION
     operand.upcase!

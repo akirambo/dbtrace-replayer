@@ -34,7 +34,7 @@ require_relative "./metrics"
 
 class AbstractRunner
   def initialize(dbname, logger, option)
-    @log_dbname = dbname.upcase
+    @log_dbname = dbname.downcase
     ## REMOVE START
     @logger = logger
     @options = option
