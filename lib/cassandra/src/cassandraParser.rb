@@ -33,7 +33,7 @@ require_relative "../../common/abstractDBParser"
 
 class CassandraParser < AbstractDBParser
   def initialize(filename, option, logger)
-    @typePosition = [0]
+    @type_position = [0]
     @skipTypes = %w[CREATE EXECUTE_CQL3_QUERY USE].freeze
     @command2primitive = {
       "INSERT" => "INSERT",

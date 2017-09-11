@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -29,7 +30,6 @@
 #
 
 require "securerandom"
-
 require_relative "memcachedLog"
 require_relative "../../common/abstractDBParser"
 
@@ -51,173 +51,163 @@ class MemcachedParser < AbstractDBParser
     "0x0d" => "getkq",
     "0x0e" => "append",
     "0x0f" => "prepend",
-    "0x11" => "stats"
-  }
+    "0x11" => "stats",
+  }.freeze
+
   def initialize(filename, option, logger)
-    @typePosition   = [1]
-    @skipTypes      = [
+    @type_position = [1]
+    @skip_types = [
       ## common
-      "going","NOT","END","FOUND","sending",
-      "STORED","NOT_STORED","version",
-      "VERSION","connection",
-      "handled.","class","server","send","new","Client",
+      "going", "NOT", "END", "FOUND", "sending",
+      "STORED", "NOT_STORED", "version",
+      "VERSION", "connection",
+      "handled.", "class", "server", "send", "new", "Client",
       ## Binarly Protocol
-      "0x81","test","read","client","writing","found","not","len",
+      "0x81", "test", "read", "client", "writing", "found", "not", "len",
       "Deleting",
-      #"0x04","0x00"
-    ]
-    @GetKeyCommandFromFOUND = ["append","prepend","delete"]
+      # "0x04","0x00"
+    ].freeze
+    @get_key_command_from_found = %w[append prepend delete].freeze
     ## For yscb-mode
     ## For create supportedCommand
     @command2primitive = {
-      "get"     => "READ",
-      "set"     => "INSERT",
-      "add"     => "INSERT",
+      "get" => "READ",
+      "set" => "INSERT",
+      "add" => "INSERT",
       "replace" => "UPDATE",
-      "incr"    => "UPDATE",
-      "decr"    => "UPDATE",
-      "gets"    => "READ",
-      "cas"     => "UPDATE",
-      "append"  => "UPDATE",
+      "incr" => "UPDATE",
+      "decr" => "UPDATE",
+      "gets" => "READ",
+      "cas" => "UPDATE",
+      "append" => "UPDATE",
       "prepend" => "UPDATE",
-      "delete"  => "UPDATE",
-      "flush"   => "UPDATE"
-    }
+      "delete" => "UPDATE",
+      "flush" => "UPDATE",
+    }.freeze
     logs = MemcachedLogsSimple.new(@command2primitive, option, logger)
-    super(filename, logs, @command2primitive.keys(), option, logger)
+    super(filename, logs, @command2primitive.keys, option, logger)
   end
+
   def parse(line)
     data = line.chop.split("\s")
-    @typePosition.each{|index|
-      if(data.size > index)then
+    @type_position.each do |index|
+      if data.size > index
         command = data[index].downcase
-        if(@supportedCommand.include?(command))then
-          result = Hash.new
-          args   = data
+        if @supportedCommand.include?(command)
+          result = {}
+          args = data
           result[command] = args
           return result
         else
-          if(!@skipTypes.include?(command) and !integer_string?(command))then
+          if !@skip_types.include?(command) && !integer_string?(command)
             @logger.warn "[WARNING] :: Unsupported Command #{command}"
           end
         end
       end
-    }
-    return nil
+    end
+    nil
   end
-  def parseMultiLines(filename)
+
+  def parse_multilines(filename)
     # incr/decr is able to get incr/decr value
     ## command => the position of argument
-    gettableValue = {
+    gettable_value = {
       "incr" => 3,
-      "decr" => 3
+      "decr" => 3,
     }
     results = {}
-    logs  = []
-    File.open(filename, "r"){|f|
-      splitTerm = "0x80"
+    logs = []
+    File.open(filename, "r") do |f|
+      split_term = "0x80"
       args = []
-      supportedCommandFlag = false
       command = ""
-      while line = f.gets
+      line = f.gets
+      until line.nil?
         data = line.chop.split("\s")
-        if(data[1] == splitTerm)then
+        if data[1] == split_term
           ######################
           ## flush & register ##
           ######################
-          if(args.size > 0)then
+          unless args.size.zero?
             command = args[0]
-            if(results[command] == nil)then
+            if results[command].nil?
               results[command] = []
             end
             results[command].push(args)
             logs.push(args)
             args = []
-            supportedCommandFlag = false
           end
-          
           ##########################
           ## Parse Request Header ##
           ##########################
           # Add Command
           command = BIN2COMMAND[data[2]]
-          if(@supportedCommand.include?(command))then
-            args = extractArgs(f,data)
+          if @supportedCommand.include?(command)
+            args = extract_args(f, data)
             args.unshift(command)
           else
-            supportedCommandFlag = false
-            if(!@skipTypes.include?(command) and
-               !@skipTypes.include?(data[0]))then
+            if !@skip_types.include?(command) &&
+               !@skip_types.include?(data[0])
               @logger.warn("Unsupported Command #{command}")
               @logger.debug(data)
             end
           end
         else
-          # Add Real KeyName 
-          if(data.size > 2 and @supportedCommand.include?(data[1].downcase()))then
+          # Add Real KeyName
+          if data.size > 2 && @supportedCommand.include?(data[1].downcase)
             ## CASE1 : command = data[1], key = data[2]
             args.push(data[2])
-            command = data[1].downcase()
-          elsif(data.size > 2 and @supportedCommand.include?(data[0].downcase()))then
+            command = data[1].downcase
+          elsif data.size > 2 && @supportedCommand.include?(data[0].downcase)
             ## CASE2 : command = data[0], key = data[1]
             args.push(data[1])
             ## Add Real Value
-            command = data[0].downcase()
-            if(gettableValue.key?(command))then
-              args.push(data[2].sub(",","").to_i)
+            command = data[0].downcase
+            if gettable_value.key?(command)
+              args.push(data[2].sub(",", "").to_i)
             end
-          elsif(data.size > 3 and data.include?("FOUND") and @GetKeyCommandFromFOUND.include?(command))then
+          elsif data.size > 3 && data.include?("FOUND") && @get_key_command_from_found.include?(command)
             ## Add Real Key
             args.push(data[3])
           end
         end
+        ## GO TO NEXT
+        line = f.gets
       end
-      ##Push Final Command
-      if(args.size > 0)then
+      ## Push Final Command
+      unless args.empty?
         command = args[0]
         logs.push(args)
         results[command].push(args)
-        args = []
       end
-    }
-    registerLogs(logs)
-    return results.keys().uniq
+    end
+    register_logs(logs)
+    results.keys.uniq
   end
+
   def integer_string?(str)
     begin
       Integer(str)
-      return true
     rescue ArgumentError
       return false
     end
+    true
   end
+
   private
-  def registerLogs(logs)
+
+  def register_logs(logs)
     ## log format []
-    logs.each{|args|
+    logs.each do |args|
       ope = {}
       ope[args[0]] = []
       case args.size
       when 3 then
         ## [command, keyLength, valueLength, (key), (value)]
-        ## Add key
-        if(args[1].to_i > 0)then
-          ope[args[0]].push("x"+randomString(args[1].to_i-1))
-        end
-        ## Add value
-        if(args[2].to_i > 0)then
-          ope[args[0]].push("x"*args[2].to_i)
-        end
-        @logs.push(ope)
+        register_logs_three_strings(ope, args)
       when 4 then
         ## [command, keyLength, valueLength, key, (value)]
-        ## Add key
-        ope[args[0]].push(args[3])
-        ## Add value
-        if(args[2].to_i > 0)then
-          ope[args[0]].push("x"*args[2].to_i)
-        end
-        @logs.push(ope)
+        register_logs_four_strings(ope, args)
       when 5 then
         ## [command, keyLength, valueLength, key, value]
         ## Add key
@@ -228,43 +218,67 @@ class MemcachedParser < AbstractDBParser
       else
         @logger.warn("Unsupported Command & Arguments")
       end
-    }
+    end
   end
-  def randomString(num)
+
+  def register_logs_three_strings(ope, args)
+    ## Add key
+    if args[1].to_i > 0
+      ope[args[0]].push("x" + random_string(args[1].to_i - 1))
+    end
+    ## Add value
+    if args[2].to_i > 0
+      ope[args[0]].push("x" * args[2].to_i)
+    end
+    @logs.push(ope)
+  end
+
+  def register_logs_four_strings(ope, args)
+    ## Add key
+    ope[args[0]].push(args[3])
+    ## Add value
+    if args[2].to_i > 0
+      ope[args[0]].push("x" * args[2].to_i)
+    end
+    @logs.push(ope)
+  end
+
+  def random_string(num)
     chars = ("a".."z").to_a + ("A".."Z").to_a
     result = ""
     num.times do
       result << chars[rand(chars.length)]
     end
-    return result
+    result
   end
-  def extractArgs(f,data)
+
+  def extract_args(f, data)
     args = []
     ## GET Key Length
-    keyLength = data[3] + data[4].sub("0x","")
-    keyLength = keyLength.hex
-    #p "keyLength :: #{keyLength}"
-    args.push(keyLength)
+    key_length = data[3] + data[4].sub("0x", "")
+    key_length = key_length.hex
+    # p "key_length :: #{key_length}"
+    args.push(key_length)
     ## line(skip)
     data = f.gets.chop.split("\s")
-    ## GET Extra Length 
-    extraLength = data[1].hex
-    #p "extraLength :: #{extraLength}"
+    ## GET Extra Length
+    extra_length = data[1].hex
+    # p "extra_length :: #{extra_length}"
     ## Value Length
-    valueLength = "0x"
-    __valueLength__ =  f.gets.chop.split("\s")
-    __valueLength__.each{|byte|
-      if(byte.include?("0x"))then
-        valueLength += byte.sub("0x","")
+    value_length = "0x"
+    value_length__ = f.gets.chop.split("\s")
+    value_length__.each do |byte|
+      if byte.include?("0x")
+        value_length += byte.sub("0x", "")
       end
-    }
-    valueLength = valueLength.hex - extraLength - keyLength
-    #p "valueLength :: #{valueLength}"
-    args.push(valueLength)
+    end
+    value_length = value_length.hex - extra_length - key_length
+    # p "value_length :: #{value_length}"
+    args.push(value_length)
     ## line(skip)x4
     4.times do
       f.gets.chop.split("\s")
     end
-    return args
+    args
   end
 end

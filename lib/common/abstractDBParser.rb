@@ -51,8 +51,8 @@ class AbstractDBParser
         end
       }
     else
-      logs_command = parseMultiLines(@filename)
-      ## @logs is updated in parseMultiLines
+      logs_command = parse_multilines(@filename)
+      ## @logs is updated in parse_multilines
     end
   end
   def log

@@ -33,7 +33,7 @@ require_relative "../../common/abstractDBParser"
 
 class RedisParser < AbstractDBParser
   def initialize(filename, option, logger)
-    @typePosition = [1]
+    @type_position = [1]
     @skip_types = %w[PING INFO PUBLISH FLUSHALL COMMAND].freeze
     command2basics(option)
     logs = RedisLogsSimple.new(@command2basic, option, logger)
@@ -114,7 +114,7 @@ class RedisParser < AbstractDBParser
 
   def parse(line)
     data = line.chop.split("\s\"")
-    @typePosition.each do |index|
+    @type_position.each do |index|
       if data.size > index
         command = data[index].sub(/\"/, "").upcase
         if @supportedCommand.include?(command)
