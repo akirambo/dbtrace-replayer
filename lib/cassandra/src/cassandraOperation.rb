@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -37,64 +38,62 @@ module CassandraOperation
   def DIRECT_SELECT(query)
     value = {}
     query = normalizeCassandraQuery(query)
-    connect 
-    if(@client.syncExecuter(query))then
+    connect
+    if @client.syncExecuter(query)
       value = @client.getReply(0)
     end
-    add_duration(@client.getDuration(),"database", "SELECT")
+    add_duration(@client.getDuration, "database", "SELECT")
     close
-    return value
+    value
   end
-  def DIRECT_EXECUTER(query,onTime=true)
-    if(query.class == Array)then
-      query.each{|q|
+
+  def DIRECT_EXECUTER(query, onTime = true)
+    if query.class == Array
+      query.each do |q|
         r = DIRECT_EXECUTER(q)
-        if(!r)then
+        unless r
           return false
         end
-      }
+      end
       return true
     else
       value = {}
       query = normalizeCassandraQuery(query)
       connect
-      command = query.split(" ")[0].upcase()
-      if(@option[:async] and
-          command != "DROP" and command != "CREATE")then
+      command = query.split(" ")[0].upcase
+      if @option[:async] && command != "DROP" && command != "CREATE"
         ## Async Execution
         add_count(query.split(" ")[0])
         @pool_request_size += 1
-        @poolByteSize += query.bytesize
-        commitCondition = 
-          @option[:poolRequestMaxSize] == -1 or
-          (@pool_request_size < @option[:poolRequestMaxSize] and
-          @poolByteSize < 64000)
-        if(!onTime and commitCondition)then
+        @pool_byte_size += query.bytesize
+        commit_condition =
+          @option[:poolRequestMaxSize] == -1 || (@pool_request_size < @option[:poolRequestMaxSize] && @pool_byte_size < 64_000)
+        if !onTime && commit_condition
           ####################
           ## COMMIT QUERIES ##
           ####################
           value = @client.commitQuery(query)
-        elsif(!onTime and !commitCondition)then
-          value = execBufferedQueries()
+        elsif !onTime && !commit_condition
+          value = exec_buffered_queries
           @client.commitQuery(query)
           @pool_request_size = query.bytesize
-          @poolByteSize = 1
-        elsif(onTime)then
-          execBufferedQueries()
+          @pool_byte_size = 1
+        elsif onTime
+          exec_buffered_queries
           @client.syncExecuter(query)
           value = @client.getReply(0)
         end
       else
         ## Sync Execution
         @client.syncExecuter(query)
-        add_duration(@client.getDuration(),"database", query.split(" ")[0].upcase)
-        if(query.split(" ")[0].upcase == "SELECT")then
+        add_duration(@client.getDuration, "database", query.split(" ")[0].upcase)
+        if query.split(" ")[0].casecmp("SELECT")
           value = @client.getReply(0)
         end
       end
       close
     end
-    return value
+    value
   end
   
   #############
@@ -102,78 +101,73 @@ module CassandraOperation
   #############
   def prepare_cassandra(operand, args)
     ## PREPARE OPERATION & ARGS
-    result = {"operand" => "DIRECT_EXECUTER"}
-    if(operand.upcase == "BATCH_MUTATE" or 
-        operand.upcase == "GET_SLICE" or 
-        operand.upcase == "GET_RANGE_SLICES" or 
-        operand.upcase == "GET_INDEXED_SLICES" or 
-        operand.upcase == "MULTIGET_SLICE")then
-      result["args"] = send("prepare_#{operand.upcase}",args)
-    else
-      result["args"] = args.join(" ")
-    end
-    return result
+    result = { "operand" => "DIRECT_EXECUTER" }
+    result["args"] = if operand.casecmp("BATCH_MUTATE").zero? ||
+                        operand.casecmp("GET_SLICE").zero? ||
+                        operand.casecmp("GET_RANGE_SLICES").zero? ||
+                        operand.casecmp("GET_INDEXED_SLICES").zero? ||
+                        operand.casecmp("MULTI_GET_SLICES").zero?
+                       send("prepare_#{operand.upcase}", args)
+                     else
+                       args.join(" ")
+                     end
+    result
   end
 
   def normalizeCassandraQuery(query)
-    query.gsub!("\"","'")
-    query.gsub!('"',"'")
-    query.gsub!('-',"")
-    query.gsub!('__DOUBLEQ__','"')
-    if(!query.include?(";"))then
+    query.tr!("\"", "'")
+    query.tr!('"', "'")
+    query.delete!("-")
+    query.gsub!("__DOUBLEQ__", '"')
+    unless query.include?(";")
       query += ";"
     end
-    return query
+    query
   end
 
-  def execBufferedQueries()
-    @metrics.start_monitor("database","AsyncExec")
-    @client.asyncExecuter()
-    add_total_duration(@client.getDuration(),"database")
-    @metrics.end_monitor("database","AsyncExec")
-    @client.resetQuery()
+  def exec_buffered_queries
+    @metrics.start_monitor("database", "AsyncExec")
+    @client.asyncExecuter
+    add_total_duration(@client.getDuration, "database")
+    @metrics.end_monitor("database", "AsyncExec")
+    @client.resetQuery
     @pool_request_size = 0
-    @poolByteSize = 0    
+    @pool_byte_size = 0
     value = @client.getReply(0)
-    return value
+    value
   end
 
-  ######################
-  ##---- JAVA API ----##
-  ######################
-
-  
   ##-------------------##
   ##--- BatchMutate ---##
   ##-------------------##
-  def prepare_BATCH_MUTATE(args) 
+  def prepare_BATCH_MUTATE(args)
     result = @parser.parseBatchMutateParameter(args)
-    if(!result["counterColumn"])then
-      if(result["keyValue"].keys.size > 0)then
-        keys   = result["rowKey"]+','+result["keyValue"].keys().join(',')
-        values = '"'+result["rowValue"]+'","'+ result["keyValue"].values().join('","') +'"'
+    if !result["counterColumn"]
+      if !result["keyValue"].keys.empty?
+        keys = result["rowKey"] + "," + result["keyValue"].keys.join(",")
+        values = '"' + result["rowValue"] + '","' + result["keyValue"].values.join('","') + '"'
       else
         @logger.fatal("Fatal Error@BATCH_MUTATE")
         return ""
       end
-      query = "INSERT INTO #{result["table"]} (#{keys}) VALUES(#{values})".gsub(/\"/,"")
+      query = "INSERT INTO #{result["table"]} (#{keys}) VALUES(#{values})".delete("\"")
       return query
     else
       ## Counter Column
       queries = []
-      result["keyValue"].each_index{|index|
+      result["keyValue"].each_index do |index|
         where = []
         where.push("#{result["rowKey"]} = #{result["rowValue"]}")
-        result["keyValue"][index].each{|ck,cv|
+        result["keyValue"][index].each do |ck, cv|
           where.push("#{ck} = '#{cv}'")
-        }
-        result["counterKeyValue"][index].each{|k,v|
+        end
+        result["counterKeyValue"][index].each do |k, v|
           q = "UPDATE #{result["table"]} SET #{k} = #{k} + #{v} "
           q += " WHERE #{where.join(" AND ")}"
           queries.push(q)
-        }
-      }
-      return queries
+        end
+      end
+      queries
     end
   end
   
@@ -183,20 +177,20 @@ module CassandraOperation
   def prepare_GET_RANGE_SLICES(args)
     result = @parser.parseGetRangeSlicesParameter(args)
     query = "SELECT * FROM #{result["table"]}"
-    if(result["start_key"] and result["end_key"])then
+    if result["start_key"] && result["end_key"]
       query += " WHERE #{result["primaryKey"]} >= #{result["start_key"]}"
       query += " AND #{result["primaryKey"]} <= #{result["end_key"]}"
-    elsif(result["start_key"])then
+    elsif result["start_key"]
       query += " WHERE #{result["primaryKey"]} >= #{result["start_key"]}"
-    elsif(result["end_key"])then
+    elsif result["end_key"]
       query += " WHERE #{result["primaryKey"]} <= #{result["end_key"]}"
     end
-    if(result["count"])then
+    if result["count"]
       query += " limit #{result["count"]}"
     end
-    return query += ";"
+    query += ";"
+    query
   end
-
 
   ##-----------------##
   ##--- GET_SLICE ---##
@@ -204,10 +198,11 @@ module CassandraOperation
   def prepare_GET_SLICE(args)
     result = @parser.parseGetSliceParameter(args)
     query = "SELECT * FROM #{result["table"]} WHERE #{result["primaryKey"]} = #{result["targetKey"]}"
-    if(result["count"])then
+    if result["count"]
       query += " limit #{result["count"]}"
     end
-    return query +";"
+    query += ";"
+    query
   end
 
   ##--------------------------##
@@ -215,7 +210,7 @@ module CassandraOperation
   ##--------------------------##
   def prepare_GET_INDEXED_SLICES(args)
     result = @parser.parseGETINDEXEDSLICESParameter(args)
-    return result
+    result
   end
 
   ##----------------------##
@@ -223,8 +218,8 @@ module CassandraOperation
   ##----------------------##
   def prepare_MULTIGET_SLICE(args)
     result = @parser.parseMULTIGETSLICEParameter(args)
-    query  = "SELECT * FROM #{result["table"]}"
-    query += " WHERE #{result["primaryKey"]} IN (#{result["keys"].join(",")});" 
-    return query
-  end  
+    query = "SELECT * FROM #{result["table"]}"
+    query += " WHERE #{result["primaryKey"]} IN (#{result["keys"].join(",")});"
+    query
+  end
 end

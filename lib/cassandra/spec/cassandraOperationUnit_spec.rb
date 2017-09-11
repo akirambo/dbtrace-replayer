@@ -59,7 +59,7 @@ module CassandraOperationTester
         :poolRequestMaxSize => -1
       }
       @pool_request_size = 0
-      @poolByteSize    = 0
+      @pool_byte_size = 0
     end
     ## For Mock
     def setAsync
@@ -257,9 +257,9 @@ module CassandraOperationTester
         ans   = "'ab\"';"
         expect(@tester.send(:normalizeCassandraQuery,query)).to eq ans
       end
-      it "execBufferedQueries" do
+      it "exec_buffered_queries" do
         @tester.setValue("")
-        expect(@tester.send(:execBufferedQueries)).to eq ""
+        expect(@tester.send(:exec_buffered_queries)).to eq ""
       end
     end
   end

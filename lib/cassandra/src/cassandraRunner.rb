@@ -73,7 +73,7 @@ class CassandraRunner < AbstractRunner
     @schemas = _schema_.schemas
     @createQueries = _schema_.schemas
     @pool_request_size = 0
-    @poolByteSize = 0
+    @pool_byte_size = 0
     if(@option[:poolRequestMaxSize] == nil)then
       @option[:poolRequestMaxSize] = 250 ## Cassandra Default 256
     end
@@ -154,7 +154,7 @@ class CassandraRunner < AbstractRunner
     # @metrics.end_monitor("database","AsyncExec")
     @client.resetQuery()
     @pool_request_size = 0
-    @poolByteSize = 0
+    @pool_byte_size = 0
   end 
   def init
     setupCxx(@option[:keyspace])
