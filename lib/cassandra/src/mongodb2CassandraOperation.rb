@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -29,62 +30,33 @@
 #
 
 module Mongodb2CassandraOperation
-  MONGODB_NUMERIC_QUERY = ["$gt","$gte","$lt","$lte"]
-  MONGODB_STRING_QUERY  = ["$eq","$ne","$in","$nin"]
+  MONGODB_NUMERIC_QUERY = %w[$gt $gte $lt $lte].freeze
+  MONGODB_STRING_QUERY = %w[$eq $ne $in $nin].freeze
+
   private
+
   # @conv {"INSERT" => ["INSERT"]}
   def MONGODB_INSERT(args)
-    args.each{|arg|
+    args.each do |arg|
       name = arg[0]
-      keyValue = nil
-      if(arg[1] == nil)then
-        return false
-      elsif(arg[1].class == String)then
-        begin
-          keyValue  = parse_json(arg[1])
-        rescue => e
-          @logger.error(e.message)
-          return false
-        end
-      elsif(arg[1].class == Hash)then
-        keyValue = arg[1]
-      elsif(arg[1].class == Array)then
-        keyValue = parse_json(arg[1][0])
-      end
-      
-      if(keyValue == nil or keyValue.keys.size == 0)then
+      kv = mongo_insert_check(arg)
+      if kv == false
         return false
       end
-      command = ""
       ## convert _id --> monogoid ( only @schema Hash _id)
-      if(keyValue.keys().include?("_id") and
-         @schemas[name] and @schemas[name].fields)then
-        keyValue["mongoid"] = keyValue["_id"].gsub("-","")
-        keyValue.delete("_id")
+      if kv.keys.include?("_id") &&
+         @schemas[name] && @schemas[name].fields
+        kv["mongoid"] = kv["_id"].delete("-")
+        kv.delete("_id")
       end
-      if(@schemas[name] != nil)then
-        ## args[2] == true means bulk 
-        if(@schemas[name].check(keyValue,arg[2]))then
-          filteredKeyValue = @schemas[name].extractKeyValue(keyValue)
-          command = "INSERT INTO #{name} "
-          command +=  "(" + filteredKeyValue["key"] + ") VALUES "
-          command +=  "(" + filteredKeyValue["value"] + ");"
-          begin
-            DIRECT_EXECUTER(command)
-          rescue => e
-            @logger.error("Cannot Execute Command #{command}")
-            @logger.error(" - Error Message #{e.message}")
-            return false
-          end
-        else
-          @logger.warn("Not Found Table [#{name}]. Please Create Table @ INSERT .") 
-          return false
-        end
+      if !@schemas[name].nil?
+        ## args[2] == true means bulk
+        return mongo_bulk_schemas(kv, name, arg[2])
       else
         return false
       end
-    }
-    return true
+    end
+    true
   end
 
   # @conv {"UPDATE" => ["UPDATE"]}
@@ -93,18 +65,19 @@ module Mongodb2CassandraOperation
     command = "UPDATE #{name} SET"
     ## EXTRACT NEW VALUE FOR EACH FIELD
     updates = []
-    if(arg["update"] and arg["update"]["$set"])then
-      arg["update"]["$set"].each{|key,value|
-        if(@schemas[name].stringType(key))then
+    if arg["update"] && arg["update"]["$set"]
+      arg["update"]["$set"].each do |key, value|
+        if @schemas[name].stringType(key)
           updates.push(" #{key}='#{value}'")
         end
-      }
+      end
       command += updates.join(",")
     end
     ## EXTRACT QUERY
-    if(arg["query"] and query = mongodbParseQuery(arg["query"]))then
-      if(query != "")then
-        command +=  " WHERE " + query
+    query = mongodbParseQuery(arg["query"])
+    if arg["query"] || query
+      if query != ""
+        command += " WHERE " + query
       end
     end
     begin
@@ -114,7 +87,7 @@ module Mongodb2CassandraOperation
       @logger.error("Execute Command -- #{command}")
       return false
     end
-    return true
+    true
   end
 
   # @conv {"FIND" => ["SELECT"]}
@@ -124,8 +97,9 @@ module Mongodb2CassandraOperation
     result = true
     ## EXTRACT NEW VALUE FOR EACH FIELD
     ## EXTRACT FILTER
-    if(arg["filter"] and query = mongodbParseQuery(arg["filter"]))then
-      if(query.size > 0)then
+    query = mongodbParseQuery(arg["filter"])
+    if arg["filter"] || query
+      unless query.empty?
         command += " WHERE " + query + " ALLOW FILTERING"
       end
     end
@@ -136,20 +110,22 @@ module Mongodb2CassandraOperation
       @logger.error(e.message)
       result = ""
     end
-    return result
+    result
   end
+
   # @conv {"COUNT" => ["SELECT"]}
   def MONGODB_COUNT(arg)
     command = "SELECT count(*) FROM #{arg["key"]}"
     ## EXTRACT NEW VALUE FOR EACH FIELD
     ## EXTRACT FILTER
-    if(arg["filter"] and query = mongodbParseQuery(arg["filter"]))then
+    query = mongodbParseQuery(arg["filter"])
+    if arg["filter"] && query
       command += " WHERE " + query
     end
     @logger.debug("Execute Command -- #{command}")
     begin
-      result = DIRECT_EXECUTER(command+";")
-      if(result.class == Hash)then
+      result = DIRECT_EXECUTER(command + ";")
+      if result.class == Hash
         return 0
       end
       return result.to_i
@@ -157,23 +133,24 @@ module Mongodb2CassandraOperation
       @logger.error("QUERY :: #{command}")
       @logger.error(e.message)
     end
-    return 0
+    0
   end
 
   # @conv {"DELETE" => ["DELETE"]}
   def MONGODB_DELETE(arg)
     name = arg["key"]
-    if(arg["filter"] == nil or arg["filter"].size == 0)then
+    if arg["filter"].nil? || arg["filter"].size.zero?
       command = "TRUNCATE #{name};"
       begin
         DIRECT_EXECUTER(command)
-      rescue => e
+      rescue
         return false
       end
     else
       command = "DELETE FROM #{name}"
       ## EXTRACT QUERY
-      if(arg["filter"] and query = mongodbParseQuery(arg["filter"]))then
+      query = mongodbParseQuery(arg["filter"])
+      if arg["filter"] && query
         where = " WHERE " + query
       end
       @logger.debug("Execute Command -- #{command} #{where}")
@@ -181,101 +158,78 @@ module Mongodb2CassandraOperation
       begin
         DIRECT_EXECUTER(exec)
       rescue => e
-=begin
-        if(e.message.include?("PRIMARY KEY"))then
-          ## 1.SELECT DATA
-          __ope__  = where.split(" ")
-          newCom = "SELECT #{__ope__[1]} FROM #{name} "
-          result = DIRECT_SELECT(newCom)
-          ## 2.CREATE WHERE STATEMENTS
-          newWhere = []
-          result.each{|key,values|
-            values.each{|elem|
-              newWhere.push(" #{key} = #{elem} ")
-            }
-          }
-          exec = "#{command} WHERE #{newWhere.join(" AND ")}"
-          begin
-            DIRECT_EXECUTER(exec)
-          rescue => e
-            @logger.error(e.message)
-            @logger.debug("Execute Command -- #{command} WHERE #{newWhere}")
-            return false
-          end
-        end
-=end
         @logger.error(e.message)
         @logger.error(command)
         return false
       end
     end
-    return true
+    true
   end
 
   # @conv {"AGGREGATE" => ["SELECT"]}
   def MONGODB_AGGREGATE(arg)
-    name = @options[:keyspace]+"."+arg["key"]
-    if(arg["key"].include?("."))then
+    name = @options[:keyspace] + "." + arg["key"]
+    if arg["key"].include?(".")
       name = arg["key"]
     end
     arg.delete("key")
-    targetKeys = @queryParser.targetKeys(arg)
-    if(targetKeys.size > 0)then
-      command  = "SELECT " + targetKeys.join(",") + " FROM #{name}"
-    else
-      command  = "SELECT * FROM #{name}"
-    end
-    if(arg["match"])then
+    target_keys = @queryParser.targetKeys(arg)
+    command = if target_keys.empty?
+                "SELECT * FROM #{name}"
+              else
+                "SELECT " + target_keys.join(",") + " FROM #{name}"
+              end
+    if arg["match"]
       where = []
-      arg["match"].each{|k,v|
-        ## primary key ? 
-        if(@schemas[name].primaryKeys.include?(k))then
+      arg["match"].each do |k, v|
+        ## primary key ?
+        if @schemas[name].primaryKeys.include?(k)
           where.push("#{k} = '#{v}'")
         end
-      }
-      if(where.size > 0)
+      end
+      unless where.empty?
         command += " WHERE #{where.join(" AND ")}"
       end
     end
     begin
-      ans = DIRECT_EXECUTER(command+";")
-      docs = @queryParser.csv2docs(targetKeys, ans)
+      ans = DIRECT_EXECUTER(command + ";")
+      docs = @queryParser.csv2docs(target_keys, ans)
       params = @queryParser.getParameter(arg)
       result = {}
-      firstFlag = true
-      docs.each{|doc|
+      docs.each do |doc|
         ## create group key
-        key = @queryParser.createGroupKey(doc,params["cond"])
-        if(result[key] == nil)then
+        key = @queryParser.createGroupKey(doc, params["cond"])
+        if result[key].nil?
           result[key] = {}
         end
-        params["cond"].each{|k,v|
-          monitor("client","aggregate")
-          result[key][k] = @queryProcessor.aggregation(result[key][k],doc,v)
-          monitor("client","aggregate")
-        }
-      }
+        params["cond"].each do |k, v|
+          monitor("client", "aggregate")
+          result[key][k] = @queryProcessor.aggregation(result[key][k], doc, v)
+          monitor("client", "aggregate")
+        end
+      end
     rescue => e
       @logger.error(command)
       @logger.error(e.message)
     end
-    return result
+    result
   end
+
   #############
   ## PREPARE ##
   #############
   def prepare_mongodb(operand, args)
-    result = {"operand" => "MONGODB_#{operand}", "args" => nil}
-    result["args"] = @parser.exec(operand,args)
-    return result
+    result = { "operand" => "MONGODB_#{operand}", "args" => nil }
+    result["args"] = @parser.exec(operand, args)
+    result
   end
 
   def mongodbParseQuery(hash)
     where = []
-    idWhere = []
-    hash.each{|col, queries|
-      if(queries.class == Hash)then
-        queries.each{|operand,value|
+    id_where = []
+    hash.each do |col, queries|
+      if queries.class == Hash
+        queries.each do |operand, value|
           case operand
           when "$gt" then
             where.push("#{col} > #{value}")
@@ -288,22 +242,63 @@ module Mongodb2CassandraOperation
           else
             @logger.warn("Unsupported #{operand}")
           end
-        }
-      else
-        if(col == "_id")then
-          idWhere.push("mongoid = '#{queries.gsub("-","")}'")
-        else
-          where.push("#{col} = '#{queries}'")
         end
+      elsif col == "_id"
+        id_where.push("mongoid = '#{queries.delete("-")}'")
+      else
+        where.push("#{col} = '#{queries}'")
       end
-    }
-    query = where.join(" AND ")
-    if(query.size > 0 and idWhere.size > 0)then
-      query += " AND (" + idWhere.join(" OR ") + ")"
-    elsif(query.size == 0 and idWhere.size > 0)then
-      return idWhere.join(" OR ")
     end
-    return where.join(" AND ")
+    query = where.join(" AND ")
+    if !query.size.zero? && !id_where.size.zero?
+      query += " AND (" + id_where.join(" OR ") + ")"
+    elsif query.size.zero? && !id_where.size.zero?
+      return id_where.join(" OR ")
+    end
+    where.join(" AND ")
+  end
+
+  def mongo_insert_check(arg)
+    kv = nil
+    if arg[1].nil?
+      return false
+    end
+
+    if arg[1].class == String
+      begin
+        kv = parse_json(arg[1])
+      rescue => e
+        @logger.error(e.message)
+        return false
+      end
+    elsif arg[1].class == Hash
+      kv = arg[1]
+    elsif arg[1].class == Array
+      kv = parse_json(arg[1][0])
+    end
+    if kv.nil? || kv.keys.empty?
+      return false
+    end
+    kv
+  end
+
+  def mongo_bulk_schemas(kv, name, arg)
+    if @schemas[name].check(kv, arg)
+      filtered_kv = @schemas[name].extractKeyValue(kv)
+      command = "INSERT INTO #{name} "
+      command += "(" + filtered_kv["key"] + ") VALUES "
+      command += "(" + filtered_kv["value"] + ");"
+      begin
+        DIRECT_EXECUTER(command)
+      rescue => e
+        @logger.error("Cannot Execute Command #{command}")
+        @logger.error(" - Error Message #{e.message}")
+        return false
+      end
+    else
+      @logger.warn("Not Found Table [#{name}]. Please Create Table @ INSERT .")
+      return false
+    end
+    true
   end
 end
-

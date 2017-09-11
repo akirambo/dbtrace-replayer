@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -30,41 +31,43 @@
 
 class CassandraSchema
   attr_reader :keyspace, :table, :primaryKeys,
-  :createKeyspaceQuery,:createQuery, :dropQuery, :createIndexes
-  
-  def initialize(keyspace,createQuery, logger)
+              :createKeyspaceQuery, :createQuery,
+              :dropQuery, :createIndexes
+
+  def initialize(keyspace, create_query, logger)
     @keyspace = keyspace
-    @table    = nil
+    @table = nil
     @primaryKeys = nil
-    @fields   = {} ## key => type
+    @fields = {} ## key => type
     @createQuery = nil
     @createKeyspaceQuery = nil
     @createIndexes = []
     @logger = logger
     @values = []
     @dropQuery = nil
-    parse(createQuery)
+    parse(create_query)
+  end
 
-  end
   def name
-    return @keyspace+"."+@table
+    @keyspace + "." + @table
   end
-  def check(keyValue, bulk=false)
-    keyValue.each{|k,v|
-      if(bulk)then
-        if(@fields.keys and keyValue.keys  and
-            @fields.keys.size >= keyValue.keys.size)then
-          k  = @fields.keys[keyValue.keys.index(k)]
+
+  def check(kv, bulk = false)
+    kv.each do |k, v|
+      if bulk
+        if @fields.keys && !kv.keys.zero? &&
+           @fields.keys.size >= kv.keys.size
+          k = @fields.keys[kv.keys.index(k)]
         else
           @logger.warn("Please Set Fields bulk0, ... bulk#{@fields.keys.size}")
           return false
         end
       end
-      if(@fields[k])then
-        if(checkFieldType(v,@fields[k]) == false)then
-          if(@fields[k])
+      if @fields[k]
+        unless checkFieldType(v, @fields[k])
+          if @fields[k]
             @logger.error("Unmatch DataType #{k} is not #{@fields[k]} AT #{name}")
-            @logger.error("                 #{k} is #{v.class.to_s}")
+            @logger.error("                 #{k} is #{v.class}")
             @logger.error("Under Construction Auto Table Creation")
             return false
           end
@@ -73,31 +76,32 @@ class CassandraSchema
         ## Skip Field
         @logger.debug("Skip Field:: #{k}")
       end
-    }
-    return true
+    end
+    true
   end
-  def extractKeyValue(keyValue)
+
+  def extractKeyValue(kv)
     keys = []
     values = []
     kvs = {
       "key"   => [],
-      "value" => []
+      "value" => [],
     }
-    keyValue.each{|_key,value|
-      key = _key.gsub("_","")
+    kv.each do |key_, value|
+      key = key_.delete("_")
       @logger.debug("KEY    :: #{key} IN Fields :: #{@fields.keys}")
-      if(@fields.keys.include?(key))then
+      if @fields.keys.include?(key)
         keys.push(key)
         case value.class.to_s
         when "Array" then
-          if(value.size > 1)then
-            if(value[0].class == Hash)then
+          if value.size > 1
+            if value[0].class == Hash
               hash = []
-              value.each{|__hash__|
-                string = __hash__.to_json
-                string.gsub!("\"","")
-                hash.push("#{string}")
-              }
+              value.each do |hash__|
+                string = hash__.to_json
+                string.delete!("\"")
+                hash.push(string.to_s)
+              end
               values.push("{\"#{hash.join(",")}\"}")
             else
               values.push("{#{value.join(",")}}")
@@ -107,152 +111,156 @@ class CassandraSchema
           end
         when "Hash" then
           val_ = []
-          value.each{|k_,v_|
-            if(v_.class == Hash or v_.class == Array )then
-              newVal= "'#{k_}':'#{v_.to_json}'"
-              val_.push(newVal.gsub('"','__DOUBLEQ__'))
+          value.each do |k_, v_|
+            if v_.class == Hash || v_.class == Array
+              newval = "'#{k_}':'#{v_.to_json}'"
+              val_.push(newval.gsub('"', "__DOUBLEQ__"))
             else
               val_.push("'#{k_}':'#{v_}'")
             end
-          }
-          values.push("{"+val_.join(",")+"}")
+          end
+          values.push("{" + val_.join(",") + "}")
         when "Fixnum" then
-          if(@fields[key] == "INT")then
+          if @fields[key] == "INT"
             values.push(value.to_i)
-          elsif(@fields[key] == "TEXT")then
-            values.push("'"+value.to_s+"'")
+          elsif @fields[key] == "TEXT"
+            values.push("'" + value.to_s + "'")
           end
         when "String" then
-          if(value.include?("("))then
-            values.push("'"+value.sub("('","").sub("')","")+"'")
+          if value.include?("(")
+            values.push("'" + value.sub("('", "").sub("')", "") + "'")
           else
-            values.push("'"+value+"'")
+            values.push("'" + value + "'")
           end
         when "Float" then
           values.push(value.to_f)
         else
-          values.push("'"+value.to_s+"'")
+          values.push("'" + value.to_s + "'")
         end
       else
-        @logger.error("ERROR KEY : #{key} => #{value} (#{value.class.to_s})")
+        @logger.error("ERROR KEY : #{key} => #{value} (#{value.class})")
       end
-    }
+    end
     kvs["key"] = keys.join(",")
     kvs["value"] = values.join(",")
-    return kvs
+    kvs
   end
+
   def fields
     @fields.keys
   end
+
   def keys(size)
     size -= 1
     @fields.keys[0..size]
   end
+
   def getKey(index)
     @fields.keys[index]
   end
+
   def fieldType(field)
     @fields[field]
   end
-  def counterKey()
-    @fields.each{|key,value|
-      if(value == "counter")then
+
+  def counterKey
+    @fields.each do |key, value|
+      if value == "counter"
         return key
       end
-    }
-    return nil
+    end
+    nil
   end
+
   def primaryKeyType
     @fields[@primaryKeys[0]]
   end
+
   def stringType(field)
-    return (@fields[field].downcase() == "varchar" or
-            @fields[field].downcase() == "text")
+    (@fields[field].casecmp("varchar").zero? || @fields[field].casecmp("text").zero?)
   end
+
   def pushCreateIndex(query)
     @createIndexes.push(query)
   end
+
   private
-  def parse(createQuery)
+
+  def parse(create_query)
     table = ""
-    if(createQuery.include?("CREATE TABLE"))then
-      table = createQuery.split("CREATE TABLE ")[1].split(" ")[0]
-    elsif(createQuery.include?("create table"))then
-      table = createQuery.split("create table ")[1].split(" ")[0]
+    if create_query.include?("CREATE TABLE")
+      table = create_query.split("CREATE TABLE ")[1].split(" ")[0]
+    elsif create_query.include?("create table")
+      table = create_query.split("create table ")[1].split(" ")[0]
     end
     @keyspace = table.split(".")[0]
-    @createKeyspaceQuery = 
+    @createKeyspaceQuery =
       "create keyspace if not exists #{@keyspace} with replication = {'class':'SimpleStrategy','replication_factor':3}"
     @table = table.split(".")[1]
-    @primaryKeys = createQuery.downcase.split("primary key")[1]
-      .gsub("(","").gsub(")","").gsub(/\s/,"").gsub(";","").split(",")
-    @createQuery = createQuery.gsub("_","")
-    @createQuery.sub!(@keyspace.gsub("_",""), @keyspace)
-    @createQuery.sub!(@table.gsub("_",""), @table)
-    @dropQuery =  "drop table if exists #{@keyspace}.#{@table}"
-    
-    field = {}
-    if(@keyspace)then
-      _field_ = createQuery.split(" #{@keyspace}.#{@table} ")[1]
-      if(_field_.include?("primary key"))then
-        _field_ = _field_.split("primary key")[0]
-      elsif(_field_.include?("PRIMARY KEY"))then
-        _field_ = _field_.split("PRIMARY KEY")[0]
+    @primaryKeys = create_query.downcase.split("primary key")[1].delete("(").delete(")").delete(" ").delete(";").split(",")
+    @createQuery = create_query.delete("_")
+    @createQuery.sub!(@keyspace.delete("_"), @keyspace)
+    @createQuery.sub!(@table.delete("_"), @table)
+    @dropQuery = "drop table if exists #{@keyspace}.#{@table}"
+    field_ = ""
+    if @keyspace
+      field_ = create_query.split(" #{@keyspace}.#{@table} ")[1]
+      if field_.include?("primary key")
+        field_ = field_.split("primary key")[0]
+      elsif field_.include?("PRIMARY KEY")
+        field_ = field_.split("PRIMARY KEY")[0]
       end
     end
-    _field_ = _field_.gsub("(","").gsub(")","").gsub("\t","").gsub("\n","")
-    field = _field_.split(",")
-    test = {}
+    field_ = field_.delete("(").delete(")").delete("\t").delete("\n", "")
+    field = field_.split(",")
     keep = nil
-    field.each{|kv|
-      if(!kv.include?("primary key") and 
-          !kv.include?("PRIMARY KEY"))then
-        if(kv.include?("<") and !kv.include?(">"))then
+    field.each do |kv|
+      if !kv.include?("primary key") && !kv.include?("PRIMARY KEY")
+        if kv.include?("<") && !kv.include?(">")
           keep = kv
-        elsif(keep)then
-          if(kv.include?(">"))then
+        elsif keep
+          keep += "," + kv
+          if kv.include?(">")
             ## Finish
-            keep += ","+ kv
             extractKeyValueForPriv(keep)
             keep = nil
-          else
-            keep += ","+ kv
           end
         else
           extractKeyValueForPriv(kv)
         end
       end
-    }
+    end
   end
-  def checkFieldType(value, _schemaType_)
-    schemaType = _schemaType_.downcase()
+
+  def checkFieldType(value, schema_type_)
+    schema_type = schema_type_.downcase
     case value.class.to_s
     when "String" then
-      return (schemaType == "varchar" or schemaType == "text")
+      return (schema_type == "varchar" || schema_type == "text")
     when "Integer" then
-      return (schemaType == "int")
+      return schema_type == "int"
     when "Float" then
-      return (schemaType == "float")
+      return schema_type == "float"
     when "Array" then
-      return (schemaType.include?("set") or schemaType.include?("map"))
+      return (schema_type.include?("set") || schema_type.include?("map"))
     when "TrueClass" then
-      return (schemaType == "text")
+      return schema_type == "text"
     when "FalseClass" then
-      return (schemaType == "text")
+      return schema_type == "text"
     when "Hash" then
-      return (schemaType.include?("map"))
+      return schema_type.include?("map")
     else
       @logger.error("Unsupport field type #{value.class}")
     end
-    return false
+    false
   end
-  private
+
   def extractKeyValueForPriv(string)
-    kv = string.sub(/^\s*/,"").split(" ")
-    if(kv.size == 2)then
-      fieldName = kv[0].gsub(" ","")
-      fieldType = kv[1].gsub(" ","")
-      return @fields[fieldName] = fieldType
+    kv = string.sub(/^\s*/, "").split(" ")
+    if kv.size == 2
+      field_name = kv[0].delete(" ", "")
+      field_type = kv[1].delete(" ", "")
+      return @fields[field_name] = field_type
     end
   end
 end
