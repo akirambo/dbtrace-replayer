@@ -50,8 +50,8 @@ module MongodbTest
       @getValue = nil
       @setValue = ""
       @utils = Utils.new()
-      @queryParser = QueryParserMock.new()
-      @queryProcessor = QueryProcessorMock.new()
+      @query_parser = QueryParserMock.new()
+      @query_processor = QueryProcessorMock.new()
     end
     def datamodel(d)
       @options[:datamodel] = d
@@ -64,7 +64,7 @@ module MongodbTest
       @getValue = "reply"
     end
     def setQueryFlag(bool)
-      @queryProcessor.setQueryFlag(bool)
+      @query_processor.setQueryFlag(bool)
     end
     private
     def parse_json(doc)

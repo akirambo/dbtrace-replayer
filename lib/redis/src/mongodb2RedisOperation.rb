@@ -184,7 +184,7 @@ module MongoDB2RedisOperation
     @logger.debug("MONGODB_AGGREGATE")
     docs = SMEMBERS([args["key"]], true)
     result = {}
-    params = @queryParser.getParameter(args)
+    params = @query_parser.getParameter(args)
     docs = eval("[" + docs + "]")
     firstflag = true
     key2realkey = nil
@@ -194,18 +194,18 @@ module MongoDB2RedisOperation
       monitor("client", "match")
       if flag
         if firstflag
-          key2realkey = @queryParser.createKey2RealKey(doc, params["cond"])
+          key2realkey = @query_parser.createKey2RealKey(doc, params["cond"])
           firstflag = false
         end
         # create group key
-        key = @queryParser.createGroupKey(doc, params["cond"])
+        key = @query_parser.createGroupKey(doc, params["cond"])
         if result[key].nil?
           result[key] = {}
         end
         # do aggregation
         params["cond"].each do |k, v|
           monitor("client", "aggregate")
-          result[key][k] = @queryProcessor.aggregation(result[key][k], doc, v, key2realkey)
+          result[key][k] = @query_processor.aggregation(result[key][k], doc, v, key2realkey)
           monitor("client", "aggregate")
         end
       end
@@ -240,7 +240,7 @@ module MongoDB2RedisOperation
   end
 
   def mongo_query_fieldmatching(value, cond)
-    if cond.kind_of?(Hash) && !@queryProcessor.query(cond, value)
+    if cond.kind_of?(Hash) && !@query_processor.query(cond, value)
       return false
     end
     case value.class.to_s

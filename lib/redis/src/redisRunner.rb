@@ -86,15 +86,7 @@ class RedisRunner < AbstractRunner
 
   def connect
     unless @option[:keepalive]
-      case @option[:api]
-      when "cxx" then
-        @client = RedisCxxRunner.new
-        if @option[:async]
-          @client.asyncConnect(@host, @port.to_i)
-        else
-          @client.syncConnect(@host, @port.to_i)
-        end
-      end
+      setup_client
     end
   end
 
@@ -137,8 +129,8 @@ class RedisRunner < AbstractRunner
     case @option[:sourceDB].upcase
     when "MONGODB" then
       @parser = MongodbArgumentParser.new(logger)
-      @queryParser = MongodbQueryParser.new(logger)
-      @queryProcessor = MongodbQueryProcessor.new(logger)
+      @query_parser = MongodbQueryParser.new(logger)
+      @query_processor = MongodbQueryProcessor.new(logger)
     when "REDIS" then
       @parser = RedisArgumentParser.new(logger)
     when "MEMCACHED" then
