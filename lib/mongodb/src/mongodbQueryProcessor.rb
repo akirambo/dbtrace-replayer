@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -29,80 +30,85 @@
 #
 
 class MongodbQueryProcessor
-  MONGODB_NUMERIC_QUERY = ["$gt","$gte","$lt","$lte"]
-  MONGODB_STRING_QUERY  = ["$eq","$ne","$in","$nin"]
+  MONGODB_NUMERIC_QUERY = %w[$gt $gte $lt $lte].freeze
+  MONGODB_STRING_QUERY  = %w[$eq $ne $in $nin].freeze
+
   def initialize(logger)
     @logger = logger
   end
-  ## symbol [Variable] means that document is symbol type or not 
-  def aggregation(result,doc,conds,key2realkey=nil)
-    if(key2realkey == nil)then
+
+  ## symbol [Variable] means that document is symbol type or not
+  def aggregation(result, doc, conds, key2realkey = nil)
+    if key2realkey.nil?
       key2realkey = {}
-      doc.each_key{|key|
-        key2realkey["$"+key] = key
-      }
+      doc.each_key do |key|
+        key2realkey["$" + key] = key
+      end
     end
-    if(conds.class == Hash)then
-      conds.each{|k,c|
+    if conds.class == Hash
+      conds.each do |k, c|
         case k.to_s
         when "$sum" then
-          result = sum(result,doc,c,key2realkey)
+          result = sum(result, doc, c, key2realkey)
         when "$max" then
-          result = max(result,doc,c,key2realkey)
+          result = comp(result, doc, c, key2realkey, "max")
         when "$min" then
-          result = min(result,doc,c,key2realkey)
+          result = comp(result, doc, c, key2realkey, "min")
         else
           @logger.warn("Unsupported Aggregation !!")
         end
-      }
+      end
       return result
     else
-      return realValue(doc,key2realkey[conds])
+      return real_value(doc, key2realkey[conds])
     end
   end
-  def query(conds,value)
-    conds.each_key{|cond_key|
-      if(MONGODB_NUMERIC_QUERY.include?(cond_key))then
-        num = 0
-        cond_num = 0
-        if(value.include?("."))then
-          num = value.to_f
-          cond_num = cond[cond_key].to_f
-        else
-          num = value.to_i
-          cond_num = cond[cond_key].to_i
-        end
-        if(!numericQuery(cond_key,num,cond_num))then
+
+  def query(conds, value)
+    conds.each_key do |cond_key|
+      if MONGODB_NUMERIC_QUERY.include?(cond_key)
+        result = change_string_to_num
+        unless numeric_query(cond_key, result["num"], result["cond_num"])
           return false
         end
-      elsif(MONGODB_STRING_QUERY.include?(cond_key))then
-        if(!stringQuery(cond_key,value,cond[cond_key]))then
+      elsif MONGODB_STRING_QUERY.include?(cond_key)
+        unless string_query(cond_key, value, cond[cond_key])
           return false
         end
       else
         @logger.warn("Unsupported operation '#{cond_key}' !!")
       end
-    }
-    return true
+    end
+    true
   end
-private
-  def realValue(doc,conds__)
+
+  private
+
+  def change_string_to_num(conds, value, cond_key)
+    result = { "num" => 0, "cond_num" => 0 }
+    if value.include?(".")
+      result["num"] = value.to_f
+      result["cond_num"] = conds[cond_key].to_f
+    else
+      result["num"] = value.to_i
+      result["cond_num"] = conds[cond_key].to_i
+    end
+    result
+  end
+
+  def real_value(doc, conds__)
     conds = conds__.split("..")
     case conds.size
     when 1 then
-      if(doc[conds[0]])then
-        return doc[conds[0]]
-      else
-        return doc[conds[0].to_sym]
-      end
+      return real_value_one_cond(doc, conds[0])
     when 2 then
-      if(doc[conds[0]])then
+      if doc[conds[0]]
         return doc[conds[0]][conds[1]]
       else
         return doc[conds[0].to_sym][conds[1].to_sym]
       end
     when 3 then
-      if(doc[conds[0]])then
+      if doc[conds[0]]
         return doc[conds[0]][conds[1]][conds[2]]
       else
         return doc[conds[0].to_sym][conds[1].to_sym][conds[2].to_sym]
@@ -112,91 +118,104 @@ private
     end
   end
 
+  def real_value_one_cond(doc, cond)
+    if doc[cond]
+      doc[cond]
+    else
+      doc[cond.to_sym]
+    end
+  end
+
   ### Operater
-  def sum(result,doc,c,key2realkey)
-    if(c.to_i == 1)then
-      #  count the number of document 
-      if(result == nil)then
-        result = 0
-      end
+  def sum(result, doc, c, key2realkey)
+    if result.nil?
+      result = 0
+    end
+    if c.to_i == 1
+      # count the number of document
       result += 1
     else
-      if(result == nil)then
-        result = 0
-      end
-      value = realValue(doc,key2realkey[c])
+      value = real_value(doc, key2realkey[c])
       result += value.to_i
     end
-    return result
+    result
   end
-  def max(result,doc,c,key2realkey)
-    if(result == nil)then
-      result = realValue(doc,key2realkey[c]).to_i
+
+  def comp(result, doc, c, key2realkey, type)
+    if result.nil?
+      result = real_value(doc, key2realkey[c]).to_i
     else
-      _result_ = realValue(doc,key2realkey[c]).to_i
-      if(_result_ > result)then
-        result = _result_
+      result_ = real_value(doc, key2realkey[c]).to_i
+      if (type == "max" && result_ > result) ||
+         (type == "min" && result_ < result)
+        result = result_
       end
     end
-    return result
+    result
   end
-  def min(result,doc,c,key2realkey)
-    if(result == nil)then
-      result = realValue(doc,key2realkey[c]).to_i
-    else
-      _result_ = realValue(doc,key2realkey[c]).to_i
-      if(_result_ < result)then
-        result = _result_
-      end
-    end
-    return result
-  end
-  def numericQuery(operation,value,cond_value)
-    case operation
-    when "$gt" then
-      ## Return false
-      if(value <= cond_value)then
-        return false
-      end
-    when "$gte" then
-      ## Return false
-      if(value < cond_value)then
-        return false
-      end
-    when "$lt" then
-      ## Return false
-      if(value >= cond_value)then
-        return false
-      end
-    when "$lte" then
-      ## Return false
-      if(value < cond_value)then
-        return false
-      end
+
+  def numeric_query(operation, value, cond_value)
+    if operation.include?("$gt")
+      numeric_query_gt(operation, value, cond_value)
+    elsif operation.include?("$lt")
+      numeric_query_lt(operation, value, cond_value)
     else
       @logger.warn("Unsupported NUMERIC operation '#{operation}' !!")
     end
-    return true
+    true
   end
-  def stringQuery(operation,value,cond_value)
-    case operation
-    when "$eq" then
+
+  def numeric_query_gt(operation, value, cond_value)
+    if operation.inlclude?("$gt")
       ## Return false
-      if(value != cond_value)then
+      if value <= cond_value
         return false
       end
-    when "$ne" then
+    elsif operaiton.include?("$gte")
       ## Return false
-      if(value == cond_value)then
+      if value < cond_value
         return false
       end
-    when "$in" then
-      @logger.warn("Unsupported STRING operation '#{operation}' !!")
-    when "$nin" then
-      @logger.warn("Unsupported STRING operation '#{operation}' !!")
+    end
+    true
+  end
+
+  def numeric_query_lt(operation, value, cond_value)
+    if operation.include?("$lt")
+      ## Return false
+      if value >= cond_value
+        return false
+      end
+    elsif operation.include?("$lte")
+      ## Return false
+      if value < cond_value
+        return false
+      end
+    end
+    true
+  end
+
+  def string_query(operation, value, cond_value)
+    if %w[eq nq].include?(operation)
+      string_query_eq(opration, value, cond_value)
     else
       @logger.warn("Unsupported STRING operation '#{operation}' !!")
     end
-    return true
+    true
+  end
+
+  def string_query_eq(operation, value, cond_value)
+    if operation == "$eq"
+      ## Return false
+      if value != cond_value
+        return false
+      end
+    elsif operation == "$ne"
+      ## Return false
+      if value == cond_value
+        return false
+      end
+    end
+    true
   end
 end
