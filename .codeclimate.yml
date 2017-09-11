@@ -1,5 +1,0 @@
-## other configuration excluded from example...
-exclude_paths:
-- "lib/**/spec/"
-- "spec/"
-- "vendor/"
