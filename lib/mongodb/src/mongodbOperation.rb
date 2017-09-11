@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -30,38 +31,39 @@
 
 module MongodbOperation
   private
+
   def INSERT(args)
     v = false
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
-    if(args.size == 0)then
+    if args.empty?
       ## do nothing
       return true
     end
     connect
-    falseFlag = false
-    args.each{|arg|
+    args.each do |arg|
       names = arg[0].split(".")
-      if(names.size == 1)then
+      if names.size == 1
         names.unshift("dummy")
       end
       @client.setDatabaseName(names[0])
       @client.setCollectionName(names[1])
       json = @utils.add_doublequotation(arg[1])
-      if(@option[:async])then
+      if @option[:async]
         v = @client.commitDocument(json)
         add_count("INSERT")
       else
-        v = @client.syncExecuter("#{__method__}","#{json}")
-        add_duration(@client.getDuration(),"database",__method__)
+        v = @client.syncExecuter(__method__.to_s, json.to_s)
+        add_duration(@client.getDuration, "database", __method__)
       end
-      if(!v)then
+      unless v.nil?
         close
         return v
       end
-    }
+    end
     close
-    return v
+    v
   end
+
   def UPDATE(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
@@ -69,11 +71,12 @@ module MongodbOperation
     @client.setDatabaseName(names[0])
     @client.setCollectionName(names[1])
     query = @utils.add_doublequotation(args["query"])
-    doc   = @utils.add_doublequotation(args["update"])
-    v     = @client.update(query,doc,args["multi"])
+    doc = @utils.add_doublequotation(args["update"])
+    v = @client.update(query, doc, args["multi"])
     close
-    return v
+    v
   end
+
   def FIND(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
@@ -82,22 +85,23 @@ module MongodbOperation
     @client.setDatabaseName(names[0])
     @client.setCollectionName(names[1])
     json = @utils.add_doublequotation(args["filter"])
-    v = @client.find("#{json}")
-    add_duration(@client.getDuration(),"database",__method__)
+    v = @client.find(json.to_s)
+    add_duration(@client.getDuration, "database", __method__)
     close
-    if(v)then
-      rows = reply2rows(@client.getReply())
+    if v
+      rows = reply2rows(@client.getReply)
       results = []
-      if(rows.size > 0)then
-        rows.each{|row|
-          row.gsub(":","=>")
-          results.push(eval(row.gsub(":","=>")))
-        }
+      unless rows.size.zero?
+        rows.each do |row|
+          row.gsub(":", "=>")
+          results.push(eval(row.gsub(":", "=>")))
+        end
       end
     end
     close
-    return results
+    results
   end
+
   def DELETE(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
@@ -105,75 +109,80 @@ module MongodbOperation
     @client.setDatabaseName(names[0])
     @client.setCollectionName(names[1])
     filter = @utils.add_doublequotation(args["filter"])
-    v = @client.deleteExecuter(filter,true)
-    add_duration(@client.getDuration(),"database",__method__)
+    v = @client.deleteExecuter(filter, true)
+    add_duration(@client.getDuration, "database", __method__)
     close
-    return v
+    v
   end
+
   def COUNT(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
-    connect 
+    connect
     names = args["key"].split(".")
     @client.setDatabaseName(names[0])
     @client.setCollectionName(names[1])
     filter = @utils.add_doublequotation(args["query"])
     count = @client.count(filter)
-    add_duration(@client.getDuration(),"database",__method__)
+    add_duration(@client.getDuration, "database", __method__)
     close
-    return count
+    count
   end
+
   def AGGREGATE(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
-    ["match","group","unwind"].each{|type|
-      if(args[type])then
-        @client.setAggregateCommand(type,args[type])
+    %w[match group unwind].each do |type|
+      if args[type]
+        @client.setAggregateCommand(type, args[type])
       end
-    }
-    v = @client.aggregate()
-    add_duration(@client.getDuration(),"database",__method__)
-    close
-    if(v)then
-      return @client.getReply()
     end
-    return ""
+    v = @client.aggregate
+    add_duration(@client.getDuration, "database", __method__)
+    close
+    if v
+      return @client.getReply
+    end
+    ""
   end
+
   def MAPREDUCE(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     @logger.warn("Unimplemented..")
   end
-  def DROP(args,initFlag=false)
+
+  def DROP(args, init_flag = false)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
     r = false
-    if(args.size == 1)then
+    if args.size == 1
       names = args[0].split(".")
-      if(names[0] and names[1])then
+      if names[0] && names[1]
         @client.setDatabaseName(names[0])
         @client.setCollectionName(names[1])
-      elsif(names[0])then
+      elsif names[0]
         @client.setDatabaseName(names[0])
-        @client.clearCollectionName()
+        @client.clearCollectionName
       end
-      r = @client.drop()
-      if(@metrics and !initFlag)then
-        add_duration(@client.getDuration(),"database",__method__)
+      r = @client.drop
+      if @metrics && !init_flag
+        add_duration(@client.getDuration, "database", __method__)
       end
     end
     close
-    return r
+    r
   end
+
   def reply2rows(str)
-    rows = str.gsub(/\"/,'"').split("\n")
-    return rows
+    str.tr(/\"/, '"').split("\n")
   end
+
   ###########
   # PREPARE #
   ###########
   def prepare_mongodb(operand, args)
     result = {}
     result["operand"] = operand
-    result["args"] = @parser.exec(operand,args,true)
-    return result
+    result["args"] = @parser.exec(operand, args, true)
+    result
   end
 end

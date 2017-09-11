@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -36,7 +37,7 @@ class CassandraArgumentParser
     @logger = logger
     @options = options
     @schemas = {}
-    extractSchemaFromFile
+    extract_schema_from_file
   end
 
   def exec(operand, args)
@@ -344,19 +345,19 @@ class CassandraArgumentParser
           key = nil
           cols.each_index do |index|
             key_value = cols[index].split(":")
-            if key_value.size == 2 && !keyValue[0].include?("timestamp")
+            if key_value.size == 2 && !key_value[0].include?("timestamp")
               if index.zero?
                 ## name
-                key = [key_value[1].delete(" ")].pack('H*')
+                key = [key_value[1].delete(" ")].pack("H*")
                 key = @schemas[result["table"]].getKey(key.sub("C", "").to_i + 1)
               elsif index == 1
                 ## value
-                if @schemas[result["table"]].fieldType(key) == "blob" && cassandra
-                  kv[key] = "0x"+key_value[1].delete(" ")
-                elsif@schemas[result["table"]].fieldType(key) == "counter" && cassandra
-                  kv[key] = key_value[1].delete(" ").to_i
-                else
-                  kv[key] = [key_Value[1].delete(" ")].pack('H*')
+                kv[key] = if @schemas[result["table"]].fieldType(key) == "blob" && cassandra
+                            "0x" + key_value[1].delete(" ")
+                          elsif @schemas[result["table"]].fieldType(key) == "counter" && cassandra
+                            key_value[1].delete(" ").to_i
+                          else
+                            [key_Value[1].delete(" ")].pack("H*")
                 end
               end
             end
@@ -369,25 +370,23 @@ class CassandraArgumentParser
         ckvs = []
         ckv = {}
         values.each do |cols__|
-          cols = cols__.delete(")")
-                 .delete(" ")
-                 .split(",")
+          cols = cols__.delete(")").delete(" ").split(",")
           key = nil
           cols.each_index do |index|
-            keyValue = cols[index].split(":")
+            key_value = cols[index].split(":")
             if index.zero?
               ## Name 
               keyName = @schemas[result["table"]].getKey(1)
-              if(@schemas[result["table"]].fieldType(key) == "blob" and cassandra)then
-                kv[keyName] = "0x" + keyValue[1].delete(" ")
-              else
-                kv[keyName] = [keyValue[1].delete(" ")].pack('H*')
-              end
+              kv[keyName] = if @schemas[result["table"]].fieldType(key) == "blob" && cassandra
+                              "0x" + key_value[1].delete(" ")
+                            else
+                              [key_value[1].delete(" ")].pack('H*')
+                            end
             elsif index == 1
               ## Counter
               key = @schemas[result["table"]].counterKey
               if key
-                ckv[key] = keyValue[1].delete(" ").to_i
+                ckv[key] = key_value[1].delete(" ").to_i
               end
             end
           end
@@ -403,7 +402,7 @@ class CassandraArgumentParser
     result
   end
 
-  def counterColumn()
+  def counterColumn
     # do nothing
   end
 
@@ -426,7 +425,8 @@ class CassandraArgumentParser
     end
     return result
   end
-  def parseGetRangeSlicesParameter(args,cassandra=true)
+
+  def parseGetRangeSlicesParameter(args, cassandra = true)
     result = {
       "table" => nil,
       "cf"    => nil,
@@ -436,9 +436,9 @@ class CassandraArgumentParser
       "count" => nil,
     }
     ## Get Column Family
-    result["cf"] = getColumnFamily(args)
+    result["cf"] = get_column_family(args)
     ## Find Keyspace & Primary Key
-    res = getTableNameANDPrimaryKey(args, result["cf"])
+    res = get_tablename_and_primarykey(args, result["cf"])
     result["table"] = res["table"]
     result["primaryKey"] = res["primaryKey"]
     
@@ -447,11 +447,7 @@ class CassandraArgumentParser
       $1.split(",").each do |kv__|
         kv = kv__.gsub(/\s/,"").split(":")
         if kv[0] == "start_key" && kv[0] == "end_key" && kv[1]
-          if @schemas[result["table"]].primaryKeyType == "blob" && cassandra
-            result[kv[0]] = [kv[1].delete(" ")].pack('H*')
-          else
-            result[kv[0]] = [kv[1].delete(" ")].pack('H*')
-          end
+          result[kv[0]] = [kv[1].delete(" ")].pack("H*")
         else
           result[kv[0]] = kv[1]
         end
@@ -495,11 +491,11 @@ class CassandraArgumentParser
     end
     ## Get Target Key
     if args.match(/.+key': '(\w+?)'.+/)
-      if @schemas[result["table"]].primaryKeyType == "blob" && cassandra
-        result["targetKey"] = "0x" + $1
-      else
-        result["targetKey"] = [$1.delete(" ","")].pack('H*')
-      end
+      result["targetKey"] = if @schemas[result["table"]].primaryKeyType == "blob" && cassandra
+                              "0x" + $1
+                            else
+                              [$1.delete(" ","")].pack("H*")
+                            end
     end
     ## Get Count
     if args.match(/.+count': '(\w+?)'.+/)
@@ -518,7 +514,7 @@ class CassandraArgumentParser
       "primaryKey" => nil,
       "targetKey" => nil,
       "count" => nil,
-    } 
+    }
     ## Get Column Family
     if args.match(/.+column_family:(\w+?)\).*/)
       result["cf"] = $1
@@ -532,10 +528,10 @@ class CassandraArgumentParser
     end
     result
   end
-  
-  ##--------------------##
-  ##-- MULTIGET_SLICE --## 
-  ##--------------------##
+
+  ## --------------------##
+  ## -- MULTIGET_SLICE --##
+  ## --------------------##
   def prepareArgs_MULTIGET_SLICE_JAVA(args)
     data = prepare_MULTIGET_SLICEParameter(args, false)
     result = {
@@ -558,9 +554,9 @@ class CassandraArgumentParser
       "keys" => [],
     }
     ## Get ColumnFamily
-    result["cf"] = getColumnFamily(args)
+    result["cf"] = get_column_family(args)
     ## Find Keyspace & Primary Key
-    res = getTableNameANDPrimaryKey(args, result["cf"])
+    res = get_tablename_and_primarykey(args, result["cf"])
     result["table"] = res["table"]
     result["primaryKey"] = res["primaryKey"]
     if args.match(/'keys':\s'\[(.+)\]/)
@@ -602,13 +598,13 @@ class CassandraArgumentParser
   ###############
   ##-- UTILS --##
   ###############
-  def getColumnFamily(str)
+  def get_column_family(str)
     if str.match(/.+column_family:(\w+?)\).*/)
       return $1
     end
   end
 
-  def getTableNameANDPrimaryKey(_, cf)
+  def get_tablename_and_primarykey(_, cf)
     result = { "table" => nil, "primaryKey" => nil }
     @schemas.keys.each do |ks_tb|
       if ks_tb.include?(cf)
@@ -622,7 +618,7 @@ class CassandraArgumentParser
   #####################
   # Parse Schema File #
   #####################
-  def extractSchemaFromFile
+  def extract_schema_from_file
     filename = @options[:schemaFile]
     keyspace = @options[:keyspace]
     unless filename
