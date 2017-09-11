@@ -118,16 +118,25 @@ class CassandraArgumentParser
   # PREPARE for SELECT #
   #--------------------#
   def prepareArgs_SELECT_CQL(args)
+    ## key
+    result = cassandra_prepare_select_parse(args)
+    ## primary key
+    if @schemas && @schemas[result["table"]]
+      result["primaryKey"] = @schemas[result["table"]].primaryKeys[0]
+    end
+    ## schema fields
+    result["schema_fields"] = @schemas[result["table"]].fields.size
+    result
+  end
+
+  def cassandra_prepare_select_parse(args)
     result = {
-      "table" => nil,
-      "primaryKey" => nil,
-      "schema_fields" => 0,
-      "fields" => [],
+      "table" => nil, "primaryKey" => nil,
+      "schema_fields" => 0, "fields" => [],
       "cond_keys" => [],
       "cond_values" => [],
-      "limit" => nil,
+      "limit" => nil
     }
-    ## key
     select_target_flag = false
     args.each_index do |index|
       case args[index].upcase
@@ -150,12 +159,6 @@ class CassandraArgumentParser
         end
       end
     end
-    ## primary key
-    if @schemas && @schemas[result["table"]]
-      result["primaryKey"] = @schemas[result["table"]].primaryKeys[0]
-    end
-    ## schema fields
-    result["schema_fields"] = @schemas[result["table"]].fields.size
     result
   end
 

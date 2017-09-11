@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -31,75 +32,81 @@
 require_relative "../../common/utils"
 
 class MongodbArgumentParser
-  KeyValueNum = 5
-  ByteSize    = 5
-  MONGODB_ACCUMULATORS = ["$sum","$avg","$first","$last",
-                          "$max","$min","$push","$addToSet"]
+  MONGODB_ACCUMULATORS = %w[$sum $avg $first $last $max $min $push $addToSet].freeze
   MONGODB_AGGREGATE_OPERATORS = [
-    "$collStats","$project","$match","$redact",
-    "$limit","$skip","$unwind","$group","$sample",
-    "$sort","$geoNear","$lookup","$out","$indexStats",
-    "$facet","$bucket","$bucketAuto","$sortByCount",
-    "$addFields","$replaceRoot","$count","$graphLookup",
+    "$collStats", "$project", "$match", "$redact",
+    "$limit", "$skip", "$unwind", "$group", "$sample",
+    "$sort", "$geoNear", "$lookup", "$out", "$indexStats",
+    "$facet", "$bucket", "$bucketAuto", "$sortByCount",
+    "$addFields", "$replaceRoot", "$count", "$graphLookup",
     "$unwind"
-  ]
+  ].freeze
+
   def initialize(logger)
     @logger = logger
     @utils  = Utils.new
+
+    @key_value_num = 5
+    @byte_size = 5
   end
-  def exec(type,args,noString=false)
-    return send("#{type}",args,noString)
+
+  def exec(type, args, no_string = false)
+    send(type.to_s, args, no_string)
   end
-  def structureType(operand,args)
-    structureType = "others"
-    return structureType
+
+  def structureType(_, _)
+    "others"
   end
+
   private
-  def parseLog(_log_)
-    log =  '{ "key" :'+_log_
-    log.gsub!("\"",'"')
-    log.gsub!(/(\w+):/,'"\1":')
-    log.gsub!('""','"')
-    log.gsub!('"://',"://")
-    log.gsub!(/:\s*"\s*,/,':"",')
-    log.gsub!(/ObjectId\((\'\w+\')\)/,'"ObjectId(\1)"')   
-    log.gsub!(/new Date\((\w+)\)/,'\1')
-    log.gsub!(/\s+:\s+/,":")
+
+  def parseLog(log_)
+    log = '{ "key" :' + log_
+    log.tr!("\"", '"')
+    log.gsub!(/(\w+):/, '"\1":')
+    log.gsub!('""', '"')
+    log.gsub!('"://', "://")
+    log.gsub!(/:\s*"\s*,/, ':"",')
+    log.gsub!(/ObjectId\((\'\w+\')\)/, '"ObjectId(\1)"')
+    log.gsub!(/new Date\((\w+)\)/, '\1')
+    log.gsub!(/\s+:\s+/, ":")
     begin
       hash = JSON.parse(log)
     rescue JSON::ParserError => e
-      @logger.error("--"*32)
+      @logger.error("--" * 32)
       @logger.error("Log Parse Error : " + e.message)
       @logger.error("                : " + log)
     end
-    return hash
+    hash
   end
-  def INSERT(args,noString)
+
+  def INSERT(args, no_string)
     ## Parse Arguments
     result = []
     log = parseLog(args)
     key = log["key"]
     doc = log["documents"]
-    if(doc.instance_of?(Array))then
-      result.push([key,doc,false])
-    else 
+    if doc.instance_of?(Array)
+      result.push([key, doc, false])
+    else
       ## Bulk insert / insert array
-      @logger.info("Using Pseudo-data (#{KeyValueNum} key-value data) on Bulk Insert/ Array Insert.")
+      @logger.info("Using Pseudo-data (#{@key_value_num} key-value data) on Bulk Insert/ Array Insert.")
       doc.to_i.times do
         hash = {}
-        KeyValueNum.times do
-          hash[@utils.create_string(ByteSize)] = @utils.create_string(ByteSize)
+        @key_value_num.times do
+          hash[@utils.create_string(@byte_size)] = @utils.create_string(@byte_size)
         end
-        if(noString)then
-          result.push([key,hash,true])
+        if no_string
+          result.push([key, hash, true])
         else
-          result.push([key,@utils.convert_json(hash),true])
+          result.push([key, @utils.convert_json(hash), true])
         end
       end
     end
-    return result
+    result
   end
-  def UPDATE(args,noString)
+
+  def UPDATE(args, _)
     result = {
       "key"    => nil,
       "query"  => nil,
@@ -107,9 +114,9 @@ class MongodbArgumentParser
       "multi"  => true,
       "upsert" => false,
     }
-    _data = args.split("updates: [")
-    result["key"] = _data[0].gsub(/\"/,"").gsub(/\s/,"").sub(/,\Z/,"")
-    data = _data[1].split("]")[0]
+    data__ = args.split("updates: [")
+    result["key"] = data__[0].delete("\"").delete(" ").sub(/,\Z/, "")
+    data = data__[1].split("]")[0]
     begin
       hash = @utils.parse_json(data)
     rescue => e
@@ -117,80 +124,84 @@ class MongodbArgumentParser
       @logger.error(__FILE__)
       return nil
     end
-    result["query"]  = hash["q"]
+    result["query"] = hash["q"]
     result["update"] = hash["u"]
-    result["multi"]  = hash["multi"]
+    result["multi"] = hash["multi"]
     result["upsert"] = hash["upsert"]
-    return result
+    result
   end
-  def COUNT(args,noString)
+
+  def COUNT(args, _)
     result = {
       "key"   => nil,
       "query" => nil,
-      "fields" => nil
+      "fields" => nil,
     }
     ## key
-    result["key"] = args.split(",")[0].gsub("\"","").gsub(/\s/, "")
-    str = "{" + args.sub(",","").sub(result["key"],"").sub(/\"/,"").sub(/\"/,"")
+    result["key"] = args.split(",")[0].delete("\"").delete(" ")
+    str = "{" + args.sub(",", "").sub(result["key"], "").sub(/\"/, "").sub(/\"/, "")
     ## query
     hash = @utils.parse_json(str)
     result["query"] = hash["query"]
     ## field
     result["fields"] = hash["fields"]
-    return result
+    result
   end
-  def GROUP(args,noString)
-    ## Unimplements
-    return nil
+
+  def GROUP(_, _)
+    nil
   end
-  def FIND(args,noString)
+
+  def FIND(args, _)
     result = {
       "key"    => nil,
-      "filter" => nil
+      "filter" => nil,
     }
     ## key
-    result["key"] = args.split(",")[0].gsub("\"","").gsub(/\s/, "")
-    str = "{" + args.sub(",","").sub(result["key"],"").sub(/\"/,"").sub(/\"/,"")
+    result["key"] = args.split(",")[0].delete("\"").delete(" ")
+    str = "{" + args.sub(",", "").sub(result["key"], "").sub(/\"/, "").sub(/\"/, "")
     ## filter
     hash = @utils.parse_json(str)
-    if(hash["filter"])then
+    if hash["filter"]
       result["filter"] = hash["filter"]
-    elsif(hash["deletes"] and hash["deletes"][0]["q"])then
+    elsif hash["deletes"] && hash["deletes"][0]["q"]
       result["filter"] = hash["deletes"][0]["q"]
     end
-    return result
+    result
   end
-  def DELETE(args,noString)
-    return FIND(args,noString)
+
+  def DELETE(args, no_string)
+    FIND(args, no_string)
   end
-  def AGGREGATE(args,noString)
+
+  def AGGREGATE(args, _)
     result = {
       "key"    => nil,
       "match"  => nil,
       "group"  => nil,
       "unwind" => nil,
     }
-    result["key"] = args.split(",")[0].gsub("\"","").gsub(/\s/, "")
-    str = "{" + args.sub(",","").sub(result["key"],"").sub(/\"/,"").sub(/\"/,"")
-    @utils.parse_json(str)["pipeline"].each{|elem|
-      MONGODB_AGGREGATE_OPERATORS.each{|ope|
-        if(elem[ope])then
+    result["key"] = args.split(",")[0].delete("\"").delete(" ")
+    str = "{" + args.sub(",", "").sub(result["key"], "").sub(/\"/, "").sub(/\"/, "")
+    @utils.parse_json(str)["pipeline"].each do |elem|
+      MONGODB_AGGREGATE_OPERATORS.each do |ope|
+        if elem[ope]
           case ope
           when "$match" then
             result["match"] = elem["$match"].to_json
           when "$group" then
-            result["group"]  = elem["$group"].to_json
+            result["group"] = elem["$group"].to_json
           when "$unwind" then
-            result["unwind"]  = "{\"path\": \"" + elem["$unwind"] + "\"}"
+            result["unwind"] = "{\"path\": \"" + elem["$unwind"] + "\"}"
           end
         end
-      }
-    }
-    return result
+      end
+    end
+    result
   end
-  
-  def MAPREDUCE(args,noString)
+
+  def MAPREDUCE(_, _)
     @logger.warn("Unsupported MapReduce")
-    return Hash.new
+    {}
   end
 end
