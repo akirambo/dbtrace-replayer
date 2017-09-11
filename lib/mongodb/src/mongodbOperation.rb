@@ -173,7 +173,7 @@ module MongodbOperation
   end
 
   def reply2rows(str)
-    str.tr(/\"/, '"').split("\n")
+    str.gsub(/\"/, '"').split("\n")
   end
 
   ###########
