@@ -32,7 +32,7 @@ module Memcached2CassandraOperation
   private
   # @conv {"SET" => ["INSERT"]}
   def MEMCACHED_SET(args)
-    table = @options[:keyspace]+"."+@options[:columnfamily]
+    table = @option[:keyspace]+"."+@option[:columnfamily]
     command = "INSERT INTO #{table} (key,value) VALUES ('#{args[0]}','#{args[1]}');"
     begin
       DIRECT_EXECUTER(command)
@@ -45,7 +45,7 @@ module Memcached2CassandraOperation
   end
   # @conv {"GET" => ["SELECT"]}
   def MEMCACHED_GET(args)
-    table = @options[:keyspace]+"."+@options[:columnfamily]
+    table = @option[:keyspace]+"."+@option[:columnfamily]
     command = "SELECT value FROM #{table} WHERE key = '#{args[0]}';"
     begin
       value = DIRECT_EXECUTER(command)
@@ -114,15 +114,15 @@ module Memcached2CassandraOperation
   end
   # @conv {"DELETE" => ["DELETE"]}
   def MEMCACHED_DELETE(args)
-    table = @options[:keyspace]+"."+@options[:columnfamily]
+    table = @option[:keyspace]+"."+@option[:columnfamily]
     command = "DELETE FROM #{table} WHERE key = '#{args[0]}'"
     return DIRECT_EXECUTER(command)
   end
   # @conv {"FLUSH" => ["TRUNCATE"]}
   def MEMCACHED_FLUSH()
     queries = []
-    queries.push("drop keyspace if exists #{@options[:keyspace]}")
-    queries.push("create keyspace #{@options[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3}")
+    queries.push("drop keyspace if exists #{@option[:keyspace]}")
+    queries.push("create keyspace #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3}")
     @schemas.each{|k,v|
       queries.push(v.createQuery)
     }

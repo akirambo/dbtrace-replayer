@@ -32,9 +32,9 @@ require_relative "../../common/utils"
 
 
 class MemcachedArgumentParser
-  def initialize(logger, options)
+  def initialize(logger, option)
     @logger = logger
-    @options = options
+    @option = option
     @utils   = Utils.new
   end
   def exec(operand,args)
@@ -48,7 +48,7 @@ class MemcachedArgumentParser
   #################
   ## 1.SETTYPE :: SET, ADD, REPLACE, APEEND, PREPEND
   def prepareArgs_SETTYPE(args)
-    case @options[:inputFormat] 
+    case @option[:inputFormat] 
     when "basic" then
       ## CHECK ARGUMENTS
       ### 1.create
@@ -66,7 +66,7 @@ class MemcachedArgumentParser
   end
   ## 2.GETTYPE :: GET, GETS, DELETE
   def prepareArgs_GETTYPE(args)
-    case @options[:inputFormat]
+    case @option[:inputFormat]
     when "basic" then
       return [args[2]]
     when "binary" then
@@ -75,7 +75,7 @@ class MemcachedArgumentParser
   end
   ## 3.CALCTYPE :: INCR, DECR
   def prepareArgs_CALCTYPE(args)
-    case @options[:inputFormat]
+    case @option[:inputFormat]
     when "basic" then
       return [args[2],args[3]]
     when "binary" then

@@ -57,9 +57,9 @@ module Mongodb2CassandraOperationTester
       @schemas = {}
       @raiseError = false
       @logger = DummyLogger.new
-      @queryParser = QueryParserMock.new
-      @queryProcessor = QueryProcessorMock.new
-      @options = {
+      @query_parser = QueryParserMock.new
+      @query_processor = QueryProcessorMock.new
+      @option = {
         :keyspace => "k",
         :columnfamily => "f"
       }
@@ -82,7 +82,7 @@ module Mongodb2CassandraOperationTester
       return str
     end
     def setTargetKeysValue(a)
-      @queryParser.targetKeysValue = a
+      @query_parser.targetKeysValue = a
     end
     def parse_json(a)
       if(@raiseParseJSONError)then

@@ -39,8 +39,8 @@ RSpec.describe 'Unit Class TEST' do
   before (:each) do
     logger = Logger.new(STDOUT)
     logger.level = Logger::FATAL
-    options = {:async     => true}
-    @metrics = Metrics.new(logger,options)
+    option = {:async     => true}
+    @metrics = Metrics.new(logger,option)
   end
   context "output" do
     it "Case :: Async" do
@@ -50,7 +50,7 @@ RSpec.describe 'Unit Class TEST' do
       @metrics.output()
     end
     it "Case :: Sync" do
-      @metrics.instance_variable_set("@options",{:async =>false})
+      @metrics.instance_variable_set("@option",{:async =>false})
       @metrics.start_monitor("test","query")
       @metrics.add_duration(0.4,"test","query")
       @metrics.end_monitor("test","query")

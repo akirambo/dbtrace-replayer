@@ -6,10 +6,10 @@ RSpec.describe 'Memcached TO Redis Unit Test' do
   before do
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::FATAL
-    @options = {
+    @option = {
       :sourceDB => "memcached"
     }
-    @runner = RedisRunner.new("memcached", @logger,@options)
+    @runner = RedisRunner.new("memcached", @logger,@option)
     @runner.send(:operation,"FLUSHALL",[])
   end
   context 'Operation' do

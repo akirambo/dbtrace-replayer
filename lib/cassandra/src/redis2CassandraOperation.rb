@@ -36,7 +36,7 @@ module Redis2CassandraOperation
   ############
   # @conv {"SET" => ["INSERT"]}
   def REDIS_SET(args, cond = {}, onTime = false)
-    table = @options[:keyspace] + "." + @options[:columnfamily]
+    table = @option[:keyspace] + "." + @option[:columnfamily]
     command = "INSERT INTO #{table} (key,value) VALUES ('#{args[0]}','#{args[1]}')"
     r = true
     if cond["ttl"]
@@ -54,7 +54,7 @@ module Redis2CassandraOperation
 
   # @conv {"GET" => ["SELECT"]}
   def REDIS_GET(args, onTime = false)
-    table = @options[:keyspace] + "." + @options[:columnfamily]
+    table = @option[:keyspace] + "." + @option[:columnfamily]
     command = "SELECT value FROM #{table}"
     unless args.empty?
       command += " WHERE key = '#{args[0]}' ;"
@@ -170,7 +170,7 @@ module Redis2CassandraOperation
 
   # @conv {"DEL" => ["DELETE"]}
   def REDIS_DEL(args, onTime = false)
-    table = @options[:keyspace] + "." + @options[:columnfamily]
+    table = @option[:keyspace] + "." + @option[:columnfamily]
     command = "DELETE FROM #{table} WHERE key = '#{args[0]}';"
     r = true
     begin
@@ -189,7 +189,7 @@ module Redis2CassandraOperation
   # @conv {"LPUSH" => [UPDATE"]}
   def REDIS_LPUSH(args)
     ## tablename = "list"
-    table = @options[:keyspace] + ".list"
+    table = @option[:keyspace] + ".list"
     command = "UPDATE #{table} SET value = ['#{args[1]}'] + value WHERE key = '#{args[0]}';"
     begin
       DIRECT_EXECUTER(command)
@@ -204,7 +204,7 @@ module Redis2CassandraOperation
   # @conv {"RPUSH" => ["UPDATE"]}
   def REDIS_RPUSH(args)
     ## tablename = "list"
-    table = @options[:keyspace] + ".list"
+    table = @option[:keyspace] + ".list"
     command = "UPDATE #{table} SET value = value + ['#{args[1]}'] WHERE key = '#{args[0]}';"
     begin
       DIRECT_EXECUTER(command)
@@ -219,7 +219,7 @@ module Redis2CassandraOperation
   # @conv {"LPOP" => ["SELECT","DELETE"]}
   def REDIS_LPOP(args)
     ## tablename = "list"
-    table = @options[:keyspace] + ".list"
+    table = @option[:keyspace] + ".list"
     ### GET
     values = redis_lget(args)
     ### DELETE
@@ -237,7 +237,7 @@ module Redis2CassandraOperation
   # @conv {"RPOP" => ["SELECT","DELETE"]}
   def REDIS_RPOP(args, stdout = false)
     ## tablename = "list"
-    table = @options[:keyspace] + ".list"
+    table = @option[:keyspace] + ".list"
     ### GET
     values = redis_lget(args)
     ### DELETE
@@ -347,7 +347,7 @@ module Redis2CassandraOperation
     index = args[1]
     value = args[2]
     ## tablename = "list"
-    table = @options[:keyspace] + ".list"
+    table = @option[:keyspace] + ".list"
     command = "UPDATE #{table} SET value[#{index}] = '#{value}'"
     command += " WHERE key = '#{args[0]}';"
     begin
@@ -374,7 +374,7 @@ module Redis2CassandraOperation
 
   def redis_lreset(args, value)
     ## tablename = "list"
-    table = @options[:keyspace] + ".list"
+    table = @option[:keyspace] + ".list"
     command = "UPDATE #{table} SET value = ['#{value.join("','")}']"
     command += " WHERE key = '#{args[0]}'"
     begin
@@ -389,7 +389,7 @@ module Redis2CassandraOperation
 
   def redis_lget(args)
     ## tablename = "list"
-    table = @options[:keyspace] + ".list"
+    table = @option[:keyspace] + ".list"
     command = "SELECT value FROM #{table} WHERE key = '#{args[0]}';"
     data = []
     begin
@@ -407,7 +407,7 @@ module Redis2CassandraOperation
   #########
   # @conv {"SADD" => ["SELECT","INSERT"]}
   def REDIS_SADD(args)
-    table = @options[:keyspace] + ".array"
+    table = @option[:keyspace] + ".array"
     array = REDIS_SMEMBERS(args)
     if args[1].class == Array
       args[1].each do |e|
@@ -429,7 +429,7 @@ module Redis2CassandraOperation
 
   # @conv {"SREM" => ["SELECT","INSERT"]}
   def REDIS_SREM(args)
-    table = @options[:keyspace] + ".array"
+    table = @option[:keyspace] + ".array"
     array = REDIS_SMEMBERS(args)
     array.delete(args[1])
     begin
@@ -446,7 +446,7 @@ module Redis2CassandraOperation
   # @conv {"SMEMBERS" => ["SELECT"]}
   def REDIS_SMEMBERS(args)
     ## tablename = "array"
-    table = @options[:keyspace] + ".array"
+    table = @option[:keyspace] + ".array"
     command = "SELECT value FROM #{table}"
     value = []
     begin
@@ -483,7 +483,7 @@ module Redis2CassandraOperation
 
   # @conv {"SPOP" => ["SELECT","INSERT"]}
   def REDIS_SPOP(args)
-    table = @options[:keyspace] + ".array"
+    table = @option[:keyspace] + ".array"
     array = REDIS_SMEMBERS(args)
     array.pop
     command = "INSERT INTO #{table} (key,value) VALUES ('#{args[0]}',{'#{array.join("','")}'})"
@@ -583,7 +583,7 @@ module Redis2CassandraOperation
   def REDIS_ZADD(args, hash = nil)
     ## hash { member => score}
     ## tablename = "sarray"
-    table = @options[:keyspace] + ".sarray"
+    table = @option[:keyspace] + ".sarray"
     command = "UPDATE #{table} SET value = "
     command += if hash
                  hash.to_json.tr('"', "'")
@@ -605,7 +605,7 @@ module Redis2CassandraOperation
   ## args = [key, member]
   def REDIS_ZREM(args)
     ## tablename = "sarray"
-    table = @options[:keyspace] + ".sarray"
+    table = @option[:keyspace] + ".sarray"
     command = "DELETE value['#{args[1]}'] FROM #{table}"
     command += " WHERE key = '#{args[0]}';"
     begin
@@ -749,7 +749,7 @@ module Redis2CassandraOperation
   # @conv {"ZUNIONSTORE" => ["SELECT","UPDATE"]}
   ## args {"key"      => dstKey,
   ##       "args"     => [srcKey0,srcKey1,...],
-  ##       "options"  => {:weights => [1,2,...],:aggregete => SUM/MAX/MIN}
+  ##       "option"  => {:weights => [1,2,...],:aggregete => SUM/MAX/MIN}
   def REDIS_ZUNIONSTORE(args)
     data = {} ## value => score
     args["args"].each_index do |index|
@@ -761,8 +761,8 @@ module Redis2CassandraOperation
           data[value] = []
         end
         weight = 1
-        if check_options(args, index, "weights")
-          weight = args["options"][:weights][index].to_i
+        if check_option(args, index, "weights")
+          weight = args["option"][:weights][index].to_i
         end
         data[value].push(score.to_f * weight)
       end
@@ -770,8 +770,8 @@ module Redis2CassandraOperation
     ## UNION
     unless data.keys.empty?
       aggregate = "SUM"
-      if check_options(args, nil, "aggregate")
-        aggregate = args["options"][:aggregate].upcase
+      if check_option(args, nil, "aggregate")
+        aggregate = args["option"][:aggregate].upcase
       end
       hash = createDocWithAggregate(data, aggregate)
       return REDIS_ZADD([args["key"]], hash)
@@ -780,14 +780,14 @@ module Redis2CassandraOperation
   end
 
   # @conv {"ZINTERSTORE" => ["SELECT","UPDATE"]}
-  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "options" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
+  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "option" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
   def REDIS_ZINTERSTORE(args)
     data = create_zinterstore(args)
     unless data.keys.empty?
       ## UNION
       aggregate = "SUM"
-      if check_options(args, nil, "aggregate")
-        aggregate = args["options"][:aggregate].upcase
+      if check_option(args, nil, "aggregate")
+        aggregate = args["option"][:aggregate].upcase
       end
       hash = createDocWithAggregate(data, aggregate)
       return REDIS_ZADD([args["key"]], hash)
@@ -795,14 +795,14 @@ module Redis2CassandraOperation
     false
   end
 
-  def check_options(args, index, condition)
+  def check_option(args, index, condition)
     case condition
     when "weights"
-      return args["options"] &&
-             args["options"][:weights] &&
-             args["options"][:weights][index]
+      return args["option"] &&
+             args["option"][:weights] &&
+             args["option"][:weights][index]
     when "aggregate"
-      return args["options"] && args["options"][:aggregate]
+      return args["option"] && args["option"][:aggregate]
     end
     false
   end
@@ -818,8 +818,8 @@ module Redis2CassandraOperation
         end
         if data[value]
           weight = 1
-          if check_options(args, index, "weights")
-            weight = args["options"][:weights][index].to_i
+          if check_option(args, index, "weights")
+            weight = args["option"][:weights][index].to_i
           end
           data[value].push(score.to_f * weight)
         end
@@ -830,7 +830,7 @@ module Redis2CassandraOperation
 
   def redis_zget(args)
     ## tablename = "sarray"
-    table = @options[:keyspace] + ".sarray"
+    table = @option[:keyspace] + ".sarray"
     command = "SELECT value FROM #{table}"
     command += " WHERE key = '#{args[0]}';"
     begin
@@ -874,7 +874,7 @@ module Redis2CassandraOperation
   def REDIS_HSET(args, hash = nil)
     ## hash {field => value}
     ## tablename = "hash"
-    table = @options[:keyspace] + ".hash"
+    table = @option[:keyspace] + ".hash"
     command = "UPDATE #{table} SET value = "
     command += if !hash.nil?
                  "value + " + hash.to_json.tr('"', "'")
@@ -896,7 +896,7 @@ module Redis2CassandraOperation
   ## args = [key, field]
   def REDIS_HGET(args)
     ## tablename = "hash"
-    table = @options[:keyspace] + ".hash"
+    table = @option[:keyspace] + ".hash"
     command = "SELECT value FROM #{table} WHERE key = '#{args[0]}';"
     begin
       value = DIRECT_EXECUTER(command)
@@ -915,7 +915,7 @@ module Redis2CassandraOperation
   ## args = {"key" => key, "args"=> [field0,field1,...]]
   def REDIS_HMGET(args)
     ## tablename = "hash"
-    table = @options[:keyspace] + ".hash"
+    table = @option[:keyspace] + ".hash"
     command = "SELECT value FROM #{table}"
     command += " WHERE key = '#{args["key"]}';"
     result = []
@@ -962,7 +962,7 @@ module Redis2CassandraOperation
   ## args = [key, field]
   def REDIS_HDEL(args)
     ## tablename = "hash"
-    table = @options[:keyspace] + ".hash"
+    table = @option[:keyspace] + ".hash"
     command = "DELETE value['#{args[1]}'] FROM #{table}"
     command += " WHERE key = '#{args[0]}';"
     begin
@@ -1013,8 +1013,8 @@ module Redis2CassandraOperation
   # @conv {"FLUSHALL" => ["reset@client"]}
   def REDIS_FLUSHALL
     queries = []
-    queries.push("drop keyspace if exists #{@options[:keyspace]};")
-    queries.push("create keyspace #{@options[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3};")
+    queries.push("drop keyspace if exists #{@option[:keyspace]};")
+    queries.push("create keyspace #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3};")
     @schemas.each do |_, s|
       queries.push(s.createQuery)
     end

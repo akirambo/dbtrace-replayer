@@ -245,14 +245,14 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
     it "ZUNIONSTORE" do
       ## BASIC 
       @tester.sync
-      args = {"key" => "zsetC","args" => ["zsetA","zsetB"],"options" => {}}
+      args = {"key" => "zsetC","args" => ["zsetA","zsetB"],"option" => {}}
       expect(@tester.send("ZUNIONSTORE", args)).to eq "OK"
       expect(@tester.getCommand).to eq ["ZUNIONSTORE zsetC 2 zsetA zsetB"]
       
       ## AGGREGATE [SUM]x2
       @tester.sync
       args = {"key" => "zsetC", "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"],:aggregate => "sum"}}
+        "option" => {:weights => ["2.0","1.0"],:aggregate => "sum"}}
       expect(@tester.send("ZUNIONSTORE",args)).to eq "OK"
       ans =  ["ZUNIONSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate sum"]
       expect(@tester.getCommand).to eq ans
@@ -260,7 +260,7 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       ## AGGREGATE [SUM]x3
       @tester.sync
       args = {"key" => "zsetC","args" => ["zsetA","zsetB","zsetD"],
-        "options" => {:weights => ["2.0","1.0","1.5"],:aggregate => "sum"}}
+        "option" => {:weights => ["2.0","1.0","1.5"],:aggregate => "sum"}}
       expect(@tester.send("ZUNIONSTORE",args)).to eq "OK"
       ans =  ["ZUNIONSTORE zsetC 3 zsetA zsetB zsetD weights 2.0 1.0 1.5 aggregate sum"]
       expect(@tester.getCommand).to eq ans
@@ -268,7 +268,7 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       ## AGGREGATE [MIN]
       @tester.sync
       args = {"key" => "zsetC", "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"],:aggregate => "min"}}
+        "option" => {:weights => ["2.0","1.0"],:aggregate => "min"}}
       expect(@tester.send("ZUNIONSTORE",args)).to eq "OK"
       ans =  ["ZUNIONSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate min"]
       expect(@tester.getCommand).to eq ans
@@ -277,7 +277,7 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       @tester.sync
       args = {
         "key" => "zsetC","args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"],:aggregate => "max"}}
+        "option" => {:weights => ["2.0","1.0"],:aggregate => "max"}}
       expect(@tester.send("ZUNIONSTORE",args)).to eq "OK"
       ans =  ["ZUNIONSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate max"]
       expect(@tester.getCommand).to eq ans
@@ -286,7 +286,7 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
     it "ZINTERSTORE" do
       @tester.sync
       ## BASIC 
-      args = {"key" => "zsetC","args" => ["zsetA","zsetB"],"options" => {}}
+      args = {"key" => "zsetC","args" => ["zsetA","zsetB"],"option" => {}}
       expect(@tester.send("ZINTERSTORE",args)).to eq "OK"
       ans =  ["ZINTERSTORE zsetC 2 zsetA zsetB"]
       expect(@tester.getCommand).to eq ans
@@ -294,7 +294,7 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       ## AGGREGATE [SUM]
       @tester.sync
       args = {"key" => "zsetC","args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "sum"}}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "sum"}}
       
       expect(@tester.send("ZINTERSTORE",args)).to eq "OK"
       ans =  ["ZINTERSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate sum"]
@@ -303,7 +303,7 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       ## AGGREGATE [MIN]
       @tester.sync
       args = {"key" => "zsetC","args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "min"}}      
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "min"}}      
       expect(@tester.send("ZINTERSTORE", args)).to eq "OK"
       ans =  ["ZINTERSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate min"]
       expect(@tester.getCommand).to eq ans
@@ -311,7 +311,7 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       ## AGGREGATE [MAX]
       @tester.sync
       args = {"key" => "zsetC","args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "max"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "max"}
       }
       expect(@tester.send("ZINTERSTORE", args)).to eq "OK"
       ans =  ["ZINTERSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate max"]

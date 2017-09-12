@@ -5,7 +5,7 @@ RSpec.describe 'Cassandra TEST [YCSB MODE]' do
   ## Common
   inputDir    = "lib/cassandra/spec/input/"
   expectedDir = "lib/cassandra/spec/expected/"
-  options = [ "-a original", "-a primitive"]
+  option = [ "-a original", "-a primitive"]
   testSet = {}
   
   ## YCSB Workload Set
@@ -16,7 +16,7 @@ RSpec.describe 'Cassandra TEST [YCSB MODE]' do
     "ycsb_run_workloada","ycsb_run_workloadb",
     "ycsb_run_workloadc","ycsb_run_workloadd"
   ]
-  addedTestSet = buildTestSet(testNamePrefix,workloads,options,inputDir,expectedDir)
+  addedTestSet = buildTestSet(testNamePrefix,workloads,option,inputDir,expectedDir)
   testSet = testSet.merge(addedTestSet)
 
   testSet.each{|name, config|

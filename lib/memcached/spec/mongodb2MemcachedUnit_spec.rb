@@ -13,12 +13,12 @@ module Mongodb2MemcachedOperationUnitTest
       @logger = DummyLogger.new
       @parser = MemcachedUnitTest::ParserMock.new
       @utils  = MemcachedUnitTest::UtilsMock.new
-      @queryParser = MemcachedUnitTest::QueryParserMock.new
-      @queryProcessor = MemcachedUnitTest::QueryProcessorMock.new
+      @query_parser = MemcachedUnitTest::QueryParserMock.new
+      @query_processor = MemcachedUnitTest::QueryProcessorMock.new
       @queryReturn = false
       @getValue = nil
       @args = nil
-      @options = {:datamodel => "KEYVALUE"}
+      @option = {:datamodel => "KEYVALUE"}
     end
     ## Mock
     def add_count(a)
@@ -28,16 +28,16 @@ module Mongodb2MemcachedOperationUnitTest
     def monitor(a,b)
     end
     def datamodel(model)
-      @options[:datamodel] = model
+      @option[:datamodel] = model
     end
     def setDocs(docs)
       @utils.docs = docs
     end
     def setCond(cond)
-      @queryParser.cond = cond
+      @query_parser.cond = cond
     end
     def setQueryReturnValue(bool)
-      @queryProcessor.returnValue = bool
+      @query_processor.returnValue = bool
     end
     def SET(a)
       return execQuery("#{__method__}",a)

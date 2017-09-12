@@ -537,7 +537,7 @@ module Redis2MemcachedOperation
   end
 
   # @conv {"ZUNIONSTORE" => ["deserizeWithScore@client","redisSerializeWithScore@client","mergeWithOption@client","GET","SET"]}
-  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "options" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
+  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "option" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
   def REDIS_ZUNIONSTORE(args)
     result = {}
     data = {}
@@ -548,14 +548,14 @@ module Redis2MemcachedOperation
     args["args"].each_index do |index|
       key = args["args"][index]
       weight = 1.0
-      if args["options"] &&
-         args["options"][:weights] &&
-         args["options"][:weights][index]
-        weight = args["options"][:weights][index].to_f
+      if args["option"] &&
+         args["option"][:weights] &&
+         args["option"][:weights][index]
+        weight = args["option"][:weights][index].to_f
       end
       if !result.keys.empty?
         result.merge!(redisDeserializeWithScore(data[key])) do |_, v0, v1|
-          aggregateScore(args["options"][:aggregate], v0.to_f, v1.to_f, weight)
+          aggregateScore(args["option"][:aggregate], v0.to_f, v1.to_f, weight)
         end
       else
         result = redisDeserializeWithScore(data[key])
@@ -566,7 +566,7 @@ module Redis2MemcachedOperation
   end
 
   # @conv {"ZINTERSTORE" => ["deserizeWithScore@client","redisSerializeWithScore@client","diffWithOption@client""GET","SET"]}
-  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "options" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
+  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "option" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
   def REDIS_ZINTERSTORE(args)
     result = {}
     data   = {}
@@ -577,17 +577,17 @@ module Redis2MemcachedOperation
     args["args"].each_index do |index|
       key = args["args"][index]
       weight = 1.0
-      if args["options"] &&
-         args["options"][:weights] &&
-         args["options"][:weights][index]
-        weight = args["options"][:weights][index].to_f
+      if args["option"] &&
+         args["option"][:weights] &&
+         args["option"][:weights][index]
+        weight = args["option"][:weights][index].to_f
       end
       if !result.keys.empty?
         new_hash = redisDeserializeWithScore(data[key])
         keys = result.keys & new_hash.keys
         tmp__ = {}
         keys.each do |key_|
-          tmp__[key_] = aggregateScore(args["options"][:aggregate], result[key_].to_f, new_hash[key_].to_f, weight)
+          tmp__[key_] = aggregateScore(args["option"][:aggregate], result[key_].to_f, new_hash[key_].to_f, weight)
         end
       else
         result = redisDeserializeWithScore(data[key])

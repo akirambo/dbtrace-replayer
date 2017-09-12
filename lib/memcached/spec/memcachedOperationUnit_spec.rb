@@ -12,7 +12,7 @@ module MemcachedOperationUnitTest
       @logger = DummyLogger.new
       @client = MemcachedUnitTest::ClientMock.new
       @parser = MemcachedUnitTest::ParserMock.new
-      @options = {:async => false}
+      @option = {:async => false}
       @metrics = false
       @host   = "127.0.0.1"
     end
@@ -27,10 +27,10 @@ module MemcachedOperationUnitTest
     end
     ## For Test
     def async
-      @options[:async] = true
+      @option[:async] = true
     end
     def sync
-      @options[:async] = false
+      @option[:async] = false
     end
     def clientQueryReturn(val)
       @client.queryReturn = val

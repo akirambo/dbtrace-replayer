@@ -5,13 +5,13 @@ require_relative "../src/redisRunner"
 RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
   before do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :api => "cxx",
       :keepalive => false,
       :async => false
     }
-    @options[:sourceDB] = "redis"
-    @runner = RedisRunner.new("redis", @logger, @options)
+    @option[:sourceDB] = "redis"
+    @runner = RedisRunner.new("redis", @logger, @option)
   end
   ## STRINGS
   context 'STRING Operation' do
@@ -308,7 +308,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
       args = {
         "key" => "zusC",
         "args" => ["zusA","zusB"],
-        "options" => {}
+        "option" => {}
       }
       
       expect(@runner.send("ZUNIONSTORE", args)).to eq "OK"
@@ -319,7 +319,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
       args = {
         "key" => "zusCsum",
         "args" => ["zusA","zusB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "sum"
         }
@@ -335,7 +335,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
       args = {
         "key" => "zusCsum2",
         "args" => ["zusA","zusB","zusD"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0","1.5"],
           :aggregate => "sum"
         }
@@ -353,7 +353,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
       args = {
         "key" => "zusCmin",
         "args" => ["zusA","zusB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "min"
         }
@@ -368,7 +368,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
       args = {
         "key" => "zusCmax",
         "args" => ["zusA","zusB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "max"
         }
@@ -392,7 +392,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
       args = {
         "key" => "zisC",
         "args" => ["zisA","zisB"],
-        "options" => {}
+        "option" => {}
       }
       expect(@runner.send("ZINTERSTORE",args)).to eq "OK"
       expect(@runner.send("ZRANGE",["zisC",0,5])).to eq "3"
@@ -401,7 +401,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
       args = {
         "key" => "zisCsum",
         "args" => ["zisA","zisB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "sum"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "sum"}
       }
       expect(@runner.send("ZINTERSTORE",args)).to eq "OK"
       expect(@runner.send("ZSCORE",["zisCsum",3])).to eq "920"
@@ -409,7 +409,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
       args = {
         "key" => "zisCmin",
         "args" => ["zisA","zisB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "min"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "min"}
       }
       expect(@runner.send("ZINTERSTORE", args)).to eq "OK"
       expect(@runner.send("ZSCORE",["zisCmin",3])).to eq "320"
@@ -417,7 +417,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Each Connection & Sync]' do
       args = {
         "key" => "zisCmax",
         "args" => ["zisA","zisB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "max"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "max"}
       }
       expect(@runner.send("ZINTERSTORE", args)).to eq "OK"
       expect(@runner.send("ZSCORE",["zisCmax",3])).to eq "600"
@@ -554,12 +554,12 @@ end
 RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
   before do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :api => "cxx",
       :keepalive => true
     }
-    @options[:sourceDB] = "redis"
-    @runner = RedisRunner.new("redis", @logger, @options)
+    @option[:sourceDB] = "redis"
+    @runner = RedisRunner.new("redis", @logger, @option)
   end
   ## STRINGS
   context 'STRING Operation' do
@@ -837,7 +837,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
       args = {
         "key" => "zsetC",
         "args" => ["zsetA","zsetB"],
-        "options" => {}
+        "option" => {}
       }
       
       expect(@runner.send("ZUNIONSTORE", args)).to eq 5
@@ -848,7 +848,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
       args = {
         "key" => "zsetCsum",
         "args" => ["zsetA","zsetB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "sum"
         }
@@ -864,7 +864,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
       args = {
         "key" => "zsetCsum2",
         "args" => ["zsetA","zsetB","zsetD"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0","1.5"],
           :aggregate => "sum"
         }
@@ -883,7 +883,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
       args = {
         "key" => "zsetCmin",
         "args" => ["zsetA","zsetB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "min"
         }
@@ -898,7 +898,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
       args = {
         "key" => "zsetCmax",
         "args" => ["zsetA","zsetB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "max"
         }
@@ -922,7 +922,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
       args = {
         "key" => "zsetC",
         "args" => ["zsetA","zsetB"],
-        "options" => {}
+        "option" => {}
       }
       expect(@runner.send("ZINTERSTORE",args)).to eq 1
       expect(@runner.send("ZRANGE",["zsetC",0,5])).to eq ["3"]
@@ -931,7 +931,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
       args = {
         "key" => "zsetCsum",
         "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "sum"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "sum"}
       }
       expect(@runner.send("ZINTERSTORE",args)).to eq 1
       expect(@runner.send("ZSCORE",["zsetCsum",3])).to eq 920.0
@@ -939,7 +939,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
       args = {
         "key" => "zsetCmin",
         "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "min"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "min"}
       }
       expect(@runner.send("ZINTERSTORE", args)).to eq 1
       expect(@runner.send("ZSCORE",["zsetCmin",3])).to eq 320.0
@@ -947,7 +947,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Sync]' do
       args = {
         "key" => "zsetCmax",
         "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "max"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "max"}
       }
       expect(@runner.send("ZINTERSTORE", args)).to eq 1
       expect(@runner.send("ZSCORE",["zsetCmax",3])).to eq 600.0
@@ -1016,13 +1016,13 @@ end
 RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' do
   before do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :api => "cxx",
       :keepalive => true,
       :async => true
     }
-    @options[:sourceDB] = "redis"
-    @runner = RedisRunner.new("redis", @logger, @options)
+    @option[:sourceDB] = "redis"
+    @runner = RedisRunner.new("redis", @logger, @option)
   end
   ## STRINGS
   context 'STRING Operation' do
@@ -1306,7 +1306,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' d
       args = {
         "key" => "zsetC",
         "args" => ["zsetA","zsetB"],
-        "options" => {}
+        "option" => {}
       }
       
       expect(@runner.send("ZUNIONSTORE", args)).to eq 5
@@ -1317,7 +1317,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' d
       args = {
         "key" => "zsetCsum",
         "args" => ["zsetA","zsetB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "sum"
         }
@@ -1333,7 +1333,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' d
       args = {
         "key" => "zsetCsum2",
         "args" => ["zsetA","zsetB","zsetD"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0","1.5"],
           :aggregate => "sum"
         }
@@ -1352,7 +1352,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' d
       args = {
         "key" => "zsetCmin",
         "args" => ["zsetA","zsetB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "min"
         }
@@ -1367,7 +1367,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' d
       args = {
         "key" => "zsetCmax",
         "args" => ["zsetA","zsetB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "max"
         }
@@ -1391,7 +1391,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' d
       args = {
         "key" => "zsetC",
         "args" => ["zsetA","zsetB"],
-        "options" => {}
+        "option" => {}
       }
       expect(@runner.send("ZINTERSTORE",args)).to eq 1
       expect(@runner.send("ZRANGE",["zsetC",0,5])).to eq ["3"]
@@ -1400,7 +1400,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' d
       args = {
         "key" => "zsetCsum",
         "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "sum"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "sum"}
       }
       expect(@runner.send("ZINTERSTORE",args)).to eq 1
       expect(@runner.send("ZSCORE",["zsetCsum",3])).to eq 920.0
@@ -1408,7 +1408,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' d
       args = {
         "key" => "zsetCmin",
         "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "min"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "min"}
       }
       expect(@runner.send("ZINTERSTORE", args)).to eq 1
       expect(@runner.send("ZSCORE",["zsetCmin",3])).to eq 320.0
@@ -1416,7 +1416,7 @@ RSpec.describe 'RedisOperation (C++ API) Unit Test [Reuse Connection & Async]' d
       args = {
         "key" => "zsetCmax",
         "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "max"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "max"}
       }
       expect(@runner.send("ZINTERSTORE", args)).to eq 1
       expect(@runner.send("ZSCORE",["zsetCmax",3])).to eq 600.0

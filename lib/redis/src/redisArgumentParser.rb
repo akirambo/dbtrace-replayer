@@ -46,18 +46,18 @@ class RedisArgumentParser
       result["args"].push(args.shift)
     end
     
-    result["options"] = Hash.new
+    result["option"] = Hash.new
     while (args.size != 0) do
       optionName = args.shift.downcase()
       if(optionName == "weights")then
         ## Extract wheights option
-        result["options"][:weights] = Array.new
+        result["option"][:weights] = Array.new
         keynumber.times do
-          result["options"][:weights].push(args.shift)
+          result["option"][:weights].push(args.shift)
         end
       elsif(optionName == "aggregate")then
         ## Extract aggregate option
-        result["options"][:aggregate] = args.shift
+        result["option"][:aggregate] = args.shift
       else
         @logger.error("[ERROR] :: unsupported option Name #{optionName}")
       end

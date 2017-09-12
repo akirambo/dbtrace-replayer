@@ -10,11 +10,11 @@ RSpec.describe 'RedisArgumentParser Unit Test)' do
     it 'extractZ_X_STORE_ARGS' do
       args = ["dst", "2", "set", "set2", "WEIGHTS", "2.0", "1.0", "AGGREGATE", "sum"]
       ans = {"key" => "dst", "args" => ["set","set2"],
-        "options" => {:weights => ["2.0","1.0"],:aggregate => "sum"}}
+        "option" => {:weights => ["2.0","1.0"],:aggregate => "sum"}}
       expect(@tester.extractZ_X_STORE_ARGS(args)).to include(ans)
       args = ["dst", "2", "set", "set2", "WEIGHTS", "2.0", "1.0", "HOGE", "sum"]
       ans = {"key" => "dst", "args" => ["set","set2"],
-        "options" => {:weights => ["2.0","1.0"]}}
+        "option" => {:weights => ["2.0","1.0"]}}
       expect(@tester.extractZ_X_STORE_ARGS(args)).to include(ans)
     end
     it 'args2hash' do

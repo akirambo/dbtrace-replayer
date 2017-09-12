@@ -5,11 +5,11 @@ require_relative "../src/redisRunner"
 RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
   before do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :api => "ruby"
     }
-    @options[:sourceDB] = "redis"
-    @runner = RedisRunner.new("redis", @logger, @options)
+    @option[:sourceDB] = "redis"
+    @runner = RedisRunner.new("redis", @logger, @option)
   end
   ## STRINGS
   context 'STRING Operation' do
@@ -284,7 +284,7 @@ RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
       args = {
         "key" => "zsetC",
         "args" => ["zsetA","zsetB"],
-        "options" => {}
+        "option" => {}
       }
       
       expect(@runner.send("ZUNIONSTORE", args)).to eq 5
@@ -295,7 +295,7 @@ RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
       args = {
         "key" => "zsetCsum",
         "args" => ["zsetA","zsetB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "sum"
         }
@@ -311,7 +311,7 @@ RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
       args = {
         "key" => "zsetCsum2",
         "args" => ["zsetA","zsetB","zsetD"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0","1.5"],
           :aggregate => "sum"
         }
@@ -330,7 +330,7 @@ RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
       args = {
         "key" => "zsetCmin",
         "args" => ["zsetA","zsetB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "min"
         }
@@ -345,7 +345,7 @@ RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
       args = {
         "key" => "zsetCmax",
         "args" => ["zsetA","zsetB"],
-        "options" => {
+        "option" => {
           :weights => ["2.0","1.0"],
           :aggregate => "max"
         }
@@ -369,7 +369,7 @@ RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
       args = {
         "key" => "zsetC",
         "args" => ["zsetA","zsetB"],
-        "options" => {}
+        "option" => {}
       }
       expect(@runner.send("ZINTERSTORE",args)).to eq 1
       expect(@runner.send("ZRANGE",["zsetC",0,5])).to eq ["3"]
@@ -378,7 +378,7 @@ RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
       args = {
         "key" => "zsetCsum",
         "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "sum"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "sum"}
       }
       expect(@runner.send("ZINTERSTORE",args)).to eq 1
       expect(@runner.send("ZSCORE",["zsetCsum",3])).to eq 920.0
@@ -386,7 +386,7 @@ RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
       args = {
         "key" => "zsetCmin",
         "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "min"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "min"}
       }
       expect(@runner.send("ZINTERSTORE", args)).to eq 1
       expect(@runner.send("ZSCORE",["zsetCmin",3])).to eq 320.0
@@ -394,7 +394,7 @@ RSpec.describe 'RedisOperation (Ruby API) Test With Database' do
       args = {
         "key" => "zsetCmax",
         "args" => ["zsetA","zsetB"],
-        "options" => {:weights => ["2.0","1.0"], :aggregate => "max"}
+        "option" => {:weights => ["2.0","1.0"], :aggregate => "max"}
       }
       expect(@runner.send("ZINTERSTORE", args)).to eq 1
       expect(@runner.send("ZSCORE",["zsetCmax",3])).to eq 600.0

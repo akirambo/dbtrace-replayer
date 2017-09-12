@@ -483,7 +483,7 @@ module MemcachedOperationUnitTest
         args = {
           "key"=>"dst", 
           "args"=>["src0","src1"],
-          "options"=>{:weights => [1,2],:aggregate =>"SUM"}
+          "option"=>{:weights => [1,2],:aggregate =>"SUM"}
         }
         @tester.queryReturn = true
         @tester.getValue = {
@@ -500,7 +500,7 @@ module MemcachedOperationUnitTest
         args = {
           "key"=>"dst", 
           "args"=>["src0","src1"],
-          "options"=>{:weights => [1,2],:aggregate =>"SUM"}
+          "option"=>{:weights => [1,2],:aggregate =>"SUM"}
         }
         @tester.queryReturn = true
         @tester.getValue = {

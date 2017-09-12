@@ -9,9 +9,9 @@ require_relative "../../common/utils"
 RSpec.describe 'MongodbOperation Unit TEST' do
   before do
     @logger = DummyLogger.new
-    @options = {}
-    @options[:sourceDB] = "mongodb"
-    @runner = MongodbRunner.new("mongodb",@logger,@options)
+    @option = {}
+    @option[:sourceDB] = "mongodb"
+    @runner = MongodbRunner.new("mongodb",@logger,@option)
   end
   context " > Memcached To Mongodb Operation" do
     before (:each) do

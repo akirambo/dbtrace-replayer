@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -28,24 +29,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-require "mongo"
-
 require_relative "../../common/abstract_runner"
 require_relative "./cxx/mongodbCxxRunner"
-
-require_relative "../../mongodb/src/mongodbArgumentParser"
-require_relative "../../redis/src/redisArgumentParser"
-require_relative "../../memcached/src/memcachedArgumentParser"
-require_relative "../../cassandra/src/cassandraArgumentParser"
 
 require_relative "./mongodbOperation"
 require_relative "./redis2MongodbOperation"
 require_relative "./memcached2MongodbOperation"
 require_relative "./cassandra2MongodbOperation"
 
-
 class MongodbRunner < AbstractRunner
-  ## MONGODB OPERATION 
+  ## MONGODB OPERATION
   include MongodbOperation
   ## MEMCACHED TO MONGODB OPERATION
   include Memcached2MongodbOperation
@@ -53,71 +46,60 @@ class MongodbRunner < AbstractRunner
   include Redis2MongodbOperation
   ## CASSANDRA TO MONGODB OPERATION
   include Cassandra2MongodbOperation
-  
-  def initialize(logDBName, logger, option)
+
+  def initialize(log_dbname, logger, option)
     @host = "127.0.0.1"
-    @port = 27017
-    if(ENV["MONGODB_IPADDRESS"])then
+    @port = "27017"
+    if ENV["MONGODB_IPADDRESS"]
       @host = ENV["MONGODB_IPADDRESS"]
     end
     ## SETUP
     @client = nil
-    @parser = nil
-    @logger = logger
-    @option = option
-    case option[:sourceDB].upcase
-    when "MONGODB" then
-      @parser = MongodbArgumentParser.new(logger)
-    when "REDIS" then
-      @parser = RedisArgumentParser.new(logger)
-    when "MEMCACHED" then
-      @parser = MemcachedArgumentParser.new(logger,option)
-    when "CASSANDRA" then
-      @parser = CassandraArgumentParser.new(logger,option)
-    else
-      if(option[:mode] != "clear")then
-        @logger.error("Unsupported DB Log #{option[:sourceDB].upcase}" )
-      end
-    end
-    super(logDBName,logger,option)
+    super(log_dbname, logger, option)
   end
+
   def connect
-    if(!@option[:keepalive])then
+    unless @option[:keepalive]
       @client.connect("mongodb://#{@host}:#{@port}")
     end
   end
+
   def close
-    if(!@option[:keepalive])then
-      @client.close()
+    unless @option[:keepalive]
+      @client.close
     end
   end
+
   def async_exec
-    @metrics.start_monitor("database","INSERT")
-    @client.insertMany()
-    #add_count("INSERT_MANY")
-    add_total_duration(@client.getDuration(),"database")
-    #@metrics.end_monitor("database","INSERT_MANY")
-    @metrics.end_monitor("database","INSERT")
-  end 
+    @metrics.start_monitor("database", "INSERT")
+    @client.insertMany
+    # add_count("INSERT_MANY")
+    add_total_duration(@client.getDuration, "database")
+    # @metrics.end_monitor("database", "INSERT_MANY")
+    @metrics.end_monitor("database", "INSERT")
+  end
 
   def init
-    setupClient
-    if(@option[:clearDB])then
+    setup_client
+    if @option[:clearDB]
       refresh
     end
   end
+
   def finish
-    if(@option[:clearDB])then
+    if @option[:clearDB]
       refresh
     end
   end
+
   def refresh
-    setupClient
+    setup_client
     connect
-    @client.drop()
-    @client.close()
+    @client.drop
+    @client.close
   end
-  def setupClient
-    @client = MongodbCxxRunner.new()
+
+  def setup_client
+    @client = MongodbCxxRunner.new
   end
 end

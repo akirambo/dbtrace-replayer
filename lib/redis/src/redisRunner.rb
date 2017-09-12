@@ -33,15 +33,6 @@ require "json"
 require_relative "../../common/abstract_runner"
 require_relative "./cxx/redisCxxRunner"
 
-## Parser
-require_relative "../../mongodb/src/mongodbArgumentParser"
-require_relative "../../mongodb/src/mongodbQueryParser"
-require_relative "../../mongodb/src/mongodbQueryProcessor"
-
-require_relative "../../redis/src/redisArgumentParser"
-require_relative "../../memcached/src/memcachedArgumentParser"
-require_relative "../../cassandra/src/cassandraArgumentParser"
-
 require_relative "./redisOperation"
 require_relative "./memcached2RedisOperation"
 require_relative "./mongodb2RedisOperation"
@@ -74,14 +65,12 @@ class RedisRunner < AbstractRunner
       ## Redis Default 2500
       @option[:poolRequestMaxSize] = -1
     end
-    ## Setup Parser
-    setup_parser(logger, option)
     ## Setup Client
     @client = nil
     if @option[:keepalive]
       setup_client
-      super(log_db_name, logger, option)
     end
+    super(log_db_name, logger, option)
   end
 
   def connect
@@ -122,25 +111,6 @@ class RedisRunner < AbstractRunner
   def async_exec
     if @pool_request_size > 0
       redis_async_executer(nil, true)
-    end
-  end
-
-  def setup_parser(logger, option)
-    case @option[:sourceDB].upcase
-    when "MONGODB" then
-      @parser = MongodbArgumentParser.new(logger)
-      @query_parser = MongodbQueryParser.new(logger)
-      @query_processor = MongodbQueryProcessor.new(logger)
-    when "REDIS" then
-      @parser = RedisArgumentParser.new(logger)
-    when "MEMCACHED" then
-      @parser = MemcachedArgumentParser.new(logger, option)
-    when "CASSANDRA" then
-      @parser = CassandraArgumentParser.new(logger, option)
-    else
-      if option[:mode] != "clear"
-        @logger.error("Unsupported DB Log #{option[:sourceDB].upcase}")
-      end
     end
   end
 

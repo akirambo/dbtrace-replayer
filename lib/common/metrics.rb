@@ -29,9 +29,9 @@
 #
 
 class Metrics
-  def initialize(logger,options)
+  def initialize(logger,option)
     @logger = logger
-    @options = options
+    @option = option
     ## type => { query => []}
     @time  = {}
     ## queryType => count
@@ -43,8 +43,8 @@ class Metrics
   end
   def output()
     @logger.info("=========== Metrics Output ===========")
-    @logger.info("#{@options[:sourceDB]} => #{@options[:targetDB]}")
-    if(@options[:async])then
+    @logger.info("#{@option[:sourceDB]} => #{@option[:targetDB]}")
+    if(@option[:async])then
       @logger.info(" API :: ASYNC MODE")
     else
       @logger.info(" API ::  SYNC MODE")

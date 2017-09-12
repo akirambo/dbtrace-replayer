@@ -414,14 +414,14 @@ module Redis2MongodbTester
       it "REDIS_UNIONSTORE" do
         @tester.setFindValue([{"value"=>"a"},{"value"=>"b"}])
         @tester.setQueryValue(true)
-        args = {"args"=>["a","b"],"options"=>{:weights=>[1.2,1],:aggregate=>"sum"}}
+        args = {"args"=>["a","b"],"option"=>{:weights=>[1.2,1],:aggregate=>"sum"}}
         expect(@tester.send(:REDIS_ZUNIONSTORE,args)).to eq true
         expect(@tester.command).to eq "INSERT"
       end
       it "REDIS_ZINTERSTORE" do
         @tester.setFindValue([{"value"=>"a"},{"value"=>"b"}])
         @tester.setQueryValue(true)
-        args = {"args"=>["a","b"],"options"=>{:weights=>[1.2,1],:aggregate=>"sum"}}
+        args = {"args"=>["a","b"],"option"=>{:weights=>[1.2,1],:aggregate=>"sum"}}
         expect(@tester.send(:REDIS_ZINTERSTORE,args)).to eq true
         expect(@tester.command).to eq "INSERT"
       end

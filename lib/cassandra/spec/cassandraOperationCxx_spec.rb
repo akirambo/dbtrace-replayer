@@ -7,13 +7,13 @@ require_relative "../../common/utils"
 RSpec.describe 'CassandraOperation Unit TEST (C++ API) [Each Connection]' do
   before do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :keyspace => "test",
       :api => "cxx",
       :keepalive => false
     }
-    @options[:sourceDB] = "cassandra"
-    @runner = CassandraRunner.new("cassandra",@logger,@options)
+    @option[:sourceDB] = "cassandra"
+    @runner = CassandraRunner.new("cassandra",@logger,@option)
   end
   context " > Cassandra Operation" do
     before (:each) do
@@ -39,13 +39,13 @@ end
 RSpec.describe 'CassandraOperation Unit TEST (C++ API) [Reuse Connection]' do
   before do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :keyspace => "test",
       :api => "cxx",
       :keepalive => true
     }
-    @options[:sourceDB] = "cassandra"
-    @runner = CassandraRunner.new("cassandra",@logger,@options)
+    @option[:sourceDB] = "cassandra"
+    @runner = CassandraRunner.new("cassandra",@logger,@option)
   end
   context " > Cassandra Operation" do
     before (:each) do

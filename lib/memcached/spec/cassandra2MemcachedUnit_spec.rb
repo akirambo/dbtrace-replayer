@@ -15,22 +15,22 @@ module Cassandra2MemcachedOperationUnitTest
       @queryReturn = false
       @getValue = nil
       @args = nil
-      @options = {:datamodel => "KEYVALUE"}
+      @option = {:datamodel => "KEYVALUE"}
     end
     ## Mock
     def monitor(a,b)
     end
     def datamodel(model)
-      @options[:datamodel] = model
+      @option[:datamodel] = model
     end
     def setDocs(docs)
       @utils.docs = docs
     end
     def setCond(cond)
-      @queryParser.cond = cond
+      @query_parser.cond = cond
     end
     def setQueryReturnValue(bool)
-      @queryProcessor.returnValue = bool
+      @query_processor.returnValue = bool
     end
     def SET(a)
       return execQuery("#{__method__}",a)

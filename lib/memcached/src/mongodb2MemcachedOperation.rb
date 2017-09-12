@@ -35,7 +35,7 @@ module MongoDB2MemcachedOperation
 
   # @conv {"INSERT" => ["GET","SET"]}
   def MONGODB_INSERT(args)
-    case @options[:datamodel]
+    case @option[:datamodel]
     when "KEYVALUE" then
       return mongodbInsertKeyvalue(args)
     when "DOCUMENT" then
@@ -46,7 +46,7 @@ module MongoDB2MemcachedOperation
 
   # @conv {"UPDATE" => ["query@client","GET","REPLACE"]}
   def MONGODB_UPDATE(args)
-    case @options[:datamodel]
+    case @option[:datamodel]
     when "KEYVALUE" then
       return mongodbUpdateKeyvalue(args)
     when "DOCUMENT" then
@@ -58,7 +58,7 @@ module MongoDB2MemcachedOperation
   # @conv {"FIND" => ["mongodbQuery@client","GET"]}
   ## args = {"key"=>key, "filter"=>filter}
   def MONGODB_FIND(args)
-    case @options[:datamodel]
+    case @option[:datamodel]
     when "KEYVALUE" then
       docs = GET([args["key"] + args["filter"]["_id"]])
       return documentNormalize(docs)
@@ -70,7 +70,7 @@ module MongoDB2MemcachedOperation
 
   # @conv {"DELETE" => ["mongodbQuery@client","GET","DELETE","REPLACE"]}
   def MONGODB_DELETE(args)
-    case @options[:datamodel]
+    case @option[:datamodel]
     when "KEYVALUE" then
       col = args["key"] + args["filter"]["_id"]
       return DELETE([col])
@@ -82,7 +82,7 @@ module MongoDB2MemcachedOperation
 
   # @conv {"COUNT" => ["query@client","GET"]}
   def MONGODB_COUNT(args)
-    case @options[:datamodel]
+    case @option[:datamodel]
     when "KEYVALUE" then
       data = GET([args["key"] + args["query"]["_id"]], false)
       unless data.size.zero?
@@ -104,7 +104,7 @@ module MongoDB2MemcachedOperation
     add_count(:aggregate)
     data = GET([args["key"]], false)
     docs = @utils.symbolhash2stringhash(eval(data))
-    params = @queryParser.getParameter(args)
+    params = @query_parser.getParameter(args)
     first_flag = true
     key2realkey = nil
     docs.each do |doc|
@@ -113,18 +113,18 @@ module MongoDB2MemcachedOperation
       match_duration = start_time - Time.now
       if match_flag
         if first_flag
-          key2realkey = @queryParser.createKey2RealKey(doc, params["cond"])
+          key2realkey = @query_parser.createKey2RealKey(doc, params["cond"])
           first_flag = false
         end
         # create group key
-        key = @queryParser.createGroupKey(doc, params["cond"])
+        key = @query_parser.createGroupKey(doc, params["cond"])
         if result[key].nil?
           result[key] = {}
         end
         # do aggregation
         params["cond"].each do |k, v|
           start_time = Time.now
-          result[key][k] = @queryProcessor.aggregation(result[key][k], doc, v, key2realkey)
+          result[key][k] = @query_processor.aggregation(result[key][k], doc, v, key2realkey)
           aggregate_duration += Time.now - start_time
         end
       end
@@ -153,7 +153,7 @@ module MongoDB2MemcachedOperation
               return false
             end
           else
-            unless @queryProcessor.query(cond, value)
+            unless @query_processor.query(cond, value)
               return false
             end
           end

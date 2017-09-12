@@ -7,19 +7,19 @@ require_relative "../../common/utils"
 RSpec.describe 'Redis To CassandraOperation Unit TEST' do
   before (:all) do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :keyspace     => "testdb",
       :columnfamily => "string",
       :schemaFile => "#{File.dirname(__FILE__)}/input/testSchema.schema",
       :sourceDB => "redis"
     }
 
-    @options[:sourceDB] = "cassandra"
-    @runner = CassandraRunner.new("cassandra",@logger,@options)
+    @option[:sourceDB] = "cassandra"
+    @runner = CassandraRunner.new("cassandra",@logger,@option)
   end
   context " > Redis To Cassandra Operation" do
     before (:each) do
-      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@options[:keyspace]}.#{@options[:columnfamily]};")
+      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@option[:keyspace]}.#{@option[:columnfamily]};")
     end
     it "REDIS_SET" do
       args = ["key00","val00"]
@@ -115,19 +115,19 @@ RSpec.describe 'Redis To CassandraOperation Unit TEST' do
   context " > Redis (Sorted Array) Operation" do
     skip "テスト未実装"
     before (:each) do
-      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@options[:keyspace]}.#{@options[:columnfamily]};")
+      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@option[:keyspace]}.#{@option[:columnfamily]};")
     end
   end
   context " > Redis (List) Operation" do
     skip "テスト未実装"
     before (:each) do
-      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@options[:keyspace]}.#{@options[:columnfamily]};")
+      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@option[:keyspace]}.#{@option[:columnfamily]};")
     end
   end
   context " > Redis (Hash) Operation" do
     skip "テスト未実装"
     before (:each) do
-      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@options[:keyspace]}.#{@options[:columnfamily]};")
+      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@option[:keyspace]}.#{@option[:columnfamily]};")
     end
   end
 end

@@ -418,8 +418,8 @@ module RedisOperation
 
   def z_xstore(name, args)
     command = "#{name} #{args["key"]} #{args["args"].size} #{args["args"].join(" ")}"
-    if args["options"] != {}
-      command += redis_optionhash2command(args["options"])
+    if args["option"] != {}
+      command += redis_optionhash2command(args["option"])
     end
     redis_cxx_executer(name, command)
   end

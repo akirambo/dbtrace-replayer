@@ -7,12 +7,12 @@ RSpec.describe 'Cassandra TO Mongodb Unit Test' do
   before do
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::FATAL
-    @options = {
+    @option = {
       :sourceDB => "cassandra",
       :keyspace => "testdb",
       :columnfamliry => "string"
     }
-    @runner = MongodbRunner.new("cassandra", @logger,@options)
+    @runner = MongodbRunner.new("cassandra", @logger,@option)
   end
   context ' Table Test' do
     before do

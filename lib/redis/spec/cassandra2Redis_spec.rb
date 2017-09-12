@@ -7,10 +7,10 @@ RSpec.describe 'Cassandra TO Redis Test' do
   before do
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::FATAL
-    @options = {
+    @option = {
       :sourceDB => "cassandra",
     }
-    @runner = RedisRunner.new("cassandra", @logger,@options)
+    @runner = RedisRunner.new("cassandra", @logger,@option)
     @runner.send("FLUSHALL",[])
   end
   context 'Field Size == 1 => String' do

@@ -42,11 +42,11 @@ module MongodbTest
   class Mock
     attr_reader :command, :setValue
     include MongoDB2RedisOperation
-    def initialize(logger,options)
+    def initialize(logger,option)
       @logger = logger
       @command = ""
       @parser = ParserMock.new()
-      @options = options
+      @option = option
       @getValue = nil
       @setValue = ""
       @utils = Utils.new()
@@ -54,7 +54,7 @@ module MongodbTest
       @query_processor = QueryProcessorMock.new()
     end
     def datamodel(d)
-      @options[:datamodel] = d
+      @option[:datamodel] = d
     end
     def setGetValueHash
       @getValue  = '{"a":1,"b":"v","c":{"h":1},"d":true,"e":1.0}'

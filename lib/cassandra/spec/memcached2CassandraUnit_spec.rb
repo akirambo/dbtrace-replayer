@@ -24,7 +24,7 @@ module Memcached2CassandraOperationTester
       @schemas = {}
       @raiseError = false
       @logger = DummyLogger.new
-      @options = {
+      @option = {
         :keyspace => "k",
         :columnfamily => "f"
       }

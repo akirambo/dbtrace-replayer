@@ -7,18 +7,18 @@ require_relative "../../common/utils"
 RSpec.describe 'Memcached To CassandraOperation Unit TEST' do
   before (:all) do
     @logger = DummyLogger.new
-    @options = {
+    @optionu = {
       :keyspace     => "testdb",
       :columnfamily => "string",
       :schemaFile => "#{File.dirname(__FILE__)}/input/testSchema.schema",
       :sourceDB => "memacached",
       :api => "ruby"
     }
-    @runner = CassandraRunner.new("memacached",@logger,@options)
+    @runner = CassandraRunner.new("memacached",@logger,@option)
   end
   context " > Memcached To Cassandra Operation" do
     before (:each) do
-      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@options[:keyspace]}.#{@options[:columnfamily]};")
+      @runner.send("DIRECT_EXECUTER","TRUNCATE #{@option[:keyspace]}.#{@option[:columnfamily]};")
     end
     it "MEMCACHED_SET" do
       args = ["key00","val00"]

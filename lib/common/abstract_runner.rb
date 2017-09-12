@@ -32,18 +32,47 @@
 require_relative "./utils"
 require_relative "./metrics"
 
+require_relative "../../mongodb/src/mongodbArgumentParser"
+require_relative "../../redis/src/redisArgumentParser"
+require_relative "../../memcached/src/memcachedArgumentParser"
+require_relative "../../cassandra/src/cassandraArgumentParser"
+
+require_relative "../../mongodb/src/mongodbQueryParser"
+require_relative "../../mongodb/src/mongodbQueryProcessor"
+
 class AbstractRunner
   def initialize(dbname, logger, option)
     @log_dbname = dbname.downcase
+    @parser = nil
     ## REMOVE START
     @logger = logger
-    @options = option
+    @option = option
     ## REMOVE END
     @utils = Utils.new
     @monitor_name = nil
-    @metrics = Metrics.new(logger, @options)
+    @metrics = Metrics.new(@logger, @option)
+    setup_argument_parser
   end
 
+  def setup_argument_parser
+    case @option[:sourceDB].upcase
+    when "MONGODB" then
+      @parser = MongodbArgumentParser.new(@logger)
+      @query_parser = MongodbQueryParser.new(@logger)
+      @query_processor = MongodbQueryProcessor.new(@logger)
+    when "REDIS" then
+      @parser = RedisArgumentParser.new(@logger)
+    when "MEMCACHED" then
+      @parser = MemcachedArgumentParser.new(@logger, @option)
+    when "CASSANDRA" then
+      @parser = CassandraArgumentParser.new(@logger, @option)
+    else
+      if option[:mode] != "clear"
+        @logger.error("Unsupported DB Log #{@option[:sourceDB].upcase}")
+      end
+    end
+  end
+  
   def exec(workload)
     init
     workload.each do |ope|
@@ -53,7 +82,7 @@ class AbstractRunner
         operation(cmd, ope[command])
       end
     end
-    if @options[:async]
+    if @option[:async]
       async_exec
     end
     @metrics.output
@@ -90,7 +119,7 @@ class AbstractRunner
       @metrics.end_monitor("database", @monitor_name)
       @metrics.end_monitor("client", @monitor_name)
     rescue => e
-      @logger.error("[#{operand}] Operation([#{@options[:sourceDB]}] TO [#{@options[:targetDB]}] is not supported @ #{__FILE__}")
+      @logger.error("[#{operand}] Operation([#{@option[:sourceDB]}] TO [#{@option[:targetDB]}] is not supported @ #{__FILE__}")
       if !conv.nil? && !conv["operand"].nil?
         @logger.error("Operator :: #{conv["operand"]}")
       end

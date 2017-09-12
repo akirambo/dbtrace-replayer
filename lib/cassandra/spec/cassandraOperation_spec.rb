@@ -7,9 +7,9 @@ require_relative "../../common/utils"
 RSpec.describe 'CassandraOperation Unit TEST (Ruby API)' do
   before do
     @logger = DummyLogger.new
-    @options = {}
-    @options[:sourceDB] = "cassandra"
-    @runner = CassandraRunner.new("cassandra",@logger,@options)
+    @option = {}
+    @option[:sourceDB] = "cassandra"
+    @runner = CassandraRunner.new("cassandra",@logger,@option)
   end
   context " > Cassandra Operation" do
     before (:each) do

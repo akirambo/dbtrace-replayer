@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -39,7 +40,7 @@ module MongoDB2RedisOperation
   ## args[0] --> skip, args[1] = {_id => xx, value => xx, ...}
   def MONGODB_INSERT(args)
     v = "NG"
-    if @options[:datamodel] == "DOCUMENT"
+    if @option[:datamodel] == "DOCUMENT"
       ## Documents [SADD]
       if args[0] && args[0][0] && args[0][1][0]
         doc = {
@@ -51,7 +52,7 @@ module MongoDB2RedisOperation
       end
       v = SADD(doc)
     else
-      @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
+      @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
     end
     v
   end
@@ -59,8 +60,8 @@ module MongoDB2RedisOperation
   # @conv {"UPDATE" => ["SMEMBERS","QUERY@client","DEL","SADD"]}
   def MONGODB_UPDATE(args)
     results = []
-    if @options[:datamodel] != "DOCUMENT"
-      @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
+    if @option[:datamodel] != "DOCUMENT"
+      @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
       return "NG"
     end
     if args["update"].nil? || args["update"]["$set"].nil?
@@ -94,7 +95,7 @@ module MongoDB2RedisOperation
   # @conv {"FIND" => ["GET,"QUERY@client"]}
   def MONGODB_FIND(args)
     results = []
-    case @options[:datamodel]
+    case @option[:datamodel]
     when "DOCUMENT" then
       ## Documents
       data = SMEMBERS([args["key"]], true)
@@ -113,7 +114,7 @@ module MongoDB2RedisOperation
         end
       end
     else
-      @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
+      @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
       return "NG"
     end
     results
@@ -122,7 +123,7 @@ module MongoDB2RedisOperation
   # @conv {"DELETE" => ["SMEMBERS","QUERY@client","SREM"]}
   def MONGODB_DELETE(args)
     v = "NG"
-    case @options[:datamodel]
+    case @option[:datamodel]
     when "DOCUMENT"
       if args["filter"].size.zero?
         v = DEL([args["key"]])
@@ -144,7 +145,7 @@ module MongoDB2RedisOperation
         end
       end
     else
-      @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
+      @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
     end
     v
   end
@@ -158,7 +159,7 @@ module MongoDB2RedisOperation
   # @conv {"COUNT" => ["SMEMBERS","QUERY@client","COUNT@client"]}
   def MONGODB_COUNT(args)
     count = 0
-    case @options[:datamodel]
+    case @option[:datamodel]
     when "DOCUMENT" then
       docs = SMEMBERS([args["key"]], true)
       monitor("client", "count")
@@ -174,7 +175,7 @@ module MongoDB2RedisOperation
       end
       monitor("client", "count")
     else
-      @logger.error("Unsupported Data Model @ mongodb2redis #{@options[:datamodel]}")
+      @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
     end
     count
   end

@@ -9,12 +9,12 @@ require_relative "../../common/utils"
 RSpec.describe 'MongodbOperation Unit TEST (C++ API) [Each Connection]' do
   before do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :api => "cxx",
       :keepalive => false
     }
-    @options[:sourceDB] = "mongodb"
-    @runner = MongodbRunner.new("mongodb",@logger,@options)
+    @option[:sourceDB] = "mongodb"
+    @runner = MongodbRunner.new("mongodb",@logger,@option)
     @runner.init
     @runner.send("DROP",["test.col"])
   end
@@ -157,12 +157,12 @@ end
 RSpec.describe 'MongodbOperation Unit TEST (C++ API) [Reuse Connection]' do
   before do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :api => "cxx",
       :keepalive => true
     }
-    @options[:sourceDB] = "mongodb"
-    @runner = MongodbRunner.new("mongodb",@logger,@options)
+    @option[:sourceDB] = "mongodb"
+    @runner = MongodbRunner.new("mongodb",@logger,@option)
     @runner.init
     @runner.send("DROP",["test.col"])
   end

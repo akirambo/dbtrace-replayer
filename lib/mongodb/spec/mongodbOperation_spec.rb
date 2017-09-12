@@ -9,11 +9,11 @@ require_relative "../../common/utils"
 RSpec.describe 'MongodbOperation Unit TEST (Ruby API)' do
   before do
     @logger = DummyLogger.new
-    @options = {
+    @option = {
       :api => "ruby"
     }
-    @options[:sourceDB] = "mongodb"
-    @runner = MongodbRunner.new("mongodb",@logger,@options)
+    @option[:sourceDB] = "mongodb"
+    @runner = MongodbRunner.new("mongodb",@logger,@option)
   end
   context " > Mongodb Operation" do
     before (:each) do

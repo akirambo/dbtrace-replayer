@@ -717,7 +717,7 @@ module Redis2MongodbOperation
   end
 
   # @conv {"ZUNIONSTORE" => ["FIND","INSERT"]}
-  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "options" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
+  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "option" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
   def REDIS_ZUNIONSTORE(args)
     ## GET DATA
     data = {} ## value => score
@@ -730,21 +730,21 @@ module Redis2MongodbOperation
         unless data[doc["value"].to_s]
           data[doc["value"].to_s] = []
         end
-        weight = get_weight(args["options"], index)
+        weight = get_weight(args["option"], index)
         data[doc["value"].to_s].push(doc["score"].to_i * weight)
       end
     end
     ## CREATE DOC
     aggregate = "SUM"
-    if args["options"] && args["options"][:aggregate]
-      aggregate = args["options"][:aggregate].upcase
+    if args["option"] && args["option"][:aggregate]
+      aggregate = args["option"][:aggregate].upcase
     end
     docs = createDocsWithAggregate(args["key"], data, aggregate)
     INSERT(docs)
   end
 
   # @conv {"ZINTERSTORE" => ["FIND","INSERT"]}
-  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "options" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
+  ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "option" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
   def REDIS_ZINTERSTORE(args)
     ## GET DATA
     data = {} ## value => score
@@ -758,15 +758,15 @@ module Redis2MongodbOperation
           data[doc["value"].to_s] = []
         end
         if data[doc["value"].to_s]
-          weight = get_weight(args["options"], index)
+          weight = get_weight(args["option"], index)
           data[doc["value"].to_s].push(doc["score"].to_i * weight)
         end
       end
     end
     ## CREATE DOC
     aggregate = "SUM"
-    if args["options"] && args["options"][:aggregate]
-      aggregate = args["options"][:aggregate].upcase
+    if args["option"] && args["option"][:aggregate]
+      aggregate = args["option"][:aggregate].upcase
     end
     docs = createDocsWithAggregate(args["key"], data, aggregate)
     INSERT(docs)

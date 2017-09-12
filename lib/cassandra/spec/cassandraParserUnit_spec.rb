@@ -8,8 +8,8 @@ module CassandraParserTester
     before(:each) do
       filename = ""
       logger = DummyLogger.new
-      options = {}
-      @tester = CassandraParser.new(filename,options,logger)
+      option = {}
+      @tester = CassandraParser.new(filename,option,logger)
     end
     context "CQL3" do
       it "Parse" do

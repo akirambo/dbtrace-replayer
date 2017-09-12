@@ -33,15 +33,15 @@ require_relative "./cassandraSchema"
 
 class CassandraArgumentParser
   attr_reader :schemas
-  def initialize(logger, options)
+  def initialize(logger, option)
     @logger = logger
-    @options = options
+    @option = option
     @schemas = {}
     extract_schema_from_file
   end
 
   def exec(operand, args)
-    send("prepareArgs_#{operand}_#{@options[:inputFormat].upcase}", args)
+    send("prepareArgs_#{operand}_#{@option[:inputFormat].upcase}", args)
   end
 
   def structureType(_operand, _args)
@@ -619,8 +619,8 @@ class CassandraArgumentParser
   # Parse Schema File #
   #####################
   def extract_schema_from_file
-    filename = @options[:schemaFile]
-    keyspace = @options[:keyspace]
+    filename = @option[:schemaFile]
+    keyspace = @option[:keyspace]
     unless filename
       filename = "#{File.dirname(__FILE__)}/cassandraDefaultSchema.schema"
     end

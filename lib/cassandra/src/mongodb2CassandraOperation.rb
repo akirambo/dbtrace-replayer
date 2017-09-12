@@ -168,12 +168,12 @@ module Mongodb2CassandraOperation
 
   # @conv {"AGGREGATE" => ["SELECT"]}
   def MONGODB_AGGREGATE(arg)
-    name = @options[:keyspace] + "." + arg["key"]
+    name = @option[:keyspace] + "." + arg["key"]
     if arg["key"].include?(".")
       name = arg["key"]
     end
     arg.delete("key")
-    target_keys = @queryParser.targetKeys(arg)
+    target_keys = @query_parser.targetKeys(arg)
     command = if target_keys.empty?
                 "SELECT * FROM #{name}"
               else
@@ -193,18 +193,18 @@ module Mongodb2CassandraOperation
     end
     begin
       ans = DIRECT_EXECUTER(command + ";")
-      docs = @queryParser.csv2docs(target_keys, ans)
-      params = @queryParser.getParameter(arg)
+      docs = @query_parser.csv2docs(target_keys, ans)
+      params = @query_parser.getParameter(arg)
       result = {}
       docs.each do |doc|
         ## create group key
-        key = @queryParser.createGroupKey(doc, params["cond"])
+        key = @query_parser.createGroupKey(doc, params["cond"])
         if result[key].nil?
           result[key] = {}
         end
         params["cond"].each do |k, v|
           monitor("client", "aggregate")
-          result[key][k] = @queryProcessor.aggregation(result[key][k], doc, v)
+          result[key][k] = @query_processor.aggregation(result[key][k], doc, v)
           monitor("client", "aggregate")
         end
       end

@@ -38,7 +38,7 @@ module MemcachedOperation
     @logger.debug("GENERATED QUERY: #{__method__} #{args[0]}")
     value = ""
     connect
-    if(@options[:async] and asyncable)then
+    if(@option[:async] and asyncable)then
       @mget = true
       add_count(__method__)
       @client.commitGetKey(args[0])

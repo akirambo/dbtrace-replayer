@@ -7,10 +7,10 @@ RSpec.describe 'Memcached Argument Parser Unit Test' do
   context 'Prepare Arguments' do
     before do
       @logger = DummyLogger.new
-      @options = {
+      @option = {
         :inputFormat => "basic"
       }
-      @parser = MemcachedArgumentParser.new(@logger,@options)
+      @parser = MemcachedArgumentParser.new(@logger,@option)
     end
     it "structureType" do
       result = @parser.structureType("SETTYPE",[nil,nil,"key","0","10","3"])
@@ -98,10 +98,10 @@ RSpec.describe 'Memcached Argument Parser Unit Test' do
   context 'Prepare Arguments' do
     before(:all) do
       @logger = DummyLogger.new
-      @options = {
+      @option = {
         :inputFormat => "binary"
       }
-      @parser = MemcachedArgumentParser.new(@logger,@options)
+      @parser = MemcachedArgumentParser.new(@logger,@option)
     end
     it "MEMCACHED_SET" do
       args = "dummy"

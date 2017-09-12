@@ -35,7 +35,7 @@ module Redis2CassandraOperationTester
       @raiseError = false
       @parser = ParserMock.new
       @logger = DummyLogger.new
-      @options = {
+      @option = {
         :keyspace => "k",
         :columnfamily => "f"
       }
@@ -440,7 +440,7 @@ module Redis2CassandraOperationTester
         args = {}
         args["key"]  = "dst"
         args["args"] = ["src0","src1"]
-        args["options"] = {:weights => [1,2], :aggregate => "SUM"}
+        args["option"] = {:weights => [1,2], :aggregate => "SUM"}
         expect(@tester.send(:REDIS_ZUNIONSTORE,args)).to be true
         command = "UPDATE k.sarray SET value = {'a':6.0,'b':15.0,'c':12.0} WHERE key = 'dst';"
         expect(@tester.command).to eq command
@@ -453,7 +453,7 @@ module Redis2CassandraOperationTester
         args = {}
         args["key"]  = "dst"
         args["args"] = ["src0","src1"]
-        args["options"] = {:weights => [1,2], :aggregate => "SUM"}
+        args["option"] = {:weights => [1,2], :aggregate => "SUM"}
         expect(@tester.send(:REDIS_ZINTERSTORE,args)).to be true
         command = "UPDATE k.sarray SET value = {'a':6.0,'b':15.0,'c':12.0} WHERE key = 'dst';"
         expect(@tester.command).to eq command

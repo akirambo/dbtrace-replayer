@@ -28,18 +28,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-require 'cassandra'
-
 require_relative "../../common/abstract_runner"
 require_relative "./cxx/cassandraCxxRunner"
-
-require_relative "../../mongodb/src/mongodbArgumentParser"
-require_relative "../../mongodb/src/mongodbQueryParser"
-require_relative "../../mongodb/src/mongodbQueryProcessor"
-
-require_relative "../../redis/src/redisArgumentParser"
-require_relative "../../memcached/src/memcachedArgumentParser"
-require_relative "../../cassandra/src/cassandraArgumentParser"
 
 require_relative "./redis2CassandraOperation"
 require_relative "./memcached2CassandraOperation"
@@ -49,17 +39,17 @@ require_relative "./mongodb2CassandraOperation"
 class CassandraRunner < AbstractRunner
   ## CASSANDRA OPERATION
   include CassandraOperation
-  ## MONGODB TO CASSANDRA OPERATION 
+  ## MONGODB TO CASSANDRA OPERATION
   include Mongodb2CassandraOperation
   ## MEMCACHED TO MONGODB OPERATION
   include Memcached2CassandraOperation
   ## REDIS TO MONGODB OPERATION
   include Redis2CassandraOperation
-  
-  def initialize(logDBName, logger, option)
+
+  def initialize(log_dbname, logger, option)
     ## SETUP
     @host = "127.0.0.1"
-    if(ENV["CASSANDRA_IPADDRESS"])then
+    unless ENV["CASSANDRA_IPADDRESS"].nil?
       @host = ENV["CASSANDRA_IPADDRESS"]
     end
     @client = nil
@@ -68,102 +58,85 @@ class CassandraRunner < AbstractRunner
     @option = option
 
     ## Cassandra Specific Variable
-    @columnFamily2keySpace = {}
-    _schema_ = CassandraArgumentParser.new(logger,option)
-    @schemas = _schema_.schemas
-    @createQueries = _schema_.schemas
+    schema_ = CassandraArgumentParser.new(logger, option)
+    @schemas = schema_.schemas
     @pool_request_size = 0
     @pool_byte_size = 0
-    if(@option[:poolRequestMaxSize] == nil)then
-      @option[:poolRequestMaxSize] = 250 ## Cassandra Default 256
-    end
-    case @option[:sourceDB].upcase
-    when "MONGODB" then
-      @parser = MongodbArgumentParser.new(logger)
-      @queryParser = MongodbQueryParser.new(logger)
-      @queryProcessor = MongodbQueryProcessor.new(logger)
-    when "REDIS" then
-      @parser = RedisArgumentParser.new(logger)
-    when "MEMCACHED" then
-      @parser = MemcachedArgumentParser.new(logger,option)
-    when "CASSANDRA" then
-      @parser = CassandraArgumentParser.new(logger,option)
-    else
-    end
     ## EXTRACT SCHEMA
-    init 
-    super(logDBName,logger,option)
+    init
+    super(log_dbname, logger, option)
   end
+
   def refresh
-    @client = CassandraCxxRunner.new()
+    @client = CassandraCxxRunner.new
     @client.connect(@host)
-    @client.resetDatabase()
-    @client.close()
-  end  
+    @client.resetDatabase
+    @client.close
+  end
+
   private
 
-  def setupCxx(keyspace)
-    @client = CassandraCxxRunner.new()
+  def setup_cxx
+    @client = CassandraCxxRunner.new
     @client.connect(@host)
     @client.syncExecuter("create keyspace if not exists  #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3}")
-    ## Refresh By Schema File 
-    @schemas.each{|cf,schema|
+    ## Refresh By Schema File
+    @schemas.each do |_, schema|
       ## Create Keyspace
-      begin
-        @client.syncExecuter(schema.createKeyspaceQuery)
-      rescue => e
-        @logger.error("Cannot Create Keyspace. #{e.message}")
-        @logger.error("QUERY :: #{schema.dropQuery}")
+      cassandra_setup_query(schema.createKeyspaceQuery,
+                            "Cannot Create Keyspace")
+      cassandra_setup_query(schema.createQuery,
+                            "Cannot Create Table")
+      schema.createIndexes.each do |query|
+        cassandra_setup_query(query,
+                              "Cannot Create Index")
       end
-      begin 
-        @client.syncExecuter(schema.createQuery)
-      rescue => e
-        @logger.error("Cannot Create Table. #{e.message}")
-        @logger.error("QUERY :: #{schema.createQuery}")
-      end
-      schema.createIndexes.each{|query|
-        begin
-          @client.syncExecuter(query)
-        rescue => e
-          @logger.error("Cannot Create Index. #{e.message}")
-          @logger.error("QUERY :: #{query}")
-        end
-      }
-    }
-    @client.resetQuery()
-    @pool_request_size = 0    
-    if(!@option[:keepalive])then
-      @client.close()
     end
+    @client.resetQuery
+    @pool_request_size = 0
+    unless @option[:keepalive]
+      @client.close
+    end
+  end
+
+  def cassandra_setup_query(query, code)
+    @client.syncExecuter(query)
+  rescue => e
+    @logger.error("#{code} #{e.message}")
+    @logger.error("QUERY :: #{query}")
   end
 
   def connect
-    if(!@option[:keepalive])then
+    unless @option[:keepalive]
       @client.connect(@host)
     end
   end
+
   def close
-    if(!@option[:keepalive])then
-      @client.close()
+    unless @option[:keepalive]
+      @client.close
     end
   end
+
   def async_exec
     # @metrics.start_monitor("database","AsyncExec")
     @client.asyncExecuter
-    add_total_duration(@client.getDuration(),"database")
+    add_total_duration(@client.getDuration, "database")
     # @metrics.end_monitor("database","AsyncExec")
-    @client.resetQuery()
+    @client.resetQuery
     @pool_request_size = 0
     @pool_byte_size = 0
-  end 
+  end
+
   def init
-    setupCxx(@option[:keyspace])
-    if(@option[:clearDB])then
+    setup_cxx
+    if @option[:clearDB]
       refresh
     end
   end
+
   def finish
-    if(@option[:clearDB])then
+    if @option[:clearDB]
       refresh
     end
   end
