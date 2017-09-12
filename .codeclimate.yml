@@ -18,3 +18,4 @@ ratings:
 exclude_paths:
 - spec/
 - lib/*/spec/
+- lib/*/src/cxx

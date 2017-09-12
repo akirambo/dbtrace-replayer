@@ -104,6 +104,14 @@ option = {
   :poolRequestMaxSize => 250,
 }
 
+def mode_setter(modes, option, error_code)
+  unless modes.include?(option)
+    puts error_code
+    puts opt.banner
+    abort
+  end
+end
+
 opt.on("-a API", "--apitype API",
        "SET API TYPE [cxx(default)] ") do |v|
   option[:api] = v.downcase
@@ -163,11 +171,7 @@ end
 opt.on("-m MODE", "--mode MODE",
        "SELECT MODE [run(default), clear(with target option), ycsb]") do |v|
   option[:mode] = v
-  unless SUPPORTED_MODE.include?(option[:mode])
-    puts "[ERROR] :: Unsupported Mode #{option[:mode]}"
-    puts opt.banner
-    abort
-  end
+  mode_setter(SUPPORTED_MODE, option[:mode], "[ERROR] :: Unsupported Mode #{option[:mode]}")
 end
 opt.on("--schema SCHEMA_FILENAME",
        "SET SCHEMA FILE FOR [cassandra]") do |v|
@@ -188,11 +192,9 @@ opt.on("-Y YCSB_OUTPUT_MODE",
        "--ycsb-output-mode YCSB_OUTPUT_MODE",
        "SELECT YCSB_OUTPUT_MODE (only for YCSB mode) [basic(default), full]") do |v|
   option[:ycsbOutputFormat] = v
-  unless SUPPORTED_OUTPUT_FORMATS.include?(option[:ycsbOutputFormat])
-    puts "[ERROR] :: Unsupported YCSB OUTPUT FORMAT #{option[:ycsbOutputFormat]}"
-    puts opt.banner
-    abort
-  end
+  mode_setter(SUPPORTED_OUTPUT_FORMATS,
+              option[:ycsbOutputFormat],
+              "[ERROR] :: Unsupported YCSB OUTPUT FORMAT #{option[:ycsbOutputFormat]}")
 end
 opt.on("--parse-ycsb-mode PARSE_MODE",
        "SELECT ANALYSIS MODE (only for YCSB mode) [original(default),primitive]") do |v|

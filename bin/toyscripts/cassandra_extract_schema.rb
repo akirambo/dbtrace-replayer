@@ -20,7 +20,7 @@ begin
         buf = []
         buf.push(line)
       elsif(line.include?("USE"))then
-        keyspace = line.sub(/\s*USE\s*/,"").sub(";","").gsub(/\s/,"")
+        keyspace = line.sub(/\s*USE\s*/,"").sub(";","").delete(" ")
       elsif(line.include?("CREATE TABLE"))then
         ## Store Buffer
         ##if(buf.size > 0 and !keyspaceFlag)then
@@ -47,10 +47,10 @@ begin
     schemas.push(buf.join(" "))
   end
   keyspaces.each{|ks|
-    print ks.gsub(/\"/,"") + "\n"
+    print ks.delete("\"") + "\n"
   }
   schemas.each{|schema|
-    schema.gsub!(/\"/,"")
+    schema.delete!("\"")
     schema.sub!(/WITH.*/,";")
     print schema + "\n"
   }

@@ -24,6 +24,7 @@ Metrics/AbcSize:
 Style/FileName:
   Exclude:
   - bin/**/*
+  - lib/**/src/*
 
 # We don't (currently) document our code
 Style/Documentation:
@@ -110,16 +111,15 @@ Security/Eval:
 
 Metrics/ModuleLength:
   Exclude:
-  - spec/**/*
-  - lib/**/**/spec/*
-  - lib/common/spec/*
+  - bin/*/*
+  - lib/**/src/*
+  - lib/common/*
 
 Metrics/MethodLength:
-  Max: 30
-  Exclude:
-  - spec/**/*
-  - lib/common/spec/*
-  - lib/**/**/spec/*
+  Max: 60
+
+Style/ClassLength:
+  Max: 400
 
 Style/ClassAndModuleChildren:
   Exclude:

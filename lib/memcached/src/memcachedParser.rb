@@ -98,10 +98,8 @@ class MemcachedParser < AbstractDBParser
           args = data
           result[command] = args
           return result
-        else
-          if !@skip_types.include?(command) && !integer_string?(command)
-            @logger.warn "[WARNING] :: Unsupported Command #{command}"
-          end
+        elsif !@skip_types.include?(command) && !integer_string?(command)
+          @logger.warn "[WARNING] :: Unsupported Command #{command}"
         end
       end
     end
@@ -128,7 +126,7 @@ class MemcachedParser < AbstractDBParser
           ######################
           ## flush & register ##
           ######################
-          unless args.size.zero?
+          unless args.empty?
             command = args[0]
             if results[command].nil?
               results[command] = []
@@ -145,31 +143,27 @@ class MemcachedParser < AbstractDBParser
           if @supportedCommand.include?(command)
             args = extract_args(f, data)
             args.unshift(command)
-          else
-            if !@skip_types.include?(command) &&
-               !@skip_types.include?(data[0])
-              @logger.warn("Unsupported Command #{command}")
-              @logger.debug(data)
-            end
+          elsif !@skip_types.include?(command) &&
+                !@skip_types.include?(data[0])
+            @logger.warn("Unsupported Command #{command}")
+            @logger.debug(data)
           end
-        else
+        elsif data.size > 2 && @supportedCommand.include?(data[1].downcase)
           # Add Real KeyName
-          if data.size > 2 && @supportedCommand.include?(data[1].downcase)
-            ## CASE1 : command = data[1], key = data[2]
-            args.push(data[2])
-            command = data[1].downcase
-          elsif data.size > 2 && @supportedCommand.include?(data[0].downcase)
-            ## CASE2 : command = data[0], key = data[1]
-            args.push(data[1])
-            ## Add Real Value
-            command = data[0].downcase
-            if gettable_value.key?(command)
-              args.push(data[2].sub(",", "").to_i)
-            end
-          elsif data.size > 3 && data.include?("FOUND") && @get_key_command_from_found.include?(command)
-            ## Add Real Key
-            args.push(data[3])
+          ## CASE1 : command = data[1], key = data[2]
+          args.push(data[2])
+          command = data[1].downcase
+        elsif data.size > 2 && @supportedCommand.include?(data[0].downcase)
+          ## CASE2 : command = data[0], key = data[1]
+          args.push(data[1])
+          ## Add Real Value
+          command = data[0].downcase
+          if gettable_value.key?(command)
+            args.push(data[2].sub(",", "").to_i)
           end
+        elsif data.size > 3 && data.include?("FOUND") && @get_key_command_from_found.include?(command)
+          ## Add Real Key
+          args.push(data[3])
         end
         ## GO TO NEXT
         line = f.gets
@@ -227,9 +221,7 @@ class MemcachedParser < AbstractDBParser
       ope[args[0]].push("x" + random_string(args[1].to_i - 1))
     end
     ## Add value
-    if args[2].to_i > 0
-      ope[args[0]].push("x" * args[2].to_i)
-    end
+    ope = register_logs_add_value(ope, args)
     @logs.push(ope)
   end
 
@@ -237,10 +229,15 @@ class MemcachedParser < AbstractDBParser
     ## Add key
     ope[args[0]].push(args[3])
     ## Add value
+    ope = register_logs_add_value(ope, args)
+    @logs.push(ope)
+  end
+
+  def register_logs_add_value(ope, args)
     if args[2].to_i > 0
       ope[args[0]].push("x" * args[2].to_i)
     end
-    @logs.push(ope)
+    ope
   end
 
   def random_string(num)
