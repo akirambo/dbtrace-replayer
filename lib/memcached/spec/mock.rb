@@ -40,12 +40,12 @@ module MemcachedUnitTest
   end
   class QueryParserMock
     attr_accessor :cond
-    def getParameter(a)
+    def get_parameter(a)
       return @cond
     end
-    def createKey2RealKey(a,b)
+    def createkey2realkey(a,b)
     end
-    def createGroupKey(a,b)
+    def create_groupkey(a,b)
       return "groupKey"
     end
   end

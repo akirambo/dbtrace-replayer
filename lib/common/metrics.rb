@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -29,7 +30,7 @@
 #
 
 class Metrics
-  def initialize(logger,option)
+  def initialize(logger, option)
     @logger = logger
     @option = option
     ## type => { query => []}
@@ -37,135 +38,137 @@ class Metrics
     ## queryType => count
     @query = {}
     @processing = {}
-    @timeTrace = []
-    @queriesOnTargetDB = {}
+    @time_trace = []
+    @queries_on_targetdb = {}
     @status = "end"
   end
-  def output()
+
+  def output
     @logger.info("=========== Metrics Output ===========")
     @logger.info("#{@option[:sourceDB]} => #{@option[:targetDB]}")
-    if(@option[:async])then
+    if @option[:async]
       @logger.info(" API :: ASYNC MODE")
     else
       @logger.info(" API ::  SYNC MODE")
     end
-    totalTime = 0.0
-    totalCount = {"all" => 0.0}
-    
+    total_time = 0.0
+    total_count = { "all" => 0.0 }
     buf = []
-    buf1 = []
-    
-    buf1.push("-- Metrics Detail --")
-    @queriesOnTargetDB.each{|query,count|
-      if(totalCount[query] == nil)then
-        totalCount[query] = 0
+    buf1 = ["-- Metrics Detail --"]
+    @queries_on_targetdb.each do |query, count|
+      if total_count[query].nil?
+        total_count[query] = 0
       end
-      totalCount[query] += count
-      totalCount["all"] += count
+      total_count[query] += count
+      total_count["all"] += count
       buf1.push("\t#{query} #{count}")
-    }
-    
-    
-    buf.push("-- GENERATED QUERY --")      
-    @time.each{|proc,queryTime|
-      #@logger.info("Time @ #{proc}")
-      queryTime.each{|query, times|
-        if(times.size > 0 and times.inject(:+) > 0)then
+    end
+    buf.push("-- GENERATED QUERY --")
+    @time.each do |proc, querytime|
+      # @logger.info("Time @ #{proc}")
+      querytime.each do |query, times|
+        if !times.empty? && times.inject(:+) > 0
           buf.push("QUERY : #{query} @#{proc}")
           buf.push(" TOTAL[count] #{times.size}")
           buf.push(" TOTAL[sec]   #{times.inject(:+)}")
-          buf.push(" AVG  [sec]   #{times.inject(:+)/times.size}")
+          buf.push(" AVG  [sec]   #{times.inject(:+) / times.size}")
           buf.push(" MAX  [sec]   #{times.max}")
           buf.push(" MIN  [sec]   #{times.min}")
-          totalTime  += times.inject(:+)
+          total_time += times.inject(:+)
         end
-      }
-    }
-    
+      end
+    end
     @logger.info("-- TOTAL METRICS --")
-    @logger.info("TOTAL LATENCY[sec] #{totalTime}")
-    @logger.info("TOTAL OPERATIONS   #{totalCount["all"].to_i}")
-    @logger.info("THROUGHPUT[Operations/sec] #{totalCount["all"].to_f/totalTime.to_f}")
-    buf1.each{|line|
+    @logger.info("TOTAL LATENCY[sec] #{total_time}")
+    @logger.info("TOTAL OPERATIONS   #{total_count["all"].to_i}")
+    @logger.info("THROUGHPUT[Operations/sec] #{total_count["all"].to_f / total_time.to_f}")
+    buf1.each do |line|
       @logger.info(line)
-    }
-    buf.each{|line|
+    end
+    buf.each do |line|
       @logger.info(line)
-    }
+    end
     @logger.info("======================================")
     ## reset
     reset
   end
-  def start_monitor(type,querytype)
-    if(!@time[type])then
+
+  def start_monitor(type, querytype)
+    if @time[type].nil?
       @time[type] = {}
     end
     @processing[type] = 0
     query(querytype)
   end
-  def end_monitor(type,querytype)
-    if(!@time[type])then
+
+  def end_monitor(type, querytype)
+    if @time[type].nil?
       @time[type] = {}
     end
-    if(!@time[type][querytype])then
+    if @time[type][querytype].nil?
       @time[type][querytype] = []
     end
-    if(@processing[type])then
+    if @processing[type]
       @time[type][querytype].push(@processing[type])
       @processing[type] = nil
     end
   end
-  def add_duration(duration,type,targetQuery)
-    if(@processing[type] == nil)then
+
+  def add_duration(duration, type, targetquery)
+    if @processing[type].nil?
       @processing[type] = 0
     end
     @processing[type] += duration
-    if(!@queriesOnTargetDB[targetQuery])then
-      @queriesOnTargetDB[targetQuery] = 0
+    if @queries_on_targetdb[targetquery].nil?
+      @queries_on_targetdb[targetquery] = 0
     end
-    @queriesOnTargetDB[targetQuery] += 1
+    @queries_on_targetdb[targetquery] += 1
   end
-  def add_count(targetQuery)
-    if(!@queriesOnTargetDB[targetQuery])then
-      @queriesOnTargetDB[targetQuery] = 0
+
+  def add_count(targetquery)
+    if @queries_on_targetdb[targetquery].nil?
+      @queries_on_targetdb[targetquery] = 0
     end
-    @queriesOnTargetDB[targetQuery] += 1
+    @queries_on_targetdb[targetquery] += 1
   end
-  def add_total_duration(duration,type)
-    if(@processing[type] == nil)then
+
+  def add_total_duration(duration, type)
+    if @processing[type].nil?
       @processing[type] = 0
     end
     @processing[type] += duration
   end
 
-  def monitor(type,targetQuery)
-    case @status 
+  def monitor(type, targetquery)
+    case @status
     when "end" then
       ## "START Timer"
       @status = "start"
-      @startTime = Time.now
+      @start_time = Time.now
     when "start" then
       ## "END Timer"
-      @endTime = Time.now
-      duration = @endTime - @startTime
-      if(@processing[type] == nil)then
+      @end_time = Time.now
+      duration = @end_time - @start_time
+      if @processing[type].nil?
         @processing[type] = 0
       end
       @processing[type] += duration
-      if(!@queriesOnTargetDB[targetQuery])then
-        @queriesOnTargetDB[targetQuery] = 0
+      if @queries_on_targetdb[targetquery].nil?
+        @queries_on_targetdb[targetquery] = 0
       end
-      @queriesOnTargetDB[targetQuery] += 1
+      @queries_on_targetdb[targetquery] += 1
       @status = "end"
     end
   end
+
   private
+
   def reset
     @time = {}
     @query = {}
-    @queriesOnTargetDB = {}
+    @queries_on_targetdb = {}
     @processing = {}
-    @timeTrace = []
+    @time_trace = []
     @status = "end"
   end
 
@@ -173,7 +176,7 @@ class Metrics
   ## For Query ##
   ###############
   def query(query)
-    if(@query[query] == nil)then
+    if @query[query].nil?
       @query[query] = 0
     end
     @query[query] += 1

@@ -29,133 +29,142 @@
 #
 
 module Memcached2MongodbOperation
-=begin
-  collecition = "testCol"
-  doc {"key" => key, "value" => value}
-=end
   private
+
   # @conv {"SET" => ["INSERT"]}
   def MEMCACHED_SET(args)
     r = false
     value = change_numeric_when_numeric(args[1])
-    if(args.size == 3 )then
-      r = INSERT([["testdb.col",{"_id" => args[0],"value"=>value,"expire"=>args[2]}]])
-    elsif(args.size == 2)then
-      r = INSERT([["testdb.col",{"_id" => args[0],"value"=>value}]])
+    if args.size == 3
+      r = INSERT([["testdb.col", { "_id" => args[0], "value" => value, "expire" => args[2] }]])
+    elsif args.size == 2
+      r = INSERT([["testdb.col", { "_id" => args[0], "value" => value }]])
     else
       @logger.fatal("Unsupprted Arguments [#{args}] @ #{__method__} ")
     end
-    return r
+    r
   end
+
   # @conv {"GET" => ["FIND"]}
   def MEMCACHED_GET(args)
     cond = {
       "key" => "testdb.col",
-      "filter" => {"_id" => args[0]}
+      "filter" => { "_id" => args[0] },
     }
     v = FIND(cond)
     ret = []
-    v.each{|doc|
+    v.each do |doc|
       ret.push(doc["value"])
-    }
-    return ret.join(",")
+    end
+    ret.join(",")
   end
+
   # @conv {"ADD" => ["SET"]}
   def MEMCACHED_ADD(args)
-    return MEMCACHED_SET(args)
+    MEMCACHED_SET(args)
   end
+
   # @conv {"REPLACE" => ["UPDATE"]}
   def MEMCACHED_REPLACE(args)
     value = change_numeric_when_numeric(args[1])
     cond = {
       "key" => "testdb.col",
-      "query" => {"_id" => args[0]},
-      "update" => {"$set" => {"value" => value}},
+      "query" => { "_id" => args[0] },
+      "update" => { "$set" => { "value" => value } },
     }
-    return UPDATE(cond)
+    UPDATE(cond)
   end
+
   # @conv {"GETS" => ["GET"]}
   def MEMCACHED_GETS(args)
-    return MEMCACHED_GET(args)
+    MEMCACHED_GET(args)
   end
+
   # @conv {"APPEND" => ["FIND","UPDATE"]}
   def MEMCACHED_APPEND(args)
     cond = {
       "key" => "testdb.col",
-      "filter" => {"_id" => args[0]},
-      "query" => {"_id" => args[0]}
+      "filter" => { "_id" => args[0] },
+      "query" => { "_id" => args[0] },
     }
     str = FIND(cond)[0]["value"].to_s
     str += args.last.to_s
-    cond["update"] = {"$set" => {"value" => str}}
-    return UPDATE(cond)
+    cond["update"] = { "$set" => { "value" => str } }
+    UPDATE(cond)
   end
-  # @conv {"PREPEND" => ["FIND","UPDATE"]} 
+
+  # @conv {"PREPEND" => ["FIND","UPDATE"]}
   def MEMCACHED_PREPEND(args)
     cond = {
       "key" => "testdb.col",
-      "filter" => {"_id" => args[0]},
-      "query" => {"_id" => args[0]}
+      "filter" => { "_id" => args[0] },
+      "query" => { "_id" => args[0] },
     }
     str = FIND(cond)[0]["value"].to_s
     str = args.last.to_s + str
-    cond["update"] = {"$set" => {"value" => str}}
-    return UPDATE(cond)
+    cond["update"] = { "$set" => { "value" => str } }
+    UPDATE(cond)
   end
+
   # @conv {"CAS" => ["SET"]}
   def MEMCACHED_CAS(args)
     args.pop
-    return MEMCACHED_SET(args)
+    MEMCACHED_SET(args)
   end
+
   # @conv {"INCR" => ["UPDATE"]}
   def MEMCACHED_INCR(args)
-    value = change_numeric_when_numeric(args[1])
-    cond = {
-      "key" => "testdb.col",
-      "query" => {"_id" => args[0]},
-      "update" =>  {"$inc" => {"value" => value}},
-      "multi"  => true
-    }
-    return UPDATE(cond)
+    memcached_incr_decr(args, "incr")
   end
+
   # @conv {"DECR" => ["UPDATE"]}
   def MEMCACHED_DECR(args)
-    value = change_numeric_when_numeric(args[1])*-1
+    memcached_incr_decr(args, "decr")
+  end
+
+  def memcached_incr_decr(args, type)
+    value = if type == "incr"
+              change_numeric_when_numeric(args[1])
+            elsif type == "decr"
+              change_numeric_when_numeric(args[1]) * - 1
+            end
     cond = {
       "key" => "testdb.col",
-      "query" => {"_id" => args[0]},
-      "update" =>  {"$inc" => {"value" => value}},
-      "multi"  => true
+      "query" => { "_id" => args[0] },
+      "update" => { "$inc" => { "value" => value } },
+      "multi"  => true,
     }
-    return UPDATE(cond)
+    UPDATE(cond)
   end
+
   # @conv {"DELETE" => ["DELETE"]}
   def MEMCACHED_DELETE(args)
     cond = {
       "key" => "testdb.col",
-      "filter" => {"_id" => args[0]}
+      "filter" => { "_id" => args[0] },
     }
-    return DELETE(cond)
+    DELETE(cond)
   end
+
   # @conv {"FLUSH" => ["DROP"]}
-  def MEMCACHED_FLUSH(args)
-    return DROP(["testdb.col"])
+  def MEMCACHED_FLUSH(_)
+    DROP(["testdb.col"])
   end
+
   #############
   ## PREPARE ##
   #############
-  def prepare_memcached(operand,args)
+  def prepare_memcached(operand, args)
     result = {}
     ## PREPARE SPECIAL OPERATION
     operand.upcase!
-    if(["FLUSHALL"].include?(operand))then
+    if ["FLUSHALL"].include?(operand)
       result["operand"] = operand
       return result
     end
-    
     ## PREPARE OPERATION & ARGS
     result["operand"] = "MEMCACHED_#{operand.upcase}"
     result["args"] = @parser.exec(operand.upcase, args)
-    return result
+    result
   end
 end

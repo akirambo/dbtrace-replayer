@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -32,110 +33,126 @@ class MongodbQueryParser
   def initialize(logger)
     @logger = logger
   end
-  def targetKeys(query)
+
+  def targetkeys(query)
     keys = []
-    query.each{|k,v|
-      if(v)then
+    query.each do |_, v|
+      if v
         v2 = eval(v)
-        keys = keys + traverseTargetKey(v2)
+        keys += traverse_targetkey(v2)
       end
-    }
-    return keys.uniq
+    end
+    keys.uniq
   end
-  def createKey2RealKey(doc,conds,headonly=false)
-    key2Realkey = {}
-    conds.each{|k,c|
-      if(c.class == Hash)then
-        c.each{|k2,c2|
-          if(c2.class == String)then
-            targetKey = c2.sub("$","")
-            if(key2Realkey[c2] == nil)then
-              key2Realkey[c2] = deepKey(doc,targetKey)
-            end
+
+  def createkey2realkey(doc, conds, _)
+    key2real = {}
+    conds.each do |_, c|
+      if c.class == Hash
+        c.each do |_, c2|
+          realkey = keys2realkey(c2, doc)
+          if realkey
+            key2real[c2] = realkey
           end
-        }
-      elsif(c.class == String)then
-        targetKey = c.sub("$","")
-        if(key2Realkey[c] == nil)then
-          key2Realkey[c] = deepKey(doc,targetKey)
+        end
+      elsif c.class == String
+        realkey = keys2realkey(c, doc)
+        if realkey
+          key2real[c] = realkey
         end
       end
-    }
-    return key2Realkey
+    end
+    key2real
   end
-  def deepKey(query,key)
-    query.each{|k,v|
-      if(k.to_s == key)then
-        return "#{k.to_s}"
-      elsif(v.class.to_s == "Hash")then
-        deepKey = deepKey(v,key)
-        if(deepKey)then
-          return k.to_s + ".." + deepKey
+
+  def key2realkey(str, doc, key2real)
+    if str.class == String
+      targetkey = str.sub("$", "")
+      if key2real[str].nil?
+        return deepkey(doc, targetkey)
+      end
+    end
+    nil
+  end
+
+  def deepkey(query, key)
+    query.each do |k, v|
+      if k.to_s == key
+        return k.to_s
+      elsif v.class.to_s == "Hash"
+        deepkey_ = deepkey(v, key)
+        if deepkey_
+          return k.to_s + ".." + deepkey_
         end
       end
-    }
-    return nil
+    end
+    nil
   end
-  def createGroupKey(doc,conds)
+
+  def create_groupkey(doc, conds)
     key = ""
-    conds.each{|k,v|
-      if(v.class.to_s == "String")then
-        if(doc[v.sub('$','')])then
-          key += "#{k}=#{doc[v.sub('$','')].gsub(" ","")}_KEY_"
-        else
-          key += "#{k}=#{doc[v.sub('$','').to_sym].gsub(" ","")}_KEY_"
-        end
+    conds.each do |k, v|
+      if v.class.to_s == "String"
+        key += if doc[v.sub("$", "")]
+                 "#{k}=#{doc[v.sub('$', '')].delete(" ")}_KEY_"
+               else
+                 "#{k}=#{doc[v.sub('$', '').to_sym].delete(" ")}_KEY_"
+               end
       end
-    }
-    return key
+    end
+    key
   end
-  def getParameter(query)
+
+  def get_parameter(query)
     # Group
     set = {
       "value" => {},
-      "cond"  => {}
+      "cond"  => {},
     }
-    if(query["group"])then
+    if query["group"]
       group = eval(query["group"])
-      group.each{|s,v|
-        set["cond"][s.to_s]  = v
-        case v.class 
+      group.each do |s, v|
+        set["cond"][s.to_s] = v
+        case v.class
         when String then
           set["value"][s.to_s] = v
         when Hash then
           set["value"][s.to_s] = []
         end
-      }
+      end
     end
     ## unwind
-    if(query["unwind"])then
+    if query["unwind"]
       # args["unwind"]
     end
-    return set
+    set
   end
-  def csv2docs(keys,values)
+
+  def csv2docs(keys, values)
     docs = []
     rows = values.split("\n")
-    rows.each{|row|
+    rows.each do |row|
       hash = {}
       cols = row.split(",")
-      keys.each_index{|index|
+      keys.each_index do |index|
         hash[keys[index]] = cols[index]
         docs.push(hash)
-      }
-    }
-    return docs
-  end
-  private 
-  def traverseTargetKey(d)
-    keys = []
-    if(d.class == String and d[0] == "$")then
-      keys.push(d.sub("$",""))
-    elsif(d.class == Hash)then
-      d.each{|k,v|
-        keys = keys + traverseTargetKey(v)
-      }
+      end
     end
-    return keys
+    docs
+  end
+
+  private
+
+  def traverse_targetkey(d)
+    keys = []
+    if d.class == String && d[0] == "$"
+      keys.push(d.sub("$", ""))
+    elsif d.class == Hash
+      d.each do |_, v|
+        keys += traverse_targetkey(v)
+      end
+    end
+    keys
   end
 end

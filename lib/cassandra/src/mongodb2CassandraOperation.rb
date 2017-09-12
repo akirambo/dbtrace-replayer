@@ -173,7 +173,7 @@ module Mongodb2CassandraOperation
       name = arg["key"]
     end
     arg.delete("key")
-    target_keys = @query_parser.targetKeys(arg)
+    target_keys = @query_parser.targetkeys(arg)
     command = if target_keys.empty?
                 "SELECT * FROM #{name}"
               else
@@ -194,11 +194,11 @@ module Mongodb2CassandraOperation
     begin
       ans = DIRECT_EXECUTER(command + ";")
       docs = @query_parser.csv2docs(target_keys, ans)
-      params = @query_parser.getParameter(arg)
+      params = @query_parser.get_parameter(arg)
       result = {}
       docs.each do |doc|
         ## create group key
-        key = @query_parser.createGroupKey(doc, params["cond"])
+        key = @query_parser.create_groupkey(doc, params["cond"])
         if result[key].nil?
           result[key] = {}
         end

@@ -104,7 +104,7 @@ module MongoDB2MemcachedOperation
     add_count(:aggregate)
     data = GET([args["key"]], false)
     docs = @utils.symbolhash2stringhash(eval(data))
-    params = @query_parser.getParameter(args)
+    params = @query_parser.get_parameter(args)
     first_flag = true
     key2realkey = nil
     docs.each do |doc|
@@ -113,11 +113,11 @@ module MongoDB2MemcachedOperation
       match_duration = start_time - Time.now
       if match_flag
         if first_flag
-          key2realkey = @query_parser.createKey2RealKey(doc, params["cond"])
+          key2realkey = @query_parser.createkey2realkey(doc, params["cond"])
           first_flag = false
         end
         # create group key
-        key = @query_parser.createGroupKey(doc, params["cond"])
+        key = @query_parser.create_groupkey(doc, params["cond"])
         if result[key].nil?
           result[key] = {}
         end

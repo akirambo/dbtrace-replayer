@@ -29,17 +29,17 @@ module Mongodb2CassandraOperationTester
     end
   end
   class QueryParserMock
-    attr_accessor :targetKeysValue
-    def targetKeys(a)
-      return @targetKeysValue
+    attr_accessor :targetkeysvalue
+    def targetkeys(a)
+      return @targetkeysvalue
     end
     def csv2docs(a,b)
       return ["dummy","dummy"]
     end
-    def getParameter(a)
+    def get_parameter(a)
       return {"cond" => {"f1" => "$sum"}}
     end
-    def createGroupKey(a,b)
+    def create_groupkey(a,b)
       return "f2"
     end
   end
@@ -82,7 +82,7 @@ module Mongodb2CassandraOperationTester
       return str
     end
     def setTargetKeysValue(a)
-      @query_parser.targetKeysValue = a
+      @query_parser.targetkeysvalue = a
     end
     def parse_json(a)
       if(@raiseParseJSONError)then

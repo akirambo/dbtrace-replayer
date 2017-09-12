@@ -185,7 +185,7 @@ module MongoDB2RedisOperation
     @logger.debug("MONGODB_AGGREGATE")
     docs = SMEMBERS([args["key"]], true)
     result = {}
-    params = @query_parser.getParameter(args)
+    params = @query_parser.get_parameter(args)
     docs = eval("[" + docs + "]")
     firstflag = true
     key2realkey = nil
@@ -195,11 +195,11 @@ module MongoDB2RedisOperation
       monitor("client", "match")
       if flag
         if firstflag
-          key2realkey = @query_parser.createKey2RealKey(doc, params["cond"])
+          key2realkey = @query_parser.createkey2realkey(doc, params["cond"])
           firstflag = false
         end
         # create group key
-        key = @query_parser.createGroupKey(doc, params["cond"])
+        key = @query_parser.create_groupkey(doc, params["cond"])
         if result[key].nil?
           result[key] = {}
         end

@@ -28,13 +28,13 @@ module MongodbTest
   end
   
   class QueryParserMock
-    def getParameter(a)
+    def get_parameter(a)
       return {"cond" => {"e" => {"$sum" => 1}},"match"=>{"b"=>"v"}}
     end
-    def createKey2RealKey(a,b)
+    def createkey2realkey(a,b)
       return "realKey"
     end
-    def createGroupKey(a,b)
+    def create_groupkey(a,b)
       return "key"
     end
   end

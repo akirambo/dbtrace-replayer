@@ -30,92 +30,105 @@
 
 module MemcachedOperation
   private
+
   def SET(args)
-    return executeQuery("#{__method__}",args[0].to_s,args[1].to_s,expireTime(args))
+    execute_query(__method__.to_s, args[0].to_s, args[1].to_s, expiretime(args))
   end
-  #def GET(args, stdout=true,asyncable=true)
-  def GET(args,asyncable=true)
+
+  def GET(args, asyncable = true)
     @logger.debug("GENERATED QUERY: #{__method__} #{args[0]}")
     value = ""
     connect
-    if(@option[:async] and asyncable)then
+    if @option[:async] && asyncable
       @mget = true
       add_count(__method__)
       @client.commitGetKey(args[0])
     else
-      ret = @client.syncExecuter("#{__method__}",args[0].to_s,"",0)
-      add_duration(@client.getDuration(),"database",__method__)
-      if(ret)then
-        value = @client.getReply()
+      ret = @client.syncExecuter(__method__.to_s, args[0].to_s, "", 0)
+      add_duration(@client.getDuration, "database", __method__)
+      if ret
+        value = @client.getReply
       end
     end
     close
-    return value 
+    value
   end
+
   def ADD(args)
-    #[previous version] :: r = @client.add(args[0],args[1],0,:raw => true)
-    return executeQuery("#{__method__}",args[0].to_s,args[1].to_s)
+    execute_query(__method__.to_s, args[0].to_s, args[1].to_s)
   end
+
   def REPLACE(args)
-    return executeQuery("#{__method__}",args[0].to_s,args[1].to_s,expireTime(args))
+    execute_query(__method__.to_s, args[0].to_s, args[1].to_s, expiretime(args))
   end
+
   def APPEND(args)
-    return executeQuery("#{__method__}",args[0].to_s,args[1].to_s)
+    execute_query(__method__.to_s, args[0].to_s, args[1].to_s)
   end
+
   def PREPEND(args)
-    return executeQuery("#{__method__}",args[0].to_s,args[1].to_s)
+    execute_query(__method__.to_s, args[0].to_s, args[1].to_s)
   end
+
   def CAS(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     @logger.warn("Unimplemented..")
-    return false
+    false
   end
+
   def INCR(args)
-    return executeQuery("#{__method__}",args[0],args[1])
+    execute_query(__method__.to_s, args[0], args[1])
   end
+
   def DECR(args)
-    return executeQuery("#{__method__}",args[0],args[1])
+    execute_query(__method__.to_s, args[0], args[1])
   end
+
   def DELETE(args)
-    return executeQuery("#{__method__}",args[0],args[1])
+    execute_query(__method__.to_s, args[0], args[1])
   end
-  def FLUSH (args,initFlag=false)
-    return executeQuery("#{__method__}","","",0,initFlag)
+
+  def FLUSH(_, initflag = false)
+    execute_query(__method__.to_s, "", "", 0, initflag)
   end
-  def KEYLIST()
-    connect 
-    keys = @client.keys()
+
+  def KEYLIST
+    connect
+    keys = @client.keys
     close
-    return keys.split(",")
+    keys.split(",")
   end
+
   #############
   ## PREPARE ##
   #############
-  def prepare_memcached(operand,args)
+  def prepare_memcached(operand, args)
     result = {}
     result["operand"] = operand.upcase
-    result["args"]    = @parser.exec(operand.upcase,args)
-    return result
+    result["args"] = @parser.exec(operand.upcase, args)
+    result
   end
-  def expireTime(args)
-    if(args.size == 3)then
+
+  def expiretime(args)
+    if args.size == 3
       return args[2].to_i
     end
     ## Not Set Expire Time (ttl = 0 )
-    return 0
+    0
   end
-  def executeQuery(operand,arg0,arg1,ttl=0,initFlag=false)
-    if(ttl != 0)then
+
+  def execute_query(operand, arg0, arg1, ttl = 0, initflag = false)
+    if ttl != 0
       @logger.debug("GENERATED QUERY: #{__method__} #{arg0} #{arg1} #{ttl}")
     else
       @logger.debug("GENERATED QUERY: #{__method__} #{arg0} #{arg1}")
     end
     connect
-    r = @client.syncExecuter(operand,arg0.to_s,arg1.to_s,ttl)
-    if(operand != "FLUSH" or (@metrics and !initFlag))then
-      add_duration(@client.getDuration(),"database",__method__)
+    r = @client.syncExecuter(operand, arg0.to_s, arg1.to_s, ttl)
+    if operand != "FLUSH" || (@metrics && !initflag)
+      add_duration(@client.getDuration, "database", __method__)
     end
     close
-    return r
+    r
   end
 end

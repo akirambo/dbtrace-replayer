@@ -92,13 +92,13 @@ RSpec.describe 'Unit Class TEST' do
       ans = {"test" => 0.1}
       expect(@metrics.instance_variable_get("@processing")).to eq ans
       ans = {"query" => 1}
-      expect(@metrics.instance_variable_get("@queriesOnTargetDB")).to eq ans
+      expect(@metrics.instance_variable_get("@queries_on_targetdb")).to eq ans
       ## #2
       @metrics.add_duration(0.1,"test","query")
       ans = {"test" => 0.2}
       expect(@metrics.instance_variable_get("@processing")).to eq ans
       ans = {"query" => 2}
-      expect(@metrics.instance_variable_get("@queriesOnTargetDB")).to eq ans
+      expect(@metrics.instance_variable_get("@queries_on_targetdb")).to eq ans
     end
   end
   context "add_count" do
@@ -106,11 +106,11 @@ RSpec.describe 'Unit Class TEST' do
       ## #1
       @metrics.add_count("query")
       ans = {"query" => 1}
-      expect(@metrics.instance_variable_get("@queriesOnTargetDB")).to eq ans
+      expect(@metrics.instance_variable_get("@queries_on_targetdb")).to eq ans
       ## #2
       @metrics.add_count("query")
       ans = {"query" => 2}
-      expect(@metrics.instance_variable_get("@queriesOnTargetDB")).to eq ans
+      expect(@metrics.instance_variable_get("@queries_on_targetdb")).to eq ans
     end
   end
   context "add_total_duration" do
@@ -134,7 +134,7 @@ RSpec.describe 'Unit Class TEST' do
       ## Check
       val = @metrics.instance_variable_get("@processing")["test"]
       expect(val).to be > 0
-      val = @metrics.instance_variable_get("@queriesOnTargetDB")["query"]
+      val = @metrics.instance_variable_get("@queries_on_targetdb")["query"]
       expect(val).to eq 1
     end
   end
