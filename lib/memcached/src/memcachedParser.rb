@@ -114,7 +114,7 @@ class MemcachedParser < AbstractDBParser
       "decr" => 3,
     }
     results = {}
-    @logs__ = []
+    logs = []
     split_term = "0x80"
     args = []
     command = ""
