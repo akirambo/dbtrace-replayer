@@ -1,30 +1,20 @@
-
 ---
 engines:
-  rubocop:
+  bundler-audit:
     enabled: true
   duplication:
-    enabled: true
+    enabled: false
     config:
       languages:
-        - "ruby"
+      - ruby
   fixme:
     enabled: true
-    exclude_paths:
-      - config/engines.yml
-  markdownlint:
+  rubocop:
     enabled: true
-    checks:
-      MD002: # "First header should be a h1 header"
-        enabled: false
-  shellcheck:
-    enabled: true
- ratings:
-   paths:
-     - "bin/*"
-     - "**.rb"
-     - "**.md"
-   exclude_paths:
-     - .bundle/
-     - spec/**/*
-     - benchmarks/**/*
+ratings:
+  paths:
+  - Gemfile.lock
+  - "**.rb"
+exclude_paths:
+- spec/
+- lib/*/spec/
