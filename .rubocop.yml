@@ -126,7 +126,10 @@ Style/ClassAndModuleChildren:
   - spec/**/*
   - lib/**/**/spec/*
   - lib/common/spec/*
-  
+
+Style/BlockNesting:
+  Max: 4
+
 Style/BlockDelimiters:
   Exclude:
   - spec/**/*

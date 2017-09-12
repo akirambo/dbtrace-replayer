@@ -3,7 +3,7 @@ require_relative "../../common/abstractDBLog"
 
 class RedisLogsSimple < AbstractDBLog
   def initialize(command2primitive, option, logger)
-    @primitiveOperationForMultiData = {
+    @primitive_operation_for_multidata = {
       "HMSET" => {
         "prefixCount" => 1,
         "argNumEachPrimitiveCommand" => 2,

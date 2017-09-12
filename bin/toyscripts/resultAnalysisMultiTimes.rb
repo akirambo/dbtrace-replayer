@@ -8,44 +8,46 @@ end
 begin
   dir = ARGV[0]
   outfile = nil
-  if(ARGV.size == 2)then
+  if ARGV.size == 2
     outfile = ARGV[1]
   end
-  buf_header = ["DB"]
-  buf_max    = ["WorstTime"]
-  buf_min    = ["BestTime"]
-  buf_ave    = ["AverageTime"]
-  buf_med    = ["MedianTime"]
-  Dir.glob("#{dir}/*.log").each{|file|
+  buf_header = %w[DB]
+  buf_max = %w[WorstTime]
+  buf_min = %w[BestTime]
+  buf_ave = %w[AverageTime]
+  buf_med = %w[MedianTime]
+  Dir.glob("#{dir}/*.log").each do |file|
     targetDB = nil
     sourceDB = nil
     totalTimes = []
     totalTime  = nil
-    File.open(file,"r"){|f|
+    File.open(file, "r") do |f|
       # parseLog
-      while line = f.gets
-        if(line.include?("=>"))then
-          if(totalTime)then
+      line = f.gets
+      until line
+        if line.include?("=>")
+          if totalTime
             totalTimes.push(totalTime)
           end
-          _data_ = line.chop.split("=>")
-          sourceDB = _data_[0].split(" : ")[1].gsub(/\s/,"").downcase
-          targetDB = _data_[1].gsub(/\s/,"").downcase
+          data_ = line.chop.split("=>")
+          sourceDB = data_[0].split(" : ")[1].delete(" ").downcase
+          targetDB = data_[1].deleteb(" ").downcase
           totalTime = 0.0
-        elsif(line.include?("TOTAL[sec]"))then
-          if(!line.include?("flush"))then
+        elsif line.include?("TOTAL[sec]")
+          unless line.include?("flush")
             totalTime += line.split(/\s/).last.to_f
           end
         end
+        line = f.gets
       end
-    }
+    end
     ## Register Data Buf
     buf_header.push("#{sourceDB}2#{targetDB}")
     buf_max.push(totalTimes.max)
     buf_min.push(totalTimes.min)
     buf_ave.push(totalTimes.inject(:+) / totalTimes.size)
     buf_med.push(median(totalTimes))
-  }
+  end
 
   ## Output
   buf = []
@@ -54,11 +56,11 @@ begin
   buf.push buf_min.join(",")
   buf.push buf_ave.join(",")
   buf.push buf_med.join(",")
-  if(outfile)then
+  if outfile
     puts "Output #{outfile} ... "
-    File.open(outfile,"w"){|f|
+    File.open(outfile, "w") do |f|
       f.write(buf.join("\n"))
-    }
+    end
   else
     puts buf.join("\n")
   end

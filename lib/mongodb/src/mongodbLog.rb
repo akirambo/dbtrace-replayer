@@ -2,7 +2,7 @@ require_relative "../../common/abstractDBLog"
 
 class MongodbLogsSimple < AbstractDBLog
   def initialize(command2primitive, option, logger)
-    @primitiveOperationForMultiData = {
+    @primitive_operation_for_multidata = {
       "insert" => {
         "splitWord" => "documents:",
         "keyValue"  => ":",

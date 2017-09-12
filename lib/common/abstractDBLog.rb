@@ -97,7 +97,7 @@ class AbstractDBLog
 
   ## Primitive Operation Analysis
   def primitive_operation_count
-    multi_access_command = @primitiveOperationForMultiData.keys
+    multi_access_command = @primitive_operation_for_multidata.keys
     @commands.each do |command_with_args|
       command_with_args.each do |command, args|
         if @command2basic[command].is_a?(Array) && multi_access_command.include?(command)
@@ -121,24 +121,24 @@ class AbstractDBLog
 
   def calc_primitiveoperation_for_multidata(command, args, com = nil)
     operation_count = 0
-    unless @primitiveOperationForMultiData.key?(command)
+    unless @primitive_operation_for_multidata.key?(command)
       @logger.error("Unsupported Multi Command #{command}")
       abort
     end
-    if @primitiveOperationForMultiData[command]["operation"] == "range"
-      first_place = args[@primitiveOperationForMultiData[command]["arg0"]].to_i
-      end_place = args[@primitiveOperationForMultiData[command]["arg1"]].to_i
+    if @primitive_operation_for_multidata[command]["operation"] == "range"
+      first_place = args[@primitive_operation_for_multidata[command]["arg0"]].to_i
+      end_place = args[@primitive_operation_for_multidata[command]["arg1"]].to_i
       operation_count = end_place + 1 - first_place
-    elsif @primitiveOperationForMultiData[command]["operation"] == "fromArgument"
-      operation_count = args[@primitiveOperationForMultiData[command]["arg"]].to_i
+    elsif @primitive_operation_for_multidata[command]["operation"] == "fromArgument"
+      operation_count = args[@primitive_operation_for_multidata[command]["arg"]].to_i
     else
       keyvalue_count = args.size
-      keyvalue_count -= @primitiveOperationForMultiData[command]["prefixCount"]
-      keyvalue_count -= @primitiveOperationForMultiData[command]["postfixCount"]
+      keyvalue_count -= @primitive_operation_for_multidata[command]["prefixCount"]
+      keyvalue_count -= @primitive_operation_for_multidata[command]["postfixCount"]
       operation_count = if com
-                          keyvalue_count / @primitiveOperationForMultiData[command]["argNumEachPrimitiveCommand"][com].to_i
+                          keyvalue_count / @primitive_operation_for_multidata[command]["argNumEachPrimitiveCommand"][com].to_i
                         else
-                          keyvalue_count / @primitiveOperationForMultiData[command]["argNumEachPrimitiveCommand"]
+                          keyvalue_count / @primitive_operation_for_multidata[command]["argNumEachPrimitiveCommand"]
                         end
     end
     operation_count

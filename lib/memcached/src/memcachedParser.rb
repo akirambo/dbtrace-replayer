@@ -114,11 +114,11 @@ class MemcachedParser < AbstractDBParser
       "decr" => 3,
     }
     results = {}
-    logs = []
+    @logs__ = []
+    split_term = "0x80"
+    args = []
+    command = ""
     File.open(filename, "r") do |f|
-      split_term = "0x80"
-      args = []
-      command = ""
       line = f.gets
       until line.nil?
         data = line.chop.split("\s")

@@ -211,10 +211,7 @@ class MongodbQueryProcessor
         return false
       end
     elsif operation == "$ne"
-      ## Return false
-      if value == cond_value
-        return false
-      end
+      return false
     end
     true
   end

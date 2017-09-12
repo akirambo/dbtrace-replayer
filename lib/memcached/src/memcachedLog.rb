@@ -33,7 +33,7 @@ require_relative "../../common/abstractDBLog"
 
 class MemcachedLogsSimple < AbstractDBLog
   def initialize(command2primitive,option,logger)
-    @primitiveOperationForMultiData = {}
+    @primitive_operation_for_multidata = {}
     super(command2primitive, option,logger)
   end
 end

@@ -72,7 +72,7 @@ class AbstractRunner
       end
     end
   end
-  
+
   def exec(workload)
     init
     workload.each do |ope|
