@@ -1,9 +1,9 @@
 ---
 engines:
   bundler-audit:
-    enabled: true
-  duplication:
     enabled: false
+  duplication:
+    enabled: true
     config:
       languages:
       - ruby
