@@ -36,7 +36,7 @@ module Cassandra2MemcachedOperation
   ## OPERATION ##
   ###############
   # @conv {"INSERT" => ["SET"]}
-  def CASSANDRA_INSERT(args)
+  def cassandra_insert(args)
     primarykey = args["primaryKey"]
     key = "#{args["table"]}--#{args["args"][primarykey]}"
     args["args"].delete(primarykey)
@@ -46,26 +46,26 @@ module Cassandra2MemcachedOperation
       ### String (Key-Value)
       field = values.keys[0]
       value = values[field]
-      return SET([key, value])
+      return set([key, value])
     else
       ### Value is JSON
       str = convert_json(values)
-      return SET([key, str])
+      return set([key, str])
     end
   end
 
   # @conv {"SELECT" => ["GET"]}
   ## args = {"key"=>tablename, "fields" => [],"where"=> [], "limit" =>number}
-  def CASSANDRA_SELECT(args)
+  def cassandra_select(args)
     results = []
     index = args["cond_keys"].index(args["primaryKey"])
     key = "#{args["table"]}--#{args["cond_values"][index]}"
     if args["schema_fields"] == 2
       ### String (Key-Value)
-      results = [GET([key])]
+      results = [get([key])]
     else
       ### String (Key-JSON)
-      str_json = GET([key])
+      str_json = get([key])
       docs = []
       unless str_json.empty?
         docs = parse_json(str_json)
@@ -80,7 +80,7 @@ module Cassandra2MemcachedOperation
   end
 
   # @conv {"UPDATE" =>["SET","GET"]}
-  def CASSANDRA_UPDATE(args)
+  def cassandra_update(args)
     args["args"] = {}
     index = args["cond_keys"].index(args["primaryKey"])
     args["args"][args["cond_keys"][index]] = args["cond_values"][index]
@@ -89,33 +89,33 @@ module Cassandra2MemcachedOperation
     end
     if args["schema_fields"] == 2
       ## Key-Value
-      return CASSANDRA_INSERT(args)
+      return cassandra_insert(args)
     elsif args["schema_fields"] == args["set"].keys.size
       ## Key-JSON Full Update
-      return CASSANDRA_INSERT(args)
+      return cassandra_insert(args)
     else
       index = args["cond_keys"].index(args["primaryKey"])
       key = "#{args["table"]}--#{args["cond_values"][index]}"
       ## Key-JSON Partical Update
-      str_json = GET([key])
+      str_json = get([key])
       docs = parse_json(str_json)
       args["set"].each do |f, v|
         docs[f] = v
       end
       str = convert_json(docs)
-      return SET([key, str])
+      return set([key, str])
     end
   end
 
   # @conv {"DELETE" =>["DELETE"]}
-  def CASSANDRA_DELETE(args)
+  def cassandra_delete(args)
     index = args["cond_keys"].index(args["primaryKey"])
     key = "#{args["table"]}--#{args["cond_values"][index]}"
-    DELETE([key])
+    delete([key])
   end
 
   # @conv {"DROP" =>["GET","SET","DELETE"] }
-  def CASSANDRA_DROP(args)
+  def cassandra_drop(args)
     keylist = KEYLIST()
     pattern = ""
     pattern = if args["type"] == "table"
@@ -130,7 +130,7 @@ module Cassandra2MemcachedOperation
       end
     end
     deletes.each do |dk|
-      DELETE([dk])
+      delete([dk])
     end
     true
   end
@@ -141,12 +141,12 @@ module Cassandra2MemcachedOperation
   def prepare_cassandra(operand, args)
     ## PREPARE OPERATION & ARGS
     result = {}
-    result["operand"] = "CASSANDRA_#{operand.upcase}"
-    result["args"] = @parser.exec(operand.upcase, args)
+    result["operand"] = "cassandra_#{operand.downcase}"
+    result["args"] = @parser.exec(operand.downcase, args)
     result
   end
 
-  def CASSANDRA_JUDGE(doc, args)
+  def cassandra_judge(doc, args)
     args["where"].each do |cond__|
       cond__ = cond__.split("=")
       fieldname = cond__[0]

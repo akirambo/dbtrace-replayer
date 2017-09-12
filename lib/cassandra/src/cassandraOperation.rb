@@ -35,7 +35,7 @@ module CassandraOperation
   #####################
   ## DIRECT EXECUTER ##
   #####################
-  def DIRECT_SELECT(query)
+  def direct_select(query)
     value = {}
     query = normalizeCassandraQuery(query)
     connect
@@ -47,10 +47,10 @@ module CassandraOperation
     value
   end
 
-  def DIRECT_EXECUTER(query, onTime = true)
+  def direct_executer(query, onTime = true)
     if query.class == Array
       query.each do |q|
-        r = DIRECT_EXECUTER(q)
+        r = direct_executer(q)
         unless r
           return false
         end
@@ -101,13 +101,13 @@ module CassandraOperation
   #############
   def prepare_cassandra(operand, args)
     ## PREPARE OPERATION & ARGS
-    result = { "operand" => "DIRECT_EXECUTER" }
-    result["args"] = if operand.casecmp("BATCH_MUTATE").zero? ||
-                        operand.casecmp("GET_SLICE").zero? ||
-                        operand.casecmp("GET_RANGE_SLICES").zero? ||
-                        operand.casecmp("GET_INDEXED_SLICES").zero? ||
-                        operand.casecmp("MULTI_GET_SLICES").zero?
-                       send("prepare_#{operand.upcase}", args)
+    result = { "operand" => "direct_executer" }
+    result["args"] = if operand.casecmp("batch_mutate").zero? ||
+                        operand.casecmp("get_slice").zero? ||
+                        operand.casecmp("get_range_slice").zero? ||
+                        operand.casecmp("get_indexed_slice").zero? ||
+                        operand.casecmp("multi_get_slices").zero?
+                       send("prepare_#{operand.downcase}", args)
                      else
                        args.join(" ")
                      end
@@ -140,8 +140,8 @@ module CassandraOperation
   ##-------------------##
   ##--- BatchMutate ---##
   ##-------------------##
-  def prepare_BATCH_MUTATE(args)
-    result = @parser.parseBatchMutateParameter(args)
+  def prepare_batch_mutate(args)
+    result = @parser.parse_batch_mutate_parameter(args)
     if !result["counterColumn"]
       if !result["keyValue"].keys.empty?
         keys = result["rowKey"] + "," + result["keyValue"].keys.join(",")
@@ -174,8 +174,8 @@ module CassandraOperation
   ##------------------------##
   ##--- GET_RANGE_SLICES ---##
   ##------------------------##
-  def prepare_GET_RANGE_SLICES(args)
-    result = @parser.parseGetRangeSlicesParameter(args)
+  def prepare_get_range_slices(args)
+    result = @parser.parse_get_range_slices_parameter(args)
     query = "SELECT * FROM #{result["table"]}"
     if result["start_key"] && result["end_key"]
       query += " WHERE #{result["primaryKey"]} >= #{result["start_key"]}"
@@ -195,8 +195,8 @@ module CassandraOperation
   ##-----------------##
   ##--- GET_SLICE ---##
   ##-----------------##
-  def prepare_GET_SLICE(args)
-    result = @parser.parseGetSliceParameter(args)
+  def prepare_get_slice(args)
+    result = @parser.parse_get_slice_parameter(args)
     query = "SELECT * FROM #{result["table"]} WHERE #{result["primaryKey"]} = #{result["targetKey"]}"
     if result["count"]
       query += " limit #{result["count"]}"
@@ -208,16 +208,15 @@ module CassandraOperation
   ##--------------------------##
   ##--- GET_INDEXED_SLICES ---##
   ##--------------------------##
-  def prepare_GET_INDEXED_SLICES(args)
-    result = @parser.parseGETINDEXEDSLICESParameter(args)
-    result
+  def prepare_get_indexed_slices(args)
+    @parser.parse_get_indexed_slices_parameter(args)
   end
 
   ##----------------------##
   ##--- MULTIGET_SLICE ---##
   ##----------------------##
-  def prepare_MULTIGET_SLICE(args)
-    result = @parser.parseMULTIGETSLICEParameter(args)
+  def prepare_multiget_slice(args)
+    result = @parser.parse_multi_get_slice_parameter(args)
     query = "SELECT * FROM #{result["table"]}"
     query += " WHERE #{result["primaryKey"]} IN (#{result["keys"].join(",")});"
     query

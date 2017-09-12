@@ -32,23 +32,23 @@ module Cassandra2MemcachedOperationUnitTest
     def setQueryReturnValue(bool)
       @query_processor.returnValue = bool
     end
-    def SET(a)
+    def set(a)
       return execQuery("#{__method__}",a)
     end
-    def GET(a)
+    def get(a)
       execQuery("#{__method__}",a)
       if(@getValue.class == Hash)then
         return @getValue[a[0]]
       end
       return @getValue
     end
-    def DELETE(a)
+    def delete(a)
       return execQuery("#{__method__}",a)
     end
     def KEYLIST
       return ["t.a","t.t","a.t"]
     end
-    def FLUSH(a)
+    def flush(a)
       return execQuery("#{__method__}",a)
     end
     def parse_json(d)
@@ -69,7 +69,7 @@ module Cassandra2MemcachedOperationUnitTest
       @tester = Cassandra2MemcachedOperationUnitTest::Mock.new
     end
     context 'Operation' do
-      it "CASSANDRA_INSERT (schema_fields == 2)" do
+      it "cassandra_insert (schema_fields == 2)" do
         @tester.queryReturn = true
         args = {
           "table"         => "t1",
@@ -77,9 +77,9 @@ module Cassandra2MemcachedOperationUnitTest
           "primaryKey"    => "pkey",
           "args"          => {"pkey" => "p0", "f0" => "v0"}
         }
-        expect(@tester.send(:CASSANDRA_INSERT,args)).to be true
+        expect(@tester.send(:cassandra_insert,args)).to be true
       end
-      it "CASSANDRA_INSERT (schema_fields > 2)" do
+      it "cassandra_insert (schema_fields > 2)" do
         @tester.queryReturn = true
         args = {
           "table"         => "t1",
@@ -87,9 +87,9 @@ module Cassandra2MemcachedOperationUnitTest
           "primaryKey"    => "pkey",
           "args"          => {"pkey" => "p0", "f0" => "v0", "f1" => "v1"}
         }
-        expect(@tester.send(:CASSANDRA_INSERT,args)).to be true
+        expect(@tester.send(:cassandra_insert,args)).to be true
       end
-      it "CASSANDRA_SELECT (schema_fields == 2)" do
+      it "cassandra_select (schema_fields == 2)" do
         @tester.getValue = "v0"
         args = {
           "table"         => "t1",
@@ -98,9 +98,9 @@ module Cassandra2MemcachedOperationUnitTest
           "cond_values"   => ["p0","v0"],
           "primaryKey"    => "pkey"
         }
-        expect(@tester.send(:CASSANDRA_SELECT,args)).to eq ["v0"]
+        expect(@tester.send(:cassandra_select,args)).to eq ["v0"]
       end
-      it "CASSANDRA_SELECT (schema_fields > 2)" do
+      it "cassandra_select (schema_fields > 2)" do
         @tester.getValue = "dummy"
         args = {
           "table"         => "t1",
@@ -110,9 +110,9 @@ module Cassandra2MemcachedOperationUnitTest
           "primaryKey"    => "pkey",
           "fields"        => ["f0","f1"]
         }
-        expect(@tester.send(:CASSANDRA_SELECT,args)).to match_array ["v0","v1"]
+        expect(@tester.send(:cassandra_select,args)).to match_array ["v0","v1"]
       end
-      it "CASSANDRA_UPDATE (schema_fields == 2)" do
+      it "cassandra_update (schema_fields == 2)" do
         @tester.queryReturn = true
         args = {
           "table"         => "t1",
@@ -122,9 +122,9 @@ module Cassandra2MemcachedOperationUnitTest
           "primaryKey"    => "pkey",
           "set"          =>  {"f0" => "n0"}
         }
-        expect(@tester.send(:CASSANDRA_UPDATE,args)).to be true
+        expect(@tester.send(:cassandra_update,args)).to be true
       end
-      it "CASSANDRA_UPDATE (schema_fields > 2)" do
+      it "cassandar_update (schema_fields > 2)" do
         @tester.queryReturn = true
         @tester.getValue = "dummy"
         args = {
@@ -135,9 +135,9 @@ module Cassandra2MemcachedOperationUnitTest
           "primaryKey"    => "pkey",
           "set"          => {"f0" => "n0", "f1" => "n1","f2"=> "n2"}
         }
-        expect(@tester.send(:CASSANDRA_UPDATE,args)).to be true
+        expect(@tester.send(:cassandra_update,args)).to be true
       end
-      it "CASSANDRA_UPDATE (schema_fields > 2)" do
+      it "cassandra_update (schema_fields > 2)" do
         @tester.queryReturn = true
         @tester.getValue = "dummy"
         args = {
@@ -148,37 +148,37 @@ module Cassandra2MemcachedOperationUnitTest
           "primaryKey"    => "pkey",
           "set"          => {"f0" => "n0", "f1" => "n1"}
         }
-        expect(@tester.send(:CASSANDRA_UPDATE,args)).to be true
+        expect(@tester.send(:cassandra_update,args)).to be true
       end
-      it "CASSANDRA_DELETE" do
+      it "cassandra_delete" do
         @tester.queryReturn = true
         args = {
           "cond_keys"     => ["pkey","f0"],
           "cond_values"   => ["p0","v0"],
           "primaryKey"    => "pkey"
         }
-        expect(@tester.send(:CASSANDRA_DELETE,args)).to be true
+        expect(@tester.send(:cassandra_delete,args)).to be true
       end
-      it "CASSANDRA_DROP" do
+      it "cassandra_drop" do
         @tester.queryReturn = true
         args = {"type" => "table","key" => "t"}
-        expect(@tester.send(:CASSANDRA_DROP,args)).to be true
+        expect(@tester.send(:cassandra_drop,args)).to be true
         args = {"type" => "keyspace", "key"=>"t"}
-        expect(@tester.send(:CASSANDRA_DROP,args)).to be true
+        expect(@tester.send(:cassandra_drop,args)).to be true
       end
     end
     context "Private Method" do
       it "prepare_cassandra" do
-        ans = {"operand" => "CASSANDRA_TEST", "args" => "OK"}
+        ans = {"operand" => "cassandra_test", "args" => "OK"}
         expect(@tester.send(:prepare_cassandra,"test","OK")).to include ans
       end
       it "CASSANDRA_JUDGE" do
         doc  = {"f0"=>"v0","f1"=>"v1"}
         args = {"where" => ["f0=v0","f1=v1"]}
-        expect(@tester.send(:CASSANDRA_JUDGE,doc,args)).to be true
+        expect(@tester.send(:cassandra_judge,doc,args)).to be true
         doc  = {"f0"=>"v1","f1"=>"v0"}
         args = {"where" => ["f0=v0","f1=v1"]}
-        expect(@tester.send(:CASSANDRA_JUDGE,doc,args)).to be false
+        expect(@tester.send(:cassandra_judge,doc,args)).to be false
       end
       it "selectField * " do
         hash  = {"f0"=>"v0","f1"=>"v1"}

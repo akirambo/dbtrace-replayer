@@ -77,7 +77,7 @@ class AbstractRunner
     init
     workload.each do |ope|
       ope.keys.each do |command|
-        cmd = command.upcase.sub("_*", "")
+        cmd = command.dowoncase.sub("_*", "")
         @logger.debug(" -- #{cmd} --")
         operation(cmd, ope[command])
       end

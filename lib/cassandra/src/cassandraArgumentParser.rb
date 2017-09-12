@@ -41,7 +41,7 @@ class CassandraArgumentParser
   end
 
   def exec(operand, args)
-    send("prepareArgs_#{operand}_#{@option[:inputFormat].upcase}", args)
+    send("prepare_args_#{operand.downcase}_#{@option[:inputFormat].downcase}", args)
   end
 
   def structureType(_operand, _args)
@@ -51,7 +51,7 @@ class CassandraArgumentParser
   #--------------------#
   # PREPARE for INSERT #
   #--------------------#
-  def prepareArgs_INSERT_CQL(args)
+  def prepare_args_insert_cql(args)
     result = {
       "table" => nil,
       "primaryKey" => nil,
@@ -86,7 +86,7 @@ class CassandraArgumentParser
     result
   end
 
-  def prepareArgs_INSERT_BASIC(args)
+  def prepare_args_insert_basic(args)
     result = {
       "key" => nil,
       "args" => {},
@@ -118,7 +118,7 @@ class CassandraArgumentParser
   #--------------------#
   # PREPARE for SELECT #
   #--------------------#
-  def prepareArgs_SELECT_CQL(args)
+  def prepare_args_select_cql(args)
     ## key
     result = cassandra_prepare_select_parse(args)
     ## primary key
@@ -140,19 +140,19 @@ class CassandraArgumentParser
     }
     select_target_flag = false
     args.each_index do |index|
-      case args[index].upcase
-      when "SELECT" then
+      case args[index].downcase
+      when "select" then
         select_target_flag = true
-      when "FROM" then
+      when "from" then
         select_target_flag = false
         result["table"] = args[index + 1]
-      when "WHERE" then
+      when "where" then
         @logger.debug("Unsupported Multi Condition with AND/OR ")
         result["cond_keys"].push(args[index + 1])
         if args[index + 2] == "=" && args.size >= index + 3
           result["cond_values"].push(args[index + 3])
         end
-      when "LIMIT" then
+      when "limit" then
         result["limit"] = args[index + 1]
       else
         if select_target_flag
@@ -163,7 +163,7 @@ class CassandraArgumentParser
     result
   end
 
-  def prepareArgs_SELECT_BASIC(args)
+  def prepare_args_select_basic(args)
     result = {
       "key" => nil,
       "fields" => [],
@@ -196,7 +196,7 @@ class CassandraArgumentParser
   #--------------------#
   # PREPARE for UPDATE #
   #--------------------#
-  def prepareArgs_UPDATE_CQL(args)
+  def prepare_args_update_cql(args)
     result = {
       "table" => nil,
       "primaryKey" => nil,
@@ -229,7 +229,7 @@ class CassandraArgumentParser
   #--------------------#
   # PREPARE for DELETE #
   #--------------------#
-  def prepareArgs_DELETE_CQL(args)
+  def prepare_args_delete_cql(args)
     result = {
       "table" => nil,
       "primaryKey" => nil,
@@ -262,7 +262,7 @@ class CassandraArgumentParser
   #------------------#
   # PREPARE for DROP #
   #------------------#
-  def prepareArgs_DROP_CQL(args)
+  def prepare_args_drop_cql(args)
     result = {}
     result["type"] = args[1]
     result["key"] = args[2]
@@ -277,8 +277,8 @@ class CassandraArgumentParser
   #--------------------------#
   # PREPARE for BATCH_MUTATE #
   #--------------------------#
-  def prepareArgs_BATCH_MUTATE_JAVA(args)
-    data = parseBatchMutateParameter(args, false)
+  def prepare_args_batch_mutate_java(args)
+    data = parse_batch_mutate_parameter(args, false)
     hash = data["keyValue"]
     if !data["counterColumn"]
       hash[data["rowKey"]] = data["rowValue"]
@@ -296,7 +296,7 @@ class CassandraArgumentParser
   end
 
   # Parser #
-  def parseBatchMutateParameter(param, cassandra = true)
+  def parse_batch_mutate_parameter(param, cassandra = true)
     result = {
       "table" => nil,
       "rowKey" => "key",
@@ -409,7 +409,7 @@ class CassandraArgumentParser
   #------------------------------#
   # PREPARE for GET_RANGE_SLICES #
   #------------------------------#
-  def prepareArgs_GET_RANGE_SLICES_JAVA(args)
+  def prepare_args_get_range_slices_java(args)
     data = parseGetRangeSlicesParameter(args, false)
     result = {
       "key"   => data["table"],
@@ -459,7 +459,7 @@ class CassandraArgumentParser
   #-----------#
   # GET_SLICE #
   #-----------#
-  def prepareArgs_GET_SLICE_JAVA(args)
+  def prepare_args_get_slice_jave(args)
     data = parseGetSliceParameter(args, false)
     result = {
       "key"   => data["table"],
@@ -532,8 +532,8 @@ class CassandraArgumentParser
   ## --------------------##
   ## -- MULTIGET_SLICE --##
   ## --------------------##
-  def prepareArgs_MULTIGET_SLICE_JAVA(args)
-    data = prepare_MULTIGET_SLICEParameter(args, false)
+  def prepare_args_multiget_slice_java(args)
+    data = prepare_multiget_slice_parameter(args, false)
     result = {
       "key"   => data["table"],
       "limit" => data["count"],
@@ -546,7 +546,7 @@ class CassandraArgumentParser
     result
   end
 
-  def prepare_MULTIGET_SLICEParameter(args, cassandra = true)
+  def prepare_multiget_slice_parameter(args, cassandra = true)
     result = {
       "table" => nil,
       "primaryKey" => "key",
@@ -577,20 +577,20 @@ class CassandraArgumentParser
   ##############
   ##-- CQL3 --##
   ##############
-  def prepareArgs_INSERT_CQL3(args)
-    prepareArgs_INSERT_CQL(args)
+  def prepare_args_insert_cql3(args)
+    prepare_args_insert_cql(args)
   end
 
-  def prepareArgs_DROP_CQL3(args)
-    prepareArgs_DROP_CQL(args)
+  def prepare_args_drop_cql3(args)
+    prepare_args_drop_cql(args)
   end
 
-  def prepareArgs_SELECT_CQL3(args)
-    prepareArgs_SELECT_CQL(args)
+  def prepare_args_select_cql3(args)
+    prepare_args_select_cql(args)
   end
 
-  def prepareArgs_UPDATE_CQL3(args)
-    prepareArgs_UPDATE_CQL(args)
+  def prepare_args_update_cql3(args)
+    prepare_args_update_cql(args)
   end
 
   private

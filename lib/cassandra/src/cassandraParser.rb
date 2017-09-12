@@ -36,20 +36,20 @@ class CassandraParser < AbstractDBParser
     @type_position = [0]
     @skipTypes = %w[CREATE EXECUTE_CQL3_QUERY USE].freeze
     @command2primitive = {
-      "INSERT" => "INSERT",
-      "SELECT" => "READ",
-      "SELECT_*" => "SCAN",
-      "DELETE" => "UPDATE",
-      "UPDATE" => "UPDATE",
-      "DROP" => "UPDATE",
+      "insert" => "INSERT",
+      "select" => "READ",
+      "select_*" => "SCAN",
+      "delete" => "UPDATE",
+      "update" => "UPDATE",
+      "drop" => "UPDATE",
       ## JAVA APIs
-      "BATCH_MUTATE" => "INSERT",
-      "GET" => "SCAN",
-      "GET_SLICE" => "SCAN",
-      "GET_COUNT" => "SCAN",
-      "GET_RANGE_SLICES" => "SCAN",
-      "MULTIGET_SLICE" => "SCAN",
-      "GET_INDEXED_SLICES" => "SCAN",
+      "batch_mutate" => "INSERT",
+      "get" => "SCAN",
+      "get_slice" => "SCAN",
+      "get_count" => "SCAN",
+      "get_range_slices" => "SCAN",
+      "multiget_slice" => "SCAN",
+      "get_indexed_slices" => "SCAN",
     }
     logs = CassandraLogsSimple.new(@command2primitive, option, logger)
     super(filename, logs, @command2primitive.keys, option, logger)
@@ -57,7 +57,7 @@ class CassandraParser < AbstractDBParser
   def parse(line)
     case @option[:inputFormat]
     when "cql3"
-      parseCQL3(line)
+      parse_cql3(line)
     else
       @logger.error("Unsupported input Format #{@option[:inputFormat]}")
       nil
@@ -71,7 +71,7 @@ class CassandraParser < AbstractDBParser
   ## % query
   ## % select parameters,request,started_at from system_traces.sessions;
   #########################################################################
-  def parseCQL3(line)
+  def parse_cql3(line)
     if line.include?("'query':") &&
        line.include?("Execute CQL3 query") &&
        !line.include?("system") &&
@@ -92,12 +92,12 @@ class CassandraParser < AbstractDBParser
         if query
           query.sub!("\'}", "")
           query.sub!(/\A\'/, "")
-          command = query.split("\s")[0].upcase
+          command = query.split("\s")[0].downcase
           if @supportedCommand.include?(command)
             result = {}
             result[command] = query.split("\s")
             begin
-              result = send("parse#{command}_CQL3", result)
+              result = send("parse_#{command}_cql3", result)
             rescue => e
               @logger.error e.message
               @logger.error "Unimplemented #{command}"
@@ -115,9 +115,9 @@ class CassandraParser < AbstractDBParser
     nil
   end
 
-  def parseINSERT_CQL3(result)
+  def parse_insert_cql3(result)
     values_flag = false
-    command = "INSERT"
+    command = "insert"
     result[command].each_index do |idx|
       if values_flag && result[command][idx].include?("(")
         result[command][idx].sub!("(", "('")
@@ -132,9 +132,9 @@ class CassandraParser < AbstractDBParser
     result
   end
 
-  def parseSELECT_CQL3(result)
+  def parse_select_cql3(result)
     target_flag = false
-    command = "SELECT"
+    command = "select"
     result[command].each_index do |idx|
       if target_flag && !result[command][idx].include?("(")
         result[command][idx] = "'#{result[command][idx]}'"
@@ -147,15 +147,15 @@ class CassandraParser < AbstractDBParser
     result
   end
 
-  def parseUPDATE_CQL3(result)
+  def parse_update_cql3(result)
     result
   end
 
-  def parseDELETE_CQL3(result)
+  def parse_delete_cql3(result)
     result
   end
 
-  def parseDROP_CQL3(result)
+  def parse_drop_cql3(result)
     result
   end
 end
