@@ -4,7 +4,7 @@ module MemcachedUnitTest
     def exec(a,b)
       return "OK"
     end
-    def extractZ_X_STORE_ARGS(a)
+    def extract_z_x_store_args(a)
       return "OK"
     end
     def args2hash(a)

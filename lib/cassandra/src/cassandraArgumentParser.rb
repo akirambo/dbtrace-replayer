@@ -358,7 +358,7 @@ class CassandraArgumentParser
                             key_value[1].delete(" ").to_i
                           else
                             [key_Value[1].delete(" ")].pack("H*")
-                end
+                          end
               end
             end
           end
@@ -415,18 +415,18 @@ class CassandraArgumentParser
       "key"   => data["table"],
       "limit" => data["count"],
       "where" => [],
-      "fields" => "*"
+      "fields" => "*",
     }
-    if(data["start_key"])then
+    if data["start_key"]
       result["where"].push("#{data["primaryKey"]}=#{data["start_key"]}")
     end
-    if(data["end_key"])then
+    if data["end_key"]
       result["where"].push("#{data["primaryKey"]}=#{data["end_key"]}")
     end
-    return result
+    result
   end
 
-  def parseGetRangeSlicesParameter(args, cassandra = true)
+  def parseGetRangeSlicesParameter(args, _)
     result = {
       "table" => nil,
       "cf"    => nil,
@@ -441,7 +441,6 @@ class CassandraArgumentParser
     res = get_tablename_and_primarykey(args, result["cf"])
     result["table"] = res["table"]
     result["primaryKey"] = res["primaryKey"]
-    
     ## Range
     if args.match(/KeyRange\((.+?)\)/)
       $1.split(",").each do |kv__|
