@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <stdlib.h>
 #include "../redis_cxxrunner.hpp"
 
 
@@ -50,9 +51,9 @@ void showDetail(const char* reply){
     std::cout << "=================" << std::endl;
 }
 
-void syncTest(RedisCxxRunner *client){
+void syncTest(RedisCxxRunner *client, char *ip){
     // SET
-    client->syncConnect("127.0.0.1",6379);
+    client->syncConnect(ip,6379);
     if(client->syncExecuter("set aaa BBBB")){
 	std::cout << "TEST(cxx) [set data] :: PASSED" << std::endl;
     }else{
@@ -152,10 +153,10 @@ void syncTest(RedisCxxRunner *client){
     client->syncClose();
 }
 
-void asyncTest(RedisCxxRunner* client){
+void asyncTest(RedisCxxRunner* client, char *ip){
     /** Async Test(1st) **/
     client->resetDuration();
-    client->asyncConnect("127.0.0.1",6379);
+    client->asyncConnect(ip,6379);
     client->commitQuery("set test11 GOOD");
     client->commitQuery("get test11");
     client->asyncExecuter();
@@ -168,7 +169,7 @@ void asyncTest(RedisCxxRunner* client){
 
     /** Async Test(2nd) **/
     client->resetDuration();
-    client->asyncConnect("127.0.0.1",6379);
+    client->asyncConnect(ip,6379);
     client->commitQuery("set test00 AAAA");
     client->commitQuery("set test01 BBBB");
     client->commitQuery("set test02 CCCC");
@@ -188,7 +189,7 @@ void asyncTest(RedisCxxRunner* client){
     client->asyncClose();
 
     /** Async Test(3rd) **/
-    client->asyncConnect("127.0.0.1",6379);
+    client->asyncConnect(ip,6379);
     client->commitQuery("hmset key00 f0 A f1 B");
     client->commitQuery("hmset key00 f2 C f3 D");
     client->commitQuery("hmget key00 f0 f1");
@@ -207,7 +208,7 @@ void asyncTest(RedisCxxRunner* client){
 
     /** Async Test **/
     // SADD
-    client->asyncConnect("127.0.0.1",6379);
+    client->asyncConnect(ip,6379);
     client->commitQuery("sadd set00 AAA");
     client->commitQuery("sadd set00 BBB");
     client->commitQuery("sadd set00 CCC");
@@ -228,19 +229,23 @@ void asyncTest(RedisCxxRunner* client){
 int main(){
     RedisCxxRunner* client ;
     client = new RedisCxxRunner();
+    char *env_ip;
+    if(!(env_ip = getenv("REDIS_IPADDRESS"))){
+      env_ip = "127.0.0.1";
+    }
     /*************
      * Sync Test *
      *************/
-    syncTest(client);
-
+    syncTest(client, env_ip);
+    
     /****************
      * Asynchronous *
      ****************/
-    asyncTest(client);
+    asyncTest(client, env_ip);
 
 
     // Specific Test 
-    client->syncConnect("127.0.0.1",6379);
+    client->syncConnect(env_ip,6379);
     client->syncExecuter("FLUSHALL");
     client->syncExecuter("SADD test001 '{\"name\":\"p001\"}'");
     client->syncExecuter("SMEMBERS test001 ");
