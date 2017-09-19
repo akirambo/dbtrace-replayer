@@ -12,19 +12,19 @@ module Mongodb2CassandraOperationTester
   end
   class CassandraSchemaMock
     attr_accessor :fields, :checkValue, :stringTypeValue
-    def createQuery
+    def create_query
       return "dummy query"
     end
     def check(a,b)
       return @checkValue
     end
-    def extractKeyValue(kv)
+    def extract_keyvalue(kv)
       return {"key"=>"'_id','f0'","value"=>"'k0','v0'"}
     end
-    def stringType(v)
+    def string_type(v)
       return @stringTypeValue
     end
-    def primaryKeys
+    def primarykeys
       return ["f0"]
     end
   end
@@ -64,14 +64,14 @@ module Mongodb2CassandraOperationTester
         :columnfamily => "f"
       }
     end
-    def DIRECT_EXECUTER(a,b=false)
+    def direct_executer(a,b=false)
       @command = a
       if(@raiseError)then
         raise ArgumentError, "Error"
       end
       return @value
     end
-    def DIRECT_SELECT(a)
+    def direct_select(a)
       @command = a
       if(@raiseError)then
         raise ArgumentError, "Error"
@@ -108,7 +108,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas["k.f"].fields = ["_id","f0"]
         ## args[2] means bulk import or not
         args = [["k.f", "dummy",false]]
-        expect(@tester.send(:MONGODB_INSERT,args)).to eq true
+        expect(@tester.send(:mongodb_insert,args)).to eq true
         command = "INSERT INTO k.f ('_id','f0') VALUES ('k0','v0');"
         expect(@tester.command).to eq command
       end
@@ -122,7 +122,7 @@ module Mongodb2CassandraOperationTester
 
         ## args[2] means bulk import or not
         args = [["k.f", ["dummy"],false]]
-        expect(@tester.send(:MONGODB_INSERT,args)).to eq true
+        expect(@tester.send(:mongodb_insert,args)).to eq true 
         command = "INSERT INTO k.f ('_id','f0') VALUES ('k0','v0');"
         expect(@tester.command).to eq command
       end
@@ -134,7 +134,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas["k.f"].fields = ["_id","f0"]
         ## args[2] means bulk import or not
         args = [["k.f", {"_id"=>"k0","value"=>"v0"},false]]
-        expect(@tester.send(:MONGODB_INSERT,args)).to eq true
+        expect(@tester.send(:mongodb_insert,args)).to eq true
         command = "INSERT INTO k.f ('_id','f0') VALUES ('k0','v0');"
         expect(@tester.command).to eq command
       end
@@ -143,7 +143,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas = {"k.f" => CassandraSchemaMock.new}
         @tester.schemas["k.f"].checkValue = true
         args = [["k.f"]]
-        expect(@tester.send(:MONGODB_INSERT,args)).to eq false
+        expect(@tester.send(:mongodb_insert,args)).to eq false
       end
       it "MONGODB_INSERT(error case :: parse_json Error)" do
         @tester.raiseError = false
@@ -152,7 +152,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas["k.f"].checkValue = true
         ## args[2] means bulk import or not
         args = [["k.f", "dummy",false]]
-        expect(@tester.send(:MONGODB_INSERT,args)).to eq false
+        expect(@tester.send(:mongodb_insert,args)).to eq false
       end
       it "MONGODB_INSERT(error case :: no keyValue)" do
         @tester.raiseError = false
@@ -161,7 +161,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas["k.f"].checkValue = true
         ## args[2] means bulk import or not
         args = [["k.f", "dummy",false]]
-        expect(@tester.send(:MONGODB_INSERT,args)).to eq false
+        expect(@tester.send(:mongodb_insert,args)).to eq false
       end
       it "MONGODB_INSERT(error casae :: query error)" do
         @tester.raiseError = true
@@ -171,7 +171,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas["k.f"].checkValue = true
         @tester.schemas["k.f"].fields = ["_id","f0"]
         args = [["k.f", ["dummy"],false]]
-        expect(@tester.send(:MONGODB_INSERT,args)).to eq false
+        expect(@tester.send(:mongodb_insert,args)).to eq false
       end
       it "MONGODB_INSERT(error case :: not match schema)" do
         @tester.raiseError = false
@@ -181,7 +181,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas["k.f"].checkValue = false
         @tester.schemas["k.f"].fields = ["_id","f0"]
         args = [["k.f", ["dummy"],false]]
-        expect(@tester.send(:MONGODB_INSERT,args)).to eq false
+        expect(@tester.send(:mongodb_insert,args)).to eq false
       end
       it "MONGODB_INSERT(error casae :: not match schema)" do
         @tester.raiseError = false
@@ -189,7 +189,7 @@ module Mongodb2CassandraOperationTester
         @tester.returnParseJSON = {"_id"=>"k0", "f0"=>"v0"}
         @tester.schemas = {"k.f0" => CassandraSchemaMock.new}
         args = [["k.f", ["dummy"],false]]
-        expect(@tester.send(:MONGODB_INSERT,args)).to eq false
+        expect(@tester.send(:mongodb_insert,args)).to eq false
       end
     end
     context "UPDATE Operation" do
@@ -201,7 +201,7 @@ module Mongodb2CassandraOperationTester
           "update" => {"$set" => {"f0" =>"v0","f1"=>"v1"}},
           "query"  => {"f2" => {"$gt" => 10}}
         }
-        expect(@tester.send(:MONGODB_UPDATE,args)).to eq true
+        expect(@tester.send(:mongodb_update,args)).to eq true
         ans = "UPDATE k.f SET f0='v0', f1='v1' WHERE f2 > 10;" 
         expect(@tester.command).to eq ans
       end
@@ -214,7 +214,7 @@ module Mongodb2CassandraOperationTester
           "update" => {"$set" => {"f0" =>"v0","f1"=>"v1"}},
           "query"  => {"f0" => {"$gt" => 10}}
         }
-        expect(@tester.send(:MONGODB_UPDATE,args)).to eq false
+        expect(@tester.send(:mongodb_update,args)).to eq false
       end
     end
     context "FIND Operation" do
@@ -225,7 +225,7 @@ module Mongodb2CassandraOperationTester
         args = { "key" => "k.f",
           "filter" => {"f0" => {"$gt" => 10}}
         }
-        expect(@tester.send(:MONGODB_FIND,args)).to eq "v0,v1\nv2,v3"
+        expect(@tester.send(:mongodb_find,args)).to eq "v0,v1\nv2,v3"
         ans = "SELECT * FROM k.f WHERE f0 > 10 ALLOW FILTERING;" 
         expect(@tester.command).to eq ans
       end
@@ -236,7 +236,7 @@ module Mongodb2CassandraOperationTester
         args = { "key" => "k.f",
           "filter" => {"f0" => {"$gt" => 10}}
         }
-        expect(@tester.send(:MONGODB_FIND,args)).to eq ""
+        expect(@tester.send(:mongodb_find,args)).to eq ""
       end     
     end
     context "COUNT Operation" do
@@ -247,7 +247,7 @@ module Mongodb2CassandraOperationTester
         args = { "key" => "k.f",
           "filter" => {"f0" => {"$gt" => 10}}
         }
-        expect(@tester.send(:MONGODB_COUNT,args)).to eq 10
+        expect(@tester.send(:mongodb_count,args)).to eq 10
         ans = "SELECT count(*) FROM k.f WHERE f0 > 10;" 
         expect(@tester.command).to eq ans
       end
@@ -258,7 +258,7 @@ module Mongodb2CassandraOperationTester
         args = { "key" => "k.f",
           "filter" => {"f0" => {"$gt" => 10}}
         }
-        expect(@tester.send(:MONGODB_COUNT,args)).to eq 0
+        expect(@tester.send(:mongodb_count,args)).to eq 0
       end
       it "MONGODB_COUNT(error case ::Return Hash)" do
         @tester.raiseError = false
@@ -267,7 +267,7 @@ module Mongodb2CassandraOperationTester
         args = { "key" => "k.f",
           "filter" => {"f0" => {"$gt" => 10}}
         }
-        expect(@tester.send(:MONGODB_COUNT,args)).to eq 0
+        expect(@tester.send(:mongodb_count,args)).to eq 0
       end
     end
     context "DELETE Operation" do
@@ -275,20 +275,20 @@ module Mongodb2CassandraOperationTester
         @tester.raiseError = false
         @tester.schemas = {"k.f" => CassandraSchemaMock.new}
         args = { "key" => "k.f", "filter" => {}}
-        expect(@tester.send(:MONGODB_DELETE,args)).to eq true
+        expect(@tester.send(:mongodb_delete,args)).to eq true
         expect(@tester.command).to eq "TRUNCATE k.f;"
       end
       it "MONGODB_DELETE(erorr case :: w/o Filter)" do
         @tester.raiseError = true
         @tester.schemas = {"k.f" => CassandraSchemaMock.new}
         args = { "key" => "k.f", "filter" => {}}
-        expect(@tester.send(:MONGODB_DELETE,args)).to eq false
+        expect(@tester.send(:mongodb_delete,args)).to eq false
       end
       it "MONGODB_DELETE(simple case :: w/ Filter)" do
         @tester.raiseError = false
         @tester.schemas = {"k.f" => CassandraSchemaMock.new}
         args = { "key" => "k.f", "filter" => {"f0" => {"$gt" => 10}}}
-        expect(@tester.send(:MONGODB_DELETE,args)).to eq true
+        expect(@tester.send(:mongodb_delete,args)).to eq true
         command = "DELETE FROM k.f WHERE f0 > 10;"
         expect(@tester.command).to eq command
       end
@@ -296,7 +296,7 @@ module Mongodb2CassandraOperationTester
         @tester.raiseError = true
         @tester.schemas = {"k.f" => CassandraSchemaMock.new}
         args = { "key" => "k.f", "filter" => {"f0" => {"$gt" => 10}}}
-        expect(@tester.send(:MONGODB_DELETE,args)).to eq false
+        expect(@tester.send(:mongodb_delete,args)).to eq false
         command = "DELETE FROM k.f WHERE f0 > 10;"
         expect(@tester.command).to eq command
       end
@@ -307,7 +307,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas = {"k.f" => CassandraSchemaMock.new}
         @tester.setTargetKeysValue(["f0","f1"])
         args = { "key" => "k.f", "match" => {"f0" => "v0"}}
-        @tester.send(:MONGODB_AGGREGATE,args)
+        @tester.send(:mongodb_aggregate,args)
         command = "SELECT f0,f1 FROM k.f WHERE f0 = 'v0';"
         expect(@tester.command).to eq command
       end
@@ -316,7 +316,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas = {"k.f" => CassandraSchemaMock.new}
         @tester.setTargetKeysValue([])
         args = { "key" => "k.f", "match" => {"f0" => "v0"}}
-        @tester.send(:MONGODB_AGGREGATE,args)
+        @tester.send(:mongodb_aggregate,args)
         command = "SELECT * FROM k.f WHERE f0 = 'v0';"
         expect(@tester.command).to eq command
       end
@@ -325,7 +325,7 @@ module Mongodb2CassandraOperationTester
         @tester.schemas = {"k.f" => CassandraSchemaMock.new}
         @tester.setTargetKeysValue([])
         args = { "key" => "k.f", "match" => {"f0" => "v0"}}
-        @tester.send(:MONGODB_AGGREGATE,args)
+        @tester.send(:mongodb_aggregate,args)
       end      
     end
     context "Private Method" do
@@ -336,46 +336,46 @@ module Mongodb2CassandraOperationTester
       it "mongodbParserQuery($gt)" do
         hash = {"c0" => {"$gt" => 10}}
         ans = "c0 > 10"
-        expect(@tester.send(:mongodbParseQuery,hash)).to eq ans
+        expect(@tester.send(:mongodb_parse_query,hash)).to eq ans
       end
       it "mongodbParserQuery($gte)" do
         hash = {"c0" => {"$gte" => 10}}
         ans = "c0 >= 10"
-        expect(@tester.send(:mongodbParseQuery,hash)).to eq ans
+        expect(@tester.send(:mongodb_parse_query,hash)).to eq ans
       end
       it "mongodbParserQuery($lt)" do
         hash = {"c0" => {"$lt" => 10}}
         ans = "c0 < 10"
-        expect(@tester.send(:mongodbParseQuery,hash)).to eq ans
+        expect(@tester.send(:mongodb_parse_query,hash)).to eq ans
       end
       it "mongodbParserQuery($lte)" do
         hash = {"c0" => {"$lte" => 10}}
         ans = "c0 <= 10"
-        expect(@tester.send(:mongodbParseQuery,hash)).to eq ans
+        expect(@tester.send(:mongodb_parse_query,hash)).to eq ans
       end
       it "mongodbParserQuery(error)" do
         hash = {"c0" => {"$max" => 10}}
-        expect(@tester.send(:mongodbParseQuery,hash)).to eq ""
+        expect(@tester.send(:mongodb_parse_query,hash)).to eq ""
       end
       it "mongodbParserQuery(equel primary key)" do
         hash = {"_id" => "aaa-01"}
         ans = "mongoid = 'aaa01'"
-        expect(@tester.send(:mongodbParseQuery,hash)).to eq ans
+        expect(@tester.send(:mongodb_parse_query,hash)).to eq ans
       end
       it "mongodbParserQuery(equal)" do
         hash = {"c0" => "5"}
         ans = "c0 = '5'"
-        expect(@tester.send(:mongodbParseQuery,hash)).to eq ans
+        expect(@tester.send(:mongodb_parse_query,hash)).to eq ans
       end
       it "mongodbParserQuery(equal)" do
         hash = {"c0" => "5"}
         ans = "c0 = '5'"
-        expect(@tester.send(:mongodbParseQuery,hash)).to eq ans
+        expect(@tester.send(:mongodb_parse_query,hash)).to eq ans
       end
       it "mongodbParserQuery(equal + $gt)" do
         hash = {"c0" => "5", "p0" => {"$gt" => 10}, "_id" => "m0"}
-        ans = "c0 = '5' AND p0 > 10"
-        expect(@tester.send(:mongodbParseQuery,hash)).to eq ans
+        ans = "c0 = '5' AND p0 > 10 AND (mongoid = 'm0')"
+        expect(@tester.send(:mongodb_parse_query,hash)).to eq ans
       end
     end
   end

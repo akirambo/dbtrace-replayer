@@ -1,3 +1,4 @@
+
 #
 # Copyright (c) 2017, Carnegie Mellon University.
 # All rights reserved.
@@ -32,11 +33,11 @@ class RedisArgumentParser
   def initialize(logger)
     @logger = logger
   end
-  
+
   ## supported method
-  def extractZ_X_STORE_ARGS(args)
-    result = Hash.new
-    result["args"] = Array.new
+  def extract_z_x_store_args(args)
+    result = {}
+    result["args"] = []
     ## example is ["dst0_sum" "2" "set" "set2" "WEIGHTS" "2.0" "1.0" "AGGREGATE" "sum"]
     result["key"] = args.shift ## shift dst_key
     keynumber = args.shift.to_i ## shift keynumber
@@ -45,46 +46,46 @@ class RedisArgumentParser
     keynumber.times do
       result["args"].push(args.shift)
     end
-    
-    result["option"] = Hash.new
-    while (args.size != 0) do
-      optionName = args.shift.downcase()
-      if(optionName == "weights")then
+    result["option"] = {}
+    until args.empty?
+      option_name = args.shift.downcase
+      if option_name == "weights"
         ## Extract wheights option
-        result["option"][:weights] = Array.new
+        result["option"][:weights] = []
         keynumber.times do
           result["option"][:weights].push(args.shift)
         end
-      elsif(optionName == "aggregate")then
+      elsif option_name == "aggregate"
         ## Extract aggregate option
         result["option"][:aggregate] = args.shift
       else
-        @logger.error("[ERROR] :: unsupported option Name #{optionName}")
+        @logger.error("[ERROR] :: unsupported option Name #{option_name}")
       end
     end
-    return result
+    result
   end
-  
+
   def args2hash(args)
-    hash = Hash.new
-    args.each_index{|index|
-      if(index % 2 == 1)then
-        hash[args[index-1]] = args[index]
+    hash = {}
+    args.each_index do |index|
+      if index.odd?
+        hash[args[index - 1]] = args[index]
       end
-    }
-    return hash
+    end
+    hash
   end
-  
+
   def args2key_args(args)
     result = {}
     result["key"] = args.shift
     result["args"] = args
-    return result
+    result
   end
+
   def args2key_hash(args)
     result = {}
     result["key"] = args.shift
     result["args"] = args2hash(args)
-    return result
+    result
   end
 end

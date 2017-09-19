@@ -35,167 +35,166 @@ module Redis2MemcachedOperation
   ############
   ## String ##
   ############
-  # @conv {"SET" => ["SET"]}
-  def REDIS_SET(args)
-    SET(args)
+  # @conv {"set" => ["set"]}
+  def redis_set(args)
+    set(args)
   end
 
-  # @conv {"GET" => ["GET"]}
-  def REDIS_GET(args)
-    GET(args)
+  # @conv {"get" => ["get"]}
+  def redis_get(args)
+    get(args)
   end
 
-  # @conv {"SETNX" => ["ADD"]}
-  def REDIS_SETNX(args)
-    ADD(args)
+  # @conv {"setnx" => ["add"]}
+  def redis_setnx(args)
+    add(args)
   end
 
-  # @conv {"SETEX" => ["SET"]}
-  def REDIS_SETEX(args)
-    SET(args)
+  # @conv {"setex" => ["set"]}
+  def redis_setex(args)
+    set(args)
   end
 
-  # @conv {"PSETEX" => ["SET"]}
-  def REDIS_PSETEX(args)
+  # @conv {"psetex" => ["set"]}
+  def redis_psetex(args)
     args[2] = (args[2].to_f / 1000).to_i + 1
-    SET(args)
+    set(args)
   end
 
-  # @conv {"MSET" => ["SET"]}
-  def REDIS_MSET(args)
+  # @conv {"mset" => ["set"]}
+  def redis_mset(args)
     args.each do |key, value|
-      unless SET([key, value])
+      unless set([key, value])
         return false
       end
     end
     true
   end
 
-  # @conv {"MGET" => ["GET"]}
-  def REDIS_MGET(args)
+  # @conv {"mget" => ["get"]}
+  def redis_mget(args)
     result = []
     args.each do |key|
-      result.push(GET([key]))
+      result.push(get([key]))
     end
     result
   end
 
-  # @conv {"MSETNX" => ["ADD"]}
-  def REDIS_MSETNX(args)
+  # @conv {"msetnx" => ["add"]}
+  def redis_msetnx(args)
     args.each do |key, value|
-      unless ADD([key, value])
+      unless add([key, value])
         return false
       end
     end
     true
   end
 
-  # @conv {"INCR" => ["INCR"]}
-  def REDIS_INCR(args)
+  # @conv {"incr" => ["incr"]}
+  def redis_incr(args)
     args[0].gsub!(":", "__colon__")
-    INCR([args[0], 1])
+    incr([args[0], 1])
   end
 
-  # @conv {"INCRBY" => ["INCR"]}
-  def REDIS_INCRBY(args)
+  # @conv {"incrby" => ["incr"]}
+  def redis_incrby(args)
     args[0].gsub!(":", "__colon__")
-    INCR(args)
+    incr(args)
   end
 
-  # @conv {"DECR" => ["DECR"]}
-  def REDIS_DECR(args)
+  # @conv {"decr" => ["decr"]}
+  def redis_decr(args)
     args[0].gsub!(":", "__colon__")
-    DECR([args[0], 1])
+    decr([args[0], 1])
   end
 
-  # @conv {"DECRBY" => ["DECRBY"]}
-  def REDIS_DECRBY(args)
+  # @conv {"decrby" => ["decrby"]}
+  def redis_decrby(args)
     args[0].gsub!(":", "__colon__")
-    DECR([args[0], args[1]])
+    decr([args[0], args[1]])
   end
 
-  # @conv {"APPEND" => ["APPEND"]}
-  def REDIS_APPEND(args)
-    APPEND(args)
+  # @conv {"append" => ["append"]}
+  def redis_append(args)
+    append(args)
   end
 
-  # @conv {"GETSET" => ["REPLACE"]}
-  def REDIS_GETSET(args)
-    old = GET(args)
-    REPLACE(args)
+  # @conv {"getset" => ["replace"]}
+  def redis_getset(args)
+    old = get(args)
+    replace(args)
     old
   end
 
-  # @conv {"STRLEN" => ["GET","LENGTH@client"]}
-  def REDIS_STRLEN(args)
-    GET(args).size
+  # @conv {"strlen" => ["get","length@client"]}
+  def redis_strlen(args)
+    get(args).size
   end
 
   ###########
-  ## Lists ##
+  ## lists ##
   ###########
-  # @conv {"LPUSH" => ["GET","SET"]}
-  def REDIS_LPUSH(args)
+  # @conv {"lpush" => ["get","set"]}
+  def redis_lpush(args)
     key = args[0]
     value = args[1]
-    exist_data = GET([key])
+    exist_data = get([key])
     unless exist_data.empty?
       value = value + "," + exist_data
     end
-    SET([key, value])
+    set([key, value])
   end
 
-  # @conv {"RPUSH" => ["GET","SET"]}
-  def REDIS_RPUSH(args)
+  # @conv {"rpush" => ["get","set"]}
+  def redis_rpush(args)
     key = args[0]
     value = args[1]
-    exist_data = GET([key])
+    exist_data = get([key])
     unless exist_data.size.zero?
       value = exist_data + "," + value
     end
-    SET([key, value])
+    set([key, value])
   end
 
-  # @conv {"LPOP" => ["redisDeserialize@client","redisSerialize@client","GET","SET"]}
-  def REDIS_LPOP(args)
-    data = GET(args)
-    value = redisDeserialize(data)
-    str = value.shift
-    value = redisSerialize(value)
-    if !value.empty?
-      SET([args[0], value])
-    else
-      DELETE([args[0]])
-    end
-    str
+  # @conv {"lpop" => ["redisdeserialize@client","redisserialize@client","get","set"]}
+  def redis_lpop(args)
+    redis_lrpop(args, "l")
   end
 
-  # @conv {"RPOP" => ["redisDeserialize@client","redisSerialize@client","GET","SET"]}
-  def REDIS_RPOP(args)
-    data  = GET(args)
-    value = redisDeserialize(data)
-    data  = value.pop
-    value = redisSerialize(value)
+  # @conv {"rpop" => ["redisdeserialize@client","redisserialize@client","get","set"]}
+  def redis_rpop(args)
+    redis_lrpop(args, "r")
+  end
+
+  def redis_lrpop(args, type)
+    data = get(args)
+    value = redis_deserialize(data)
+    data = if type == "l"
+             value.shift
+           elsif type == "r"
+             value.pop
+           end
+    value = redis_serialize(value)
     if !value.empty?
-      SET([args[0], value])
+      set([args[0], value])
     else
-      DELETE([args[0]])
+      delete([args[0]])
     end
     data
   end
 
-  # @conv {"LRANGE" => ["redisDeserialize@client","extractElementsFromList@client","GET"]}
-  def REDIS_LRANGE(args)
-    data = GET([args[0]])
-    list = redisDeserialize(data)
-    value = extractElementsFromList(list, args[1], args[2])
+  # @conv {"lrange" => ["redis_deserialize@client","extract_elements_fromlist@client","GET"]}
+  def redis_lrange(args)
+    data = get([args[0]])
+    list = redis_deserialize(data)
+    value = extract_elements_fromlist(list, args[1], args[2])
     value
   end
 
-  # @conv {"LREM" => ["redisDeserialize@client","redisSerialize@client","GET","SET"]}
-  def REDIS_LREM(args)
-    data = GET([args[0]])
-    value = redisDeserialize(data)
+  # @conv {"lrem" => ["redisdeserialize@client","redis_serialize@client","GET","SET"]}
+  def redis_lrem(args)
+    data = get([args[0]])
+    value = redis_deserialize(data)
     result = []
     count = args[1].to_i
     value.each do |elem|
@@ -206,74 +205,74 @@ module Redis2MemcachedOperation
         result.push(elem)
       end
     end
-    result = redisSerialize(result)
-    SET([args[0], result])
+    result = redis_serialize(result)
+    set([args[0], result])
   end
 
-  # @conv {"LINDEX" => ["redisDeserialize@client","extractElementsFromList@client","GET","SET"]}
-  def REDIS_LINDEX(args)
-    data = GET([args[0]])
-    value = redisDeserialize(data)[args[1].to_i]
+  # @conv {"lindex" => ["redis_deserialize@client","extract_elements_fromlist@client","GET","SET"]}
+  def redis_lindex(args)
+    data = get([args[0]])
+    value = redis_deserialize(data)[args[1].to_i]
     value
   end
 
-  # @conv {"RPOPLPUSH" => ["redisDeserialize@client","redisSerialize@client","GET","SET"]}
-  def REDIS_RPOPLPUSH(args)
-    data = REDIS_RPOP([args[0]])
-    REDIS_LPUSH([args[1], data])
+  # @conv {"rpoplpush" => ["redis_deserialize@client","redis_serialize@client","GET","SET"]}
+  def redis_rpoplpush(args)
+    data = redis_rpop([args[0]])
+    redis_lpush([args[1], data])
     data
   end
 
-  # @conv {"LSET" => ["redisDeserialize@client","redisSerialize@client","GET","SET"]}
-  def REDIS_LSET(args)
-    data = GET([args[0]])
-    value = redisDeserialize(data)
+  # @conv {"lset" => ["redis_deserialize@client","redis_serialize@client","GET","SET"]}
+  def redis_lset(args)
+    data = get([args[0]])
+    value = redis_deserialize(data)
     value[args[1].to_i] = args[2]
-    value = redisSerialize(value)
-    SET([args[0], value])
+    value = redis_serialize(value)
+    set([args[0], value])
   end
 
-  # @conv {"LTRIM" => ["redisDeserialize@client","extractElementsFromList@client","redisSerialize@client","GET","SET"]}
-  def REDIS_LTRIM(args)
-    data = REDIS_LRANGE(args)
-    value = redisSerialize(data)
-    SET([args[0], value])
+  # @conv {"ltrim" => ["redis_deserialize@client","extract_elements_fromlist@client","redis_serialize@client","GET","SET"]}
+  def redis_ltrim(args)
+    data = redis_lrange(args)
+    value = redis_serialize(data)
+    set([args[0], value])
   end
 
-  # @conv {"LLEN" => ["redisDeserialize@client","GET"]}
-  def REDIS_LLEN(args)
-    data = GET([args[0]])
-    redisDeserialize(data).size
+  # @conv {"llen" => ["redis_deserialize@client","GET"]}
+  def redis_llen(args)
+    data = get([args[0]])
+    redis_deserialize(data).size
   end
 
   #########
   ## Set ##
   #########
-  # @conv {"SRANDMEMBER" => ["redisDeserialize@client","GET"]}
-  def REDIS_SRANDMEMBER(args)
+  # @conv {"srandmember" => ["redisdeserialize@client","get"]}
+  def redis_srandmember(args)
     key = args[0]
-    data = GET([key])
-    members = redisDeserialize(data)
+    data = get([key])
+    members = redis_deserialize(data)
     members.sample
   end
 
-  # @conv {"SMEMBERS" => ["redisDeserialize@client","GET"]}
-  def REDIS_SMEMBERS(args)
+  # @conv {"smembers" => ["redis_deserialize@client","GET"]}
+  def redis_smembers(args)
     key = args[0]
-    value = GET([key])
-    redisDeserialize(value)
+    value = get([key])
+    redis_deserialize(value)
   end
 
-  # @conv {"SDIFF" => ["redisDeserialize@client","redisSerialize@client","GET"]}
-  def REDIS_SDIFF(args)
+  # @conv {"sdiff" => ["redisdeserialize@client","redis_serialize@client","GET"]}
+  def redis_sdiff(args)
     common = []
     members_array = []
     data_array = []
     args.each do |key|
-      data_array.push(GET([key]))
+      data_array.push(get([key]))
     end
     data_array.each do |data|
-      members = redisDeserialize(data)
+      members = redis_deserialize(data)
       members_array += members
       common = if common.empty?
                  members
@@ -282,128 +281,128 @@ module Redis2MemcachedOperation
                end
     end
     value = members_array.uniq - common.uniq
-    redisSerialize(value)
+    redis_serialize(value)
   end
 
-  # @conv {"SDIFFSTORE" => ["redisDeserialize@client","redisSerialize@client","GET","SET"]}
-  def REDIS_SDIFFSTORE(args)
+  # @conv {"sdiffstore" => ["redisdeserialize@client","redisserialize@client","get","set"]}
+  def redis_sdiffstore(args)
     dstkey = args.shift
-    value = REDIS_SDIFF(args)
-    SET([dstkey, value])
+    value = redis_sdiff(args)
+    set([dstkey, value])
   end
 
-  # @conv {"SINTER" => ["redisDeserialize@client","GET"]}
-  def REDIS_SINTER(args)
+  # @conv {"sinter" => ["redis_deserialize@client","GET"]}
+  def redis_sinter(args)
     result = []
     data_array = []
     args.each do |key|
-      data_array.push(GET([key]))
+      data_array.push(get([key]))
     end
     data_array.each do |data|
-      members = redisDeserialize(data)
+      members = redis_deserialize(data)
       result = if result.empty?
                  members
                else
                  result & members
                end
     end
-    redisSerialize(result)
+    redis_serialize(result)
   end
 
-  # @conv {"SINTERSTORE" => ["redisDeserialize@client","redisSerialize@client","GET","SET"]}
-  def REDIS_SINTERSTORE(args)
+  # @conv {"sinterstore" => ["redis_deserialize@client","redis_serialize@client","GET","SET"]}
+  def redis_sinterstore(args)
     dstkey = args.shift
-    result = REDIS_SINTER(args)
-    SET([dstkey, result])
+    result = redis_sinter(args)
+    set([dstkey, result])
   end
 
-  # @conv {"SUNION" => ["redisDeserialize@client","redisSerialize@client","GET"]}
-  def REDIS_SUNION(args)
+  # @conv {"sunion" => ["redis_deserialize@client","redis_serialize@client","GET"]}
+  def redis_sunion(args)
     value = []
     args.each do |key|
-      members = redisDeserialize(GET([key]))
+      members = redis_deserialize(get([key]))
       value += members
     end
-    redisSerialize(value.uniq)
+    redis_serialize(value.uniq)
   end
 
-  # @conv {"SUNION" => ["redisDeserialize@client","redisSerialize@client","GET","SET"]}
-  def REDIS_SUNIONSTORE(args)
+  # @conv {"sunion" => ["redis_deserialize@client","redis_serialize@client","GET","SET"]}
+  def redis_sunionstore(args)
     dstkey = args.shift
-    result = REDIS_SUNION(args)
-    SET([dstkey, result])
+    result = redis_sunion(args)
+    set([dstkey, result])
   end
 
-  # @conv {"SISMEMBER" => ["redisDeserialize@client","GET"]}
-  def REDIS_SISMEMBER(args)
+  # @conv {"sismember" => ["redis_deserialize@client","GET"]}
+  def redis_sismember(args)
     target = args.pop
-    value = REDIS_SMEMBERS(args)
+    value = redis_smembers(args)
     value.include?(target)
   end
 
-  # @conv {"SREM" => ["redisDeserialize@client","redisSerialize@client","GET","REPLACE"]}
-  def REDIS_SREM(args)
+  # @conv {"srem" => ["redis_deserialize@client","redis_serialize@client","GET","REPLACE"]}
+  def redis_srem(args)
     key = args[0]
     value = args[1]
-    data = GET([key])
-    members = redisDeserialize(data)
+    data = get([key])
+    members = redis_deserialize(data)
     members.delete(value)
     unless members.empty?
-      result = redisSerialize(members)
-      return REPLACE([key, result])
+      result = redis_serialize(members)
+      return replace([key, result])
     end
-    DELETE([key])
+    delete([key])
   end
 
-  # @conv {"SMOVE" => ["redisDeserialize@client","redisSerialize@client","GET","REPLACE"]}
-  def REDIS_SMOVE(args)
+  # @conv {"smove" => ["redis_deserialize@client","redis_serialize@client","GET","REPLACE"]}
+  def redis_smove(args)
     srckey = args[0]
     dstkey = args[1]
     member = args[2]
-    srcdata = GET([srckey])
-    dstdata = GET([dstkey])
+    srcdata = get([srckey])
+    dstdata = get([dstkey])
     ## REMOVE member from srtKey
-    members = redisDeserialize(srcdata)
+    members = redis_deserialize(srcdata)
     members.delete(member)
-    srcresult = redisSerialize(members)
+    srcresult = redis_serialize(members)
     ## ADD member to dstKey
-    members = redisDeserialize(dstdata)
+    members = redis_deserialize(dstdata)
     members.push(member)
-    dstresult = redisSerialize(members)
-    (REPLACE([srckey, srcresult]) && REPLACE([dstkey, dstresult]))
+    dstresult = redis_serialize(members)
+    (replace([srckey, srcresult]) && replace([dstkey, dstresult]))
   end
 
-  # @conv {"SCARD" => ["GET","redisDeserialize@client"]}
-  def REDIS_SCARD(args)
-    members = GET([args[0]])
-    redisDeserialize(members).size
+  # @conv {"scard" => ["get","redis_deserialize@client"]}
+  def redis_scard(args)
+    members = get([args[0]])
+    redis_deserialize(members).size
   end
 
-  # @conv {"SADD" => ["redisSerialize@client","SET","REPLACE"]}
-  def REDIS_SADD(args)
+  # @conv {"sadd" => ["redis_serialize@client","SET","REPLACE"]}
+  def redis_sadd(args)
     key = args.shift
-    existing_data = GET([key])
-    value = redisSerialize(args)
+    existing_data = get([key])
+    value = redis_serialize(args)
     if !existing_data.empty?
-      return REPLACE([key, "#{existing_data},#{value}"])
+      return replace([key, "#{existing_data},#{value}"])
     else
-      return SET([key, value])
+      return set([key, value])
     end
   end
 
-  # @conv {"SPOP" => ["redisDeserialize@client","redisSerialize@client","GET","REPLACE"]}
-  def REDIS_SPOP(args)
+  # @conv {"spop" => ["redis_deserialize@client","redis_serialize@client","GET","REPLACE"]}
+  def redis_spop(args)
     key = args[0]
-    data = GET([key])
+    data = get([key])
     ## GET
-    members = redisDeserialize(data)
+    members = redis_deserialize(data)
     popedmember = members.sample
     members.delete(popedmember)
-    result = redisSerialize(members)
+    result = redis_serialize(members)
     if !result.empty?
-      REPLACE([key, result])
+      replace([key, result])
     else
-      DELETE([key])
+      delete([key])
     end
     popedmember
   end
@@ -411,119 +410,119 @@ module Redis2MemcachedOperation
   #################
   ## Sorted Sets ##
   #################
-  # @conv {"ZADD" => ["redisDeserializeWithScore@client","sortByScore@client","redisSerializeWithScore@client","GET","SET"]}
+  # @conv {"zadd" => ["redis_deserialize_withscore@client","sortByScore@client","redis_serialize_withscore@client","GET","SET"]}
   ## args = [key, score, member]
-  def REDIS_ZADD(args)
+  def redis_zadd(args)
     ## hash { member => score}
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
     hash[args[2]] = args[1].to_i
-    result = redisSerializeWithScore(hash)
-    SET([args[0], result])
+    result = redis_serialize_withscore(hash)
+    set([args[0], result])
   end
 
-  # @conv {"ZREM" => ["redisDeserializeWithScore@client","redisSerializeWithScore@client","GET","SET"]}
+  # @conv {"zrem" => ["redis_deserialize_withscore@client","redis_serialize_withscore@client","GET","SET"]}
   ## args = [key, member]
-  def REDIS_ZREM(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
+  def redis_zrem(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
     hash.delete(args[1])
-    result = redisSerializeWithScore(hash, false)
+    result = redis_serialize_withscore(hash, false)
     unless result.empty?
-      return SET([args[0], result])
+      return set([args[0], result])
     end
-    DELETE([args[0]])
+    delete([args[0]])
   end
 
-  # @conv {"ZINCRBY" => ["redisDeserializeWithScore@client","sortByScore@client","redisSerializeWithScore@client","GET","SET"]}
+  # @conv {"zincrby" => ["redis_deserialize_withscore@client","sortByScore@client","redis_serialize_withscore@client","GET","SET"]}
   ## args = [key, score, member]
-  def REDIS_ZINCRBY(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
+  def redis_zincrby(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
     hash[args[2]] += args[1].to_i
-    result = redisSerializeWithScore(hash, true)
-    SET([args[0], result])
+    result = redis_serialize_withscore(hash, true)
+    set([args[0], result])
   end
 
-  # @conv {"ZRANK" => ["redisDeserializeWithScore@client","GET"]}
+  # @conv {"zrank" => ["redis_deserialize_withscore@client","GET"]}
   ## args = [key, member]
-  def REDIS_ZRANK(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
+  def redis_zrank(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
     hash.keys.index(args[1])
   end
 
-  # @conv {"ZREVRANK" => ["redisDeserializeWithScore@client","GET"]}
+  # @conv {"zrevrank" => ["redis_deserialize_withscore@client","GET"]}
   ## args = [key, member]
-  def REDIS_ZREVRANK(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
+  def redis_zrevrank(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
     hash.keys.reverse.index(args[1])
   end
 
-  # @conv {"ZRANGE" => ["redisDeserializeWithScore@client","GET"]}
+  # @conv {"zrange" => ["redis_deserialize_withscore@client","GET"]}
   ## args = [key, start, end]
-  def REDIS_ZRANGE(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
-    sortedArrayGetRange(args[1].to_i, args[2].to_i, hash.keys)
+  def redis_zrange(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
+    sorted_array_get_range(args[1].to_i, args[2].to_i, hash.keys)
   end
 
-  # @conv {"ZREVRANGE" => ["redisDeserializeWithScore@client","GET"]}
+  # @conv {"zrevrange" => ["redis_deserialize_withscore@client","GET"]}
   ## args = [key, start, end]
-  def REDIS_ZREVRANGE(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
-    sortedArrayGetRange(args[1].to_i, args[2].to_i, hash.keys.reverse)
+  def redis_zrevrange(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
+    sorted_array_get_range(args[1].to_i, args[2].to_i, hash.keys.reverse)
   end
 
-  # @conv {"ZRANGEBYSCORE" => ["redisDeserializeWithScore@client","GET"]}
+  # @conv {"zrangebyscore" => ["redis_deserialize_withscore@client","GET"]}
   ## args = [key, min, max]
-  def REDIS_ZRANGEBYSCORE(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
+  def redis_zrangebyscore(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
     selected = hash.select { |_, score| score >= args[1].to_i && score <= args[2].to_i }
     selected.keys
   end
 
-  # @conv {"ZCOUNT" => ["redisDeserializeWithScore@client","GET"]}
+  # @conv {"zcount" => ["redis_deserialize_withscore@client","GET"]}
   ## args = [key, min, max]
-  def REDIS_ZCOUNT(args)
-    selected = REDIS_ZRANGEBYSCORE(args)
+  def redis_zcount(args)
+    selected = redis_zrangebyscore(args)
     selected.size
   end
 
-  # @conv {"ZCARD" => ["redisDeserializeWithScore@client","GET"]}
+  # @conv {"zcard" => ["redis_deserialize_withscore@client","GET"]}
   ## args = [key]
-  def REDIS_ZCARD(args)
-    data = GET(args)
-    hash = redisDeserializeWithScore(data)
+  def redis_zcard(args)
+    data = get(args)
+    hash = redis_deserialize_withscore(data)
     hash.keys.size
   end
 
-  # @conv {"ZSCORE" => ["redisDeserializeWithScore@client","GET"]}
+  # @conv {"zscore" => ["redis_deserialize_withscore@client","GET"]}
   ## args = [key,member]
-  def REDIS_ZSCORE(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
+  def redis_zscore(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
     hash[args[1]].to_i
   end
 
-  # @conv {"ZREMRANGEBYSCORE" => ["redisDeserializeWithScore@client","sortByScore@client","redisSerializeWithScore","GET","SET"]}
+  # @conv {"zremrangebyscore" => ["redis_deserialize_withscore@client","sortByScore@client","redis_serialize_withscore","GET","SET"]}
   ## args = [key,min,max]
-  def REDIS_ZREMRANGEBYSCORE(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
+  def redis_zremrangebyscore(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
     selected = hash.select { |_, score| score < args[1].to_i || score > args[2].to_i }
-    result = redisSerializeWithScore(selected)
-    SET([args[0], result])
+    result = redis_serialize_withscore(selected)
+    set([args[0], result])
   end
 
-  # @conv {"ZREMRANGEBYRANK" => ["redisDeserializeWithScore@client","sortByScore@client","redisSerializeWithScore","GET","SET"]}
+  # @conv {"zremrangebyrank" => ["redis_deserialize_withscore@client","sortByScore@client","redis_serialize_withscore","GET","SET"]}
   ## args = [key,min,max]
-  def REDIS_ZREMRANGEBYRANK(args)
-    data = GET([args[0]])
-    hash = redisDeserializeWithScore(data)
+  def redis_zremrangebyrank(args)
+    data = get([args[0]])
+    hash = redis_deserialize_withscore(data)
     result = {}
     i = 0
     hash.each do |member, score|
@@ -532,100 +531,101 @@ module Redis2MemcachedOperation
       end
       i += 1
     end
-    value = redisSerializeWithScore(result)
-    SET([args[0], value])
+    value = redis_serialize_withscore(result)
+    set([args[0], value])
   end
 
-  # @conv {"ZUNIONSTORE" => ["deserizeWithScore@client","redisSerializeWithScore@client","mergeWithOption@client","GET","SET"]}
+  # @conv {"zunionstore" => ["deserizeWithScore@client","redis_serialize_withscore@client","mergeWithOption@client","GET","SET"]}
   ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "option" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
-  def REDIS_ZUNIONSTORE(args)
+  def redis_zunionstore(args)
     result = {}
-    data = {}
+    data = redis_get_stored_data(args)
     args["args"].each_index do |index|
       key = args["args"][index]
-      data[key] = GET([key])
-    end
-    args["args"].each_index do |index|
-      key = args["args"][index]
-      weight = 1.0
-      if args["option"] &&
-         args["option"][:weights] &&
-         args["option"][:weights][index]
-        weight = args["option"][:weights][index].to_f
-      end
+      weight = redis_get_weight(args, index)
       if !result.keys.empty?
-        result.merge!(redisDeserializeWithScore(data[key])) do |_, v0, v1|
-          aggregateScore(args["option"][:aggregate], v0.to_f, v1.to_f, weight)
+        result.merge!(redis_deserialize_withscore(data[key])) do |_, v0, v1|
+          aggregate_score(args["option"][:aggregate], v0.to_f, v1.to_f, weight)
         end
       else
-        result = redisDeserializeWithScore(data[key])
+        result = redis_deserialize_withscore(data[key])
       end
     end
-    value = redisSerializeWithScore(result)
-    SET([args["key"], value])
+    value = redis_serialize_withscore(result)
+    set([args["key"], value])
   end
 
-  # @conv {"ZINTERSTORE" => ["deserizeWithScore@client","redisSerializeWithScore@client","diffWithOption@client""GET","SET"]}
+  # @conv {"zinterstore" => ["deserizeWithScore@client","redis_serialize_withscore@client","diffWithOption@client""GET","SET"]}
   ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "option" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
-  def REDIS_ZINTERSTORE(args)
+  def redis_zinterstore(args)
     result = {}
-    data   = {}
+    data = redis_get_stored_data(args)
     args["args"].each_index do |index|
       key = args["args"][index]
-      data[key] = GET([key])
-    end
-    args["args"].each_index do |index|
-      key = args["args"][index]
-      weight = 1.0
-      if args["option"] &&
-         args["option"][:weights] &&
-         args["option"][:weights][index]
-        weight = args["option"][:weights][index].to_f
-      end
+      weight = redis_get_weight(args, index)
       if !result.keys.empty?
-        new_hash = redisDeserializeWithScore(data[key])
+        new_hash = redis_deserialize_withscore(data[key])
         keys = result.keys & new_hash.keys
         tmp__ = {}
         keys.each do |key_|
-          tmp__[key_] = aggregateScore(args["option"][:aggregate], result[key_].to_f, new_hash[key_].to_f, weight)
+          tmp__[key_] = aggregate_score(args["option"][:aggregate], result[key_].to_f, new_hash[key_].to_f, weight)
         end
       else
-        result = redisDeserializeWithScore(data[key])
+        result = redis_deserialize_withscore(data[key])
       end
     end
-    value = redisSerializeWithScore(result)
-    SET([args["key"], value])
+    value = redis_serialize_withscore(result)
+    set([args["key"], value])
+  end
+
+  def redis_get_stored_data(args)
+    data = {}
+    args["args"].each_index do |index|
+      key = args["args"][index]
+      data[key] = get([key])
+    end
+    data
+  end
+
+  def redis_get_weight(args, index)
+    weight = 1.0
+    if args["option"] &&
+       args["option"][:weights] &&
+       args["option"][:weights][index]
+      weight = args["option"][:weights][index].to_f
+    end
+    weight
   end
 
   ############
   ## Hashes ##
   ############
-  # @conv {"HSET" => ["redisDeserializeHash@client","redisSerializeHash@client","GET","SET"]}
+  # @conv {"hset" => ["redis_deserialize_hash@client","redis_serialize_hash@client","GET","SET"]}
   ## args = [key, field, value]
-  def REDIS_HSET(args)
-    data = GET([args[0]])
+  def redis_hset(args)
+    data = get([args[0]])
     hash = {}
     unless data.empty?
-      hash = redisDeserializeHash(data)
+      hash = redis_deserialize_hash(data)
     end
     hash[args[1]] = args[2]
-    result = redisSerializeHash(hash)
-    SET([args[0], result])
+    result = redis_serialize_hash(hash)
+    set([args[0], result])
   end
 
-  # @conv {"HGET" => ["redisDeserializeHash@client","GET"]}
+  # @conv {"hget" => ["redis_deserialize_hash@client","GET"]}
   ## args = [key, field]
-  def REDIS_HGET(args)
-    data = GET([args[0]])
-    hash = redisDeserializeHash(data)
+  def redis_hget(args)
+    data = get([args[0]])
+    hash = redis_deserialize_hash(data)
     hash[args[1]]
   end
 
-  # @conv {"HMGET" => ["redisDeserializeHash@client","GET"]}
+  # @conv {"hmget" => ["redis_deserialize_hash@client","GET"]}
   ## args = {"key" => key, "args"=> [field0,field1,...]]
-  def REDIS_HMGET(args)
-    data = GET([args["key"]])
-    hash = redisDeserializeHash(data)
+  def redis_hmget(args)
+    data = get([args["key"]])
+    hash = redis_deserialize_hash(data)
     result = []
     args["args"].each do |field|
       result.push(hash[field])
@@ -633,99 +633,99 @@ module Redis2MemcachedOperation
     result
   end
 
-  # @conv {"HMSET" => ["redisDeserializeHash@client","redisSerializeHash@client","GET","SET"]}
+  # @conv {"hmset" => ["redis_deserialize_hash@client","redis_serialize_hash@client","GET","SET"]}
   ## args = {"key" => key, "args"=> {field0=>member0,field1=>member1,...}}
-  def REDIS_HMSET(args)
+  def redis_hmset(args)
     args["key"].gsub!(":", "__colon__")
     ### keyname, asyncable
-    data = GET([args["key"]])
+    data = get([args["key"]])
     hash = {}
     unless data.empty?
-      hash = redisDeserializeHash(data)
+      hash = redis_deserialize_hash(data)
     end
     args["args"].each do |field, member|
       hash[field] = member
     end
-    result = redisSerializeHash(hash)
-    SET([args["key"], result])
+    result = redis_serialize_hash(hash)
+    set([args["key"], result])
   end
 
-  # @conv {"HINCRBY" => ["redisDeserializeHash@client","redisSerializeHash@client","GET","SET"]}
+  # @conv {"hincrby" => ["redis_deserialize_hash@client","redis_serialize_hash@client","GET","SET"]}
   ## args = [key, field, integer]
-  def REDIS_HINCRBY(args)
-    data = GET([args[0]])
+  def redis_hincrby(args)
+    data = get([args[0]])
     hash = {}
     unless data.empty?
-      hash = redisDeserializeHash(data)
+      hash = redis_deserialize_hash(data)
     end
     hash[args[1]] = hash[args[1]].to_i + args[2].to_i
-    result = redisSerializeHash(hash)
-    SET([args[0], result])
+    result = redis_serialize_hash(hash)
+    set([args[0], result])
   end
 
-  # @conv {"HEXISTS" => ["redisDeserializeHash@client","GET"]}
+  # @conv {"hexists" => ["redis_deserialize_hash@client","GET"]}
   ## args = [key, field]
-  def REDIS_HEXISTS(args)
-    data = GET([args[0]])
-    hash = redisDeserializeHash(data)
+  def redis_hexists(args)
+    data = get([args[0]])
+    hash = redis_deserialize_hash(data)
     hash.key?(args[1])
   end
 
-  # @conv {"HDEL" => ["redisDeserializeHash@client","redisSerializeHash@client","GET","SET"]}
+  # @conv {"hdel" => ["redis_deserialize_hash@client","redis_serialize_hash@client","GET","SET"]}
   ## args = [key, field]
-  def REDIS_HDEL(args)
-    data = GET([args[0]])
-    hash = redisDeserializeHash(data)
+  def redis_hdel(args)
+    data = get([args[0]])
+    hash = redis_deserialize_hash(data)
     hash.delete(args[1])
     if hash.keys.empty?
-      return DELETE([args[0]])
+      return delete([args[0]])
     end
-    result = redisSerializeHash(hash)
-    SET([args[0], result])
+    result = redis_serialize_hash(hash)
+    set([args[0], result])
   end
 
-  # @conv {"HLEN" => ["redisDeserializeHash@client","GET"]}
+  # @conv {"hlen" => ["redis_deserialize_hash@client","GET"]}
   ## args = [key]
-  def REDIS_HLEN(args)
-    data = GET([args[0]])
-    hash = redisDeserializeHash(data)
+  def redis_hlen(args)
+    data = get([args[0]])
+    hash = redis_deserialize_hash(data)
     hash.keys.size
   end
 
-  # @conv {"HKEYS" => ["redisDeserializeHash@client","GET"]}
+  # @conv {"hkeys" => ["redis_deserialize_hash@client","GET"]}
   ## args = [key]
-  def REDIS_HKEYS(args)
-    data = GET([args[0]])
-    hash = redisDeserializeHash(data)
+  def redis_hkeys(args)
+    data = get([args[0]])
+    hash = redis_deserialize_hash(data)
     hash.keys
   end
 
-  # @conv {"HVALS" => ["redisDeserializeHash@client","GET"]}
+  # @conv {"hvals" => ["redis_deserialize_hash@client","GET"]}
   ## args = [key]
-  def REDIS_HVALS(args)
-    data = GET([args[0]])
-    hash = redisDeserializeHash(data)
+  def redis_hvals(args)
+    data = get([args[0]])
+    hash = redis_deserialize_hash(data)
     hash.values
   end
 
-  # @conv {"HGETALL" => ["redisDeserializeHash@client","GET"]}
+  # @conv {"hgetall" => ["redis_deserialize_hash@client","GET"]}
   ## args = [key]
-  def REDIS_HGETALL(args)
-    data = GET([args[0]])
-    redisDeserializeHash(data)
+  def redis_hgetall(args)
+    data = get([args[0]])
+    redis_deserialize_hash(data)
   end
 
   ############
   ## OTHRES ##
   ############
-  # @conv {"FLUSHALL" => ["FLUSH"]}
-  def REDIS_FLUSHALL(args)
-    FLUSH(args)
+  # @conv {"flushall" => ["flush"]}
+  def redis_flushall(args)
+    flush(args)
   end
 
-  # @conv {"DEL" => ["DELETE"]}
-  def REDIS_DEL(args)
-    DELETE(args)
+  # @conv {"del" => ["delete"]}
+  def redis_del(args)
+    delete(args)
   end
 
   #############
@@ -733,14 +733,14 @@ module Redis2MemcachedOperation
   #############
   def prepare_redis(operand, args)
     result = {}
-    result["operand"] = "REDIS_#{operand}"
-    result["args"] = if %w[ZUNIONSTORE ZINTERSTORE].include?(operand)
-                       @parser.extractZ_X_STORE_ARGS(args)
-                     elsif %w[MSET MGET MSETNX].include?(operand)
+    result["operand"] = "redis_#{operand}"
+    result["args"] = if %w[zunionstore zinterstore].include?(operand)
+                       @parser.extract_z_x_store_args(args)
+                     elsif %w[mset mget msetnx].include?(operand)
                        @parser.args2hash(args)
-                     elsif %w[HMGET].include?(operand)
+                     elsif %w[hmget].include?(operand)
                        @parser.args2key_args(args)
-                     elsif %w[HMSET].include?(operand)
+                     elsif %w[hmset].include?(operand)
                        @parser.args2key_hash(args)
                      else
                        args
@@ -749,7 +749,7 @@ module Redis2MemcachedOperation
   end
 
   ## Private Function
-  def extractElementsFromList(list, start_pos, end_pos)
+  def extract_elements_fromlist(list, start_pos, end_pos)
     result = []
     start_pos = start_pos.to_i
     end_pos = end_pos.to_i
@@ -761,16 +761,16 @@ module Redis2MemcachedOperation
     result
   end
 
-  def redisSerialize(array)
+  def redis_serialize(array)
     array.join(",")
   end
 
-  def redisDeserialize(str)
+  def redis_deserialize(str)
     str.split(",")
   end
 
   # hash {member => score}
-  def redisSerializeWithScore(hash, sort = true)
+  def redis_serialize_withscore(hash, sort = true)
     result = []
     ## sortByScore
     if sort
@@ -783,7 +783,7 @@ module Redis2MemcachedOperation
     result.join(",")
   end
 
-  def redisDeserializeWithScore(str)
+  def redis_deserialize_withscore(str)
     result = {}
     if !str.nil? && !str.empty?
       str_with_score = str.split(",")
@@ -796,7 +796,7 @@ module Redis2MemcachedOperation
     result
   end
 
-  def redisSerializeHash(hash)
+  def redis_serialize_hash(hash)
     result = []
     ## build
     hash.each do |field, member|
@@ -805,7 +805,7 @@ module Redis2MemcachedOperation
     result.join(",")
   end
 
-  def redisDeserializeHash(str)
+  def redis_deserialize_hash(str)
     result = {}
     if !str.nil? && !str.empty?
       str_with_score = str.split(",")
@@ -818,7 +818,7 @@ module Redis2MemcachedOperation
     result
   end
 
-  def sortedArrayGetRange(start_index, end_index, members)
+  def sorted_array_get_range(start_index, end_index, members)
     result = []
     i = start_index
     if i == -1
@@ -834,7 +834,7 @@ module Redis2MemcachedOperation
     result
   end
 
-  def aggregateScore(operation, v0, v1, weight)
+  def aggregate_score(operation, v0, v1, weight)
     score = case operation.upcase
             when "SUM" then
               v0 + v1 * weight

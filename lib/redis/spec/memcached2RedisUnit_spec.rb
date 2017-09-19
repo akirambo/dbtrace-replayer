@@ -20,34 +20,34 @@ module MemcachedTest
       @parser = ParserMock.new()
     end
     private
-    def SET(args)
+    def set(argsOB)
       @command = "#{__method__}"
       return "OK"
     end
-    def SETEX(args)
+    def setex(args)
       @command = "#{__method__}"
       return "OK"
     end
-    def GET(args)
+    def get(args)
       @command = "#{__method__}"
       if(args[0] == nil)then
         return nil
       end
       return "reply"
     end
-    def INCRBY(args)
+    def incrby(args)
     @command = "#{__method__}"
       return "OK"
     end
-    def DECRBY(args)
+    def decrby(args)
       @command = "#{__method__}"
       return "OK"
     end
-    def DEL(args)
+    def del(args)
       @command = "#{__method__}"
       return "OK"
     end
-    def FLUSHALL(args)
+    def flushall(args)
       @command = "#{__method__}"
       return "OK"
     end
@@ -61,74 +61,74 @@ module MemcachedTest
       @tester = Mock.new(@logger)
     end
     context 'Operation' do
-      it "MEMCACHED_SET with expiretime" do
-        expect(@tester.send(:MEMCACHED_SET,["key",1,"value"])).to eq "OK"
-        expect(@tester.command).to eq "SETEX"
+      it "memcached_set with expiretime" do
+        expect(@tester.send(:memcached_set,["key",1,"value"])).to eq "OK"
+        expect(@tester.command).to eq "setex"
       end
-      it "MEMCACHED_SET" do
-        expect(@tester.send(:MEMCACHED_SET,["key","value"])).to eq "OK"
-        expect(@tester.command).to eq "SET"
+      it "memcached_set" do
+        expect(@tester.send(:memcached_set,["key","value"])).to eq "OK"
+        expect(@tester.command).to eq "set"
       end
-      it "MEMCACHED_SET (ERROR)" do
-        expect(@tester.send(:MEMCACHED_SET,["key"])).to eq "NG"
+      it "memcached_set (error)" do
+        expect(@tester.send(:memcached_set,["key"])).to eq "NG"
       end
-      it "MEMCACHED_GET" do
-        expect(@tester.send(:MEMCACHED_GET,["key","value"])).to eq "reply"
-        expect(@tester.command).to eq "GET"
+      it "memcached_get" do
+        expect(@tester.send(:memcached_get,["key","value"])).to eq "reply"
+        expect(@tester.command).to eq "get"
       end
-      it "MEMCACHED_ADD" do
-        expect(@tester.send(:MEMCACHED_ADD,["key","add"])).to eq "NG"
-        expect(@tester.send(:MEMCACHED_ADD,[nil,"add"])).to eq "OK"
-        expect(@tester.command).to eq "SET"
+      it "memcached_add" do
+        expect(@tester.send(:memcached_add,["key","add"])).to eq "NG"
+        expect(@tester.send(:memcached_add,[nil,"add"])).to eq "OK"
+        expect(@tester.command).to eq "set"
       end
-      it "MEMCACHED_GETS" do
-        expect(@tester.send(:MEMCACHED_GETS,["key"])).to eq "reply"
-        expect(@tester.command).to eq "GET"
+      it "memcached_gets" do
+        expect(@tester.send(:memcached_gets,["key"])).to eq "reply"
+        expect(@tester.command).to eq "get"
       end
-      it "MEMCACHED_CAS" do
-        expect(@tester.send(:MEMCACHED_CAS,["key","value",1])).to eq  "OK"
-        expect(@tester.command).to eq "SET"
-        expect(@tester.send(:MEMCACHED_CAS,["key",1,"value",1])).to eq  "OK"
-        expect(@tester.command).to eq "SETEX"
+      it "memcached_cas" do
+        expect(@tester.send(:memcached_cas,["key","value",1])).to eq  "OK"
+        expect(@tester.command).to eq "set"
+        expect(@tester.send(:memcached_cas,["key",1,"value",1])).to eq  "OK"
+        expect(@tester.command).to eq "setex"
       end
-      it "MEMCACHED_REPLACE" do
-        expect(@tester.send(:MEMCACHED_REPLACE,["key","correct"])).to eq "OK"
-        expect(@tester.command).to eq "SET"
-        expect(@tester.send(:MEMCACHED_REPLACE,[nil,"correct"])).to eq "NG"
+      it "memcached_replace" do
+        expect(@tester.send(:memcached_replace,["key","correct"])).to eq "OK"
+        expect(@tester.command).to eq "set"
+        expect(@tester.send(:memcached_replace,[nil,"correct"])).to eq "NG"
       end
-      it "MEMCACHED_APPEND" do
-        expect(@tester.send(:MEMCACHED_APPEND,["key",10,"ect"])).to eq "OK"
-        expect(@tester.command).to eq "SETEX"
-        expect(@tester.send(:MEMCACHED_APPEND,["key","ect"])).to eq "OK"
-        expect(@tester.command).to eq "SET"
+      it "memcached_append" do
+        expect(@tester.send(:memcached_append,["key",10,"ect"])).to eq "OK"
+        expect(@tester.command).to eq "setex"
+        expect(@tester.send(:memcached_append,["key","ect"])).to eq "OK"
+        expect(@tester.command).to eq "set"
       end
-      it "MEMCACHED_PREPEND" do
-        expect(@tester.send(:MEMCACHED_PREPEND,["key",10,"ect"])).to eq "OK"
-        expect(@tester.command).to eq "SETEX"
-        expect(@tester.send(:MEMCACHED_PREPEND,["key","ect"])).to eq "OK"
-        expect(@tester.command).to eq "SET"
+      it "memcached_prepend" do
+        expect(@tester.send(:memcached_prepend,["key",10,"ect"])).to eq "OK"
+        expect(@tester.command).to eq "setex"
+        expect(@tester.send(:memcached_prepend,["key","ect"])).to eq "OK"
+        expect(@tester.command).to eq "set"
       end
-      it "MEMCACHED_INCR" do
-        expect(@tester.send(:MEMCACHED_INCR,["key",100])).to eq "OK"
-        expect(@tester.command).to eq "INCRBY"
+      it "memcached_incr" do
+        expect(@tester.send(:memcached_incr,["key",100])).to eq "OK"
+        expect(@tester.command).to eq "incrby"
       end
-      it "MEMCACHED_DECR" do
-        expect(@tester.send(:MEMCACHED_DECR,["key",100])).to eq "OK"
-        expect(@tester.command).to eq "DECRBY"
+      it "memcached_decr" do
+        expect(@tester.send(:memcached_decr,["key",100])).to eq "OK"
+        expect(@tester.command).to eq "decrby"
       end
-      it "MEMCACHED_DELETE" do
-        expect(@tester.send(:MEMCACHED_DELETE,["key"])).to eq "OK"
-        expect(@tester.command).to eq "DEL"
+      it "memcached_delete" do
+        expect(@tester.send(:memcached_delete,["key"])).to eq "OK"
+        expect(@tester.command).to eq "del"
       end
-      it "MEMCACHED_FLUSH" do
-        expect(@tester.send(:MEMCACHED_FLUSH,[])).to eq "OK"
-        expect(@tester.command).to eq "FLUSHALL"
+      it "memcached_flush" do
+        expect(@tester.send(:memcached_flush,[])).to eq "OK"
+        expect(@tester.command).to eq "flushall"
       end
       it "prepare_memcached" do
-        ans = {"operand" => "FLUSHALL"}
-        expect(@tester.send(:prepare_memcached,"FLUSHALL",[""])).to include ans
-        ans = {"operand" => "MEMCACHED_TEST", "args"=>"PARSED"}
-        expect(@tester.send(:prepare_memcached,"TEST",[""])).to include ans
+        ans = {"operand" => "flushall"}
+        expect(@tester.send(:prepare_memcached,"flushall",[""])).to include ans
+        ans = {"operand" => "memcached_test", "args"=>"PARSED"}
+        expect(@tester.send(:prepare_memcached,"test",[""])).to include ans
       end
     end
   end

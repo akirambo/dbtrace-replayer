@@ -35,7 +35,7 @@ module Redis2CassandraOperation
   ## String ##
   ############
   # @conv {"SET" => ["INSERT"]}
-  def REDIS_SET(args, cond = {}, onTime = false)
+  def redis_set(args, cond = {}, onTime = false)
     table = @option[:keyspace] + "." + @option[:columnfamily]
     command = "INSERT INTO #{table} (key,value) VALUES ('#{args[0]}','#{args[1]}')"
     r = true
@@ -43,7 +43,7 @@ module Redis2CassandraOperation
       command += " USING TTL #{cond["ttl"]}"
     end
     begin
-      DIRECT_EXECUTER(command + ";", onTime)
+      direct_executer(command + ";", onTime)
     rescue => e
       @logger.error(command)
       @logger.error(e.message)
@@ -53,14 +53,14 @@ module Redis2CassandraOperation
   end
 
   # @conv {"GET" => ["SELECT"]}
-  def REDIS_GET(args, onTime = false)
+  def redis_get(args, onTime = false)
     table = @option[:keyspace] + "." + @option[:columnfamily]
     command = "SELECT value FROM #{table}"
     unless args.empty?
       command += " WHERE key = '#{args[0]}' ;"
     end
     begin
-      value = DIRECT_EXECUTER(command, onTime)
+      value = direct_executer(command, onTime)
       if value["value"] && value["value"][0]
         return value["value"][0]
       else
@@ -74,31 +74,38 @@ module Redis2CassandraOperation
   end
 
   # @conv {"SETNX" => ["INSERT","SELECT"]}
-  def REDIS_SETNX(args)
-    if REDIS_GET(args, false) == ""
-      return REDIS_SET(args)
+  def redis_setnx(args)
+    if redis_get(args, false) == ""
+      return redis_set(args)
     end
     false
   end
 
   # @conv {"SETEX" => ["INSERT"]}
-  def REDIS_SETEX(args)
-    args[2] = (args[2].to_f / 1_000).to_i + 1
-    hash = { "ttl" => args[2] }
-    REDIS_SET(args, hash)
+  def redis_setex(args)
+    redis_xsetex(args, "s")
   end
 
   # @conv {"PSETEX" => ["INSERT"]}
-  def REDIS_PSETEX(args)
-    args[2] = (args[2].to_f / 1_000_000).to_i + 1
+  def redis_psetex(args)
+    redis_xsetex(args, "p")
+  end
+
+  def redis_xsetex(args, type)
+    value = if type == "p"
+              1_000_000
+            else
+              1_000
+            end
+    args[2] = (args[2].to_f / value.to_f).to_i + 1
     hash = { "ttl" => args[2] }
-    REDIS_SET(args, hash)
+    redis_set(args, hash)
   end
 
   # @conv {"MSET" => ["INSERT"]}
-  def REDIS_MSET(args)
+  def redis_mset(args)
     args.each do |key, value|
-      r = REDIS_SET([key, value])
+      r = redis_set([key, value])
       unless r
         return false
       end
@@ -107,18 +114,18 @@ module Redis2CassandraOperation
   end
 
   # @conv {"MGET" => ["SELECT"]}
-  def REDIS_MGET(args)
+  def redis_mget(args)
     result = []
     args.each do |key, _|
-      result.push(REDIS_GET([key], false))
+      result.push(redis_get([key], false))
     end
     result
   end
 
   # @conv {"MSETNX" => ["INSERT"]}
-  def REDIS_MSETNX(args)
+  def redis_msetnx(args)
     args.each do |key, value|
-      r = REDIS_SETNX([key, value])
+      r = redis_setnx([key, value])
       unless r
         return false
       end
@@ -127,54 +134,65 @@ module Redis2CassandraOperation
   end
 
   # @conv {"INCR" => ["SELECT","INSERT"]}
-  def REDIS_INCR(args)
-    value = REDIS_GET([args[0]], false).to_i + 1
-    REDIS_SET([args[0], value])
+  def redis_incr(args)
+    redis_incr_decr(args, "incr")
   end
 
   # @conv {"INCRBY" => ["SELECT","INSERT"]}
-  def REDIS_INCRBY(args)
-    value = REDIS_GET([args[0]], false).to_i + args[1].to_i
-    REDIS_SET([args[0], value])
+  def redis_incrby(args)
+    redis_incr_decr(args, "incrby")
   end
 
   # @conv {"DECR" => ["SELECT","INSERT"]}
-  def REDIS_DECR(args)
-    value = REDIS_GET([args[0]], false).to_i - 1
-    REDIS_SET([args[0], value])
+  def redis_decr(args)
+    redis_incr_decr(args, "decr")
   end
 
   # @conv {"DECRBY" => ["SELECT","INSERT"]}
-  def REDIS_DECRBY(args)
-    value = REDIS_GET([args[0]], false).to_i - args[1].to_i
-    REDIS_SET([args[0], value])
+  def redis_decrby(args)
+    redis_incr_decr(args, "decrby")
+  end
+
+  def redis_incr_decr(args, type)
+    number = case type
+             when "incr"
+               1
+             when "incrby"
+               args[1].to_i
+             when "decr"
+               -1
+             when "decrby"
+               args[1].to_i * -1
+             end
+    value = redis_get([args[0]], false).to_i + number.to_i
+    redis_set([args[0], value])
   end
 
   # @conv {"APPEND" => ["SELECT","INSERT"]}
-  def REDIS_APPEND(args)
-    value = REDIS_GET([args[0]], false).to_s + args[1]
-    REDIS_SET([args[0], value])
+  def redis_append(args)
+    value = redis_get([args[0]], false).to_s + args[1]
+    redis_set([args[0], value])
   end
 
   # @conv {"GETSET" => ["SELECT","INSERT"]}
-  def REDIS_GETSET(args)
-    val = REDIS_GET([args[0]])
-    REDIS_SET(args)
+  def redis_getset(args)
+    val = redis_get([args[0]])
+    redis_set(args)
     val
   end
 
   # @conv {"STRLEN" => ["SELECT","LENGTH@client"]}
-  def REDIS_STRLEN(args)
-    REDIS_GET([args[0]], false).size
+  def redis_strlen(args)
+    redis_get([args[0]], false).size
   end
 
   # @conv {"DEL" => ["DELETE"]}
-  def REDIS_DEL(args, onTime = false)
+  def redis_del(args, onTime = false)
     table = @option[:keyspace] + "." + @option[:columnfamily]
     command = "DELETE FROM #{table} WHERE key = '#{args[0]}';"
     r = true
     begin
-      DIRECT_EXECUTER(command, onTime)
+      direct_executer(command, onTime)
     rescue => e
       @logger.error(command)
       @logger.error(e.message)
@@ -187,27 +205,27 @@ module Redis2CassandraOperation
   ## Lists ##
   ###########
   # @conv {"LPUSH" => [UPDATE"]}
-  def REDIS_LPUSH(args)
-    ## tablename = "list"
-    table = @option[:keyspace] + ".list"
-    command = "UPDATE #{table} SET value = ['#{args[1]}'] + value WHERE key = '#{args[0]}';"
-    begin
-      DIRECT_EXECUTER(command)
-    rescue => e
-      @logger.debug(command)
-      @logger.error(e.message)
-      return false
-    end
-    true
+  def redis_lpush(args)
+    redis_push(args, "lpush")
   end
 
   # @conv {"RPUSH" => ["UPDATE"]}
-  def REDIS_RPUSH(args)
+  def redis_rpush(args)
+    redis_push(args, "rpush")
+  end
+
+  def redis_push(args, type)
     ## tablename = "list"
     table = @option[:keyspace] + ".list"
-    command = "UPDATE #{table} SET value = value + ['#{args[1]}'] WHERE key = '#{args[0]}';"
+    command = "UPDATE #{table} SET value = "
+    command += if type == "lpush"
+                 "['#{args[1]}'] + value "
+               elsif type == "rpush"
+                 "value + ['#{args[1]}'] "
+               end
+    command += "WHERE key = '#{args[0]}';"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.debug(command)
       @logger.error(e.message)
@@ -217,7 +235,7 @@ module Redis2CassandraOperation
   end
 
   # @conv {"LPOP" => ["SELECT","DELETE"]}
-  def REDIS_LPOP(args)
+  def redis_lpop(args)
     ## tablename = "list"
     table = @option[:keyspace] + ".list"
     ### GET
@@ -225,7 +243,7 @@ module Redis2CassandraOperation
     ### DELETE
     command = "DELETE value[0] FROM #{table} WHERE key = '#{args[0]}';"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.debug(command)
       @logger.error(e.message)
@@ -235,7 +253,7 @@ module Redis2CassandraOperation
   end
 
   # @conv {"RPOP" => ["SELECT","DELETE"]}
-  def REDIS_RPOP(args, stdout = false)
+  def redis_rpop(args, stdout = false)
     ## tablename = "list"
     table = @option[:keyspace] + ".list"
     ### GET
@@ -243,7 +261,7 @@ module Redis2CassandraOperation
     ### DELETE
     command = "DELETE value[#{values.size - 1}] FROM #{table} WHERE key = '#{args[0]}';"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.debug(command)
       @logger.error(e.message)
@@ -256,7 +274,7 @@ module Redis2CassandraOperation
   end
 
   # @conv {"LRANGE" => ["SELECT"]}
-  def REDIS_LRANGE(args)
+  def redis_lrange(args)
     list = redis_lget(args)
     first = update_first(args[1].to_i)
     last = update_last(args[2].to_i, list)
@@ -288,7 +306,7 @@ module Redis2CassandraOperation
   end
 
   # @conv {"LREM" => ["UPDATE","SELECT"]}
-  def REDIS_LREM(args)
+  def redis_lrem(args)
     count = args[1].to_i
     value = args[2]
     values = redis_lget(args)
@@ -303,21 +321,20 @@ module Redis2CassandraOperation
   end
 
   def lrem_count_more_than_zero(count, args, value, values)
-    new_values = []
-    values.each_index do |index|
-      if values[index] == value && count > 0
-        count -= 1
-      else
-        new_values.push(values[index])
-      end
-    end
+    new_values = lrem_counter(count, value, values)
     redis_lreset(args, new_values)
   end
 
   def lrem_count_less_than_zero(count, args, value, values)
     count *= -1
-    new_values = []
     values.reverse!
+    new_values = lrem_counter(count, value, values)
+    new_values.reverse!
+    redis_lreset(args, new_values)
+  end
+
+  def lrem_counter(count, value, values)
+    new_values = []
     values.each_index do |index|
       if values[index] == value && count > 0
         count -= 1
@@ -325,25 +342,24 @@ module Redis2CassandraOperation
         new_values.push(values[index])
       end
     end
-    new_values.reverse!
-    redis_lreset(args, new_values)
+    new_values
   end
 
-  # @conv {"LINDEX" => ["SELECT"]}
-  def REDIS_LINDEX(args)
+  # @conv {"lindex" => ["select"]}
+  def redis_lindex(args)
     value = redis_lget(args)
     value[args[1].to_i]
   end
 
   # @conv {"RPOPLPUSH" =>  ["SELECT","DELETE","UPDATE"]}
-  def REDIS_RPOPLPUSH(args)
-    value = REDIS_RPOP(args)
-    REDIS_LPUSH(args)
+  def redis_rpoplpush(args)
+    value = redis_rpop(args)
+    redis_lpush(args)
     value
   end
 
   # @conv {"LSET" => ["UPDATE"]}
-  def REDIS_LSET(args)
+  def redis_lset(args)
     index = args[1]
     value = args[2]
     ## tablename = "list"
@@ -351,7 +367,7 @@ module Redis2CassandraOperation
     command = "UPDATE #{table} SET value[#{index}] = '#{value}'"
     command += " WHERE key = '#{args[0]}';"
     begin
-      result = DIRECT_EXECUTER(command)
+      result = direct_executer(command)
     rescue => e
       @logger.debug(command)
       @logger.error(e.message)
@@ -361,13 +377,13 @@ module Redis2CassandraOperation
   end
 
   # @conv {"LTRIM" => ["SELECT","INSERT"]
-  def REDIS_LTRIM(args)
-    new_data = redis_lget(args) - REDIS_LRANGE(args)
+  def redis_ltrim(args)
+    new_data = redis_lget(args) - redis_lrange(args)
     redis_lreset(args, new_data)
   end
 
   # @conv {"LLEN" => ["SELECT","length@client"]}
-  def REDIS_LLEN(args)
+  def redis_llen(args)
     list = redis_lget(args)
     list.size
   end
@@ -378,7 +394,7 @@ module Redis2CassandraOperation
     command = "UPDATE #{table} SET value = ['#{value.join("','")}']"
     command += " WHERE key = '#{args[0]}'"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.debug(command)
       @logger.error(e.message)
@@ -393,7 +409,7 @@ module Redis2CassandraOperation
     command = "SELECT value FROM #{table} WHERE key = '#{args[0]}';"
     data = []
     begin
-      result = DIRECT_EXECUTER(command)
+      result = direct_executer(command)
       data = eval(result)
     rescue => e
       @logger.debug(command)
@@ -406,9 +422,9 @@ module Redis2CassandraOperation
   ## Set ##
   #########
   # @conv {"SADD" => ["SELECT","INSERT"]}
-  def REDIS_SADD(args)
+  def redis_sadd(args)
     table = @option[:keyspace] + ".array"
-    array = REDIS_SMEMBERS(args)
+    array = redis_smembers(args)
     if args[1].class == Array
       args[1].each do |e|
         array.push(e)
@@ -418,7 +434,7 @@ module Redis2CassandraOperation
     end
     command = "INSERT INTO #{table} (key,value) VALUES ('#{args[0]}',{'#{array.join("','")}'})"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.error(command)
       @logger.error(e.message)
@@ -428,13 +444,13 @@ module Redis2CassandraOperation
   end
 
   # @conv {"SREM" => ["SELECT","INSERT"]}
-  def REDIS_SREM(args)
+  def redis_srem(args)
     table = @option[:keyspace] + ".array"
-    array = REDIS_SMEMBERS(args)
+    array = redis_smembers(args)
     array.delete(args[1])
     begin
       command = "INSERT INTO #{table} (key,value) VALUES ('#{args[0]}',{'#{array.join("','")}'})"
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.error(command)
       @logger.error(e.message)
@@ -444,13 +460,13 @@ module Redis2CassandraOperation
   end
 
   # @conv {"SMEMBERS" => ["SELECT"]}
-  def REDIS_SMEMBERS(args)
+  def redis_smembers(args)
     ## tablename = "array"
     table = @option[:keyspace] + ".array"
     command = "SELECT value FROM #{table}"
     value = []
     begin
-      values = DIRECT_SELECT(command)
+      values = direct_select(command)
     rescue => e
       @logger.error(command)
       @logger.error(e.message)
@@ -469,26 +485,26 @@ module Redis2CassandraOperation
     value
   end
 
-  # @conv {"SISMEMBER" => ["SELECT"]}
-  def REDIS_SISMEMBER(args)
-    array = REDIS_SMEMBERS(args)
+  # @conv {"SISMEMber" => ["select"]}
+  def redis_sismember(args)
+    array = redis_smembers(args)
     array.include?(args[1])
   end
 
   # @conv {"SRANDMEMBER" => ["SELECT"]}
-  def REDIS_SRANDMEMBER(args)
-    array = REDIS_SMEMBERS(args)
+  def redis_srandmember(args)
+    array = redis_smembers(args)
     array.sample
   end
 
   # @conv {"SPOP" => ["SELECT","INSERT"]}
-  def REDIS_SPOP(args)
+  def redis_spop(args)
     table = @option[:keyspace] + ".array"
-    array = REDIS_SMEMBERS(args)
+    array = redis_smembers(args)
     array.pop
     command = "INSERT INTO #{table} (key,value) VALUES ('#{args[0]}',{'#{array.join("','")}'})"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.error(command)
       @logger.error(e.message)
@@ -498,27 +514,27 @@ module Redis2CassandraOperation
   end
 
   # @conv {"SMOVE" => ["SELECT"]}
-  def REDIS_SMOVE(args)
+  def redis_smove(args)
     srckey = args[0]
     dstkey = args[1]
     member = args[2]
     ## REMOVE member from srtKey
-    REDIS_SREM([srckey, member])
+    redis_srem([srckey, member])
     ## ADD member to dstKey
-    REDIS_SADD([dstkey, member])
+    redis_sadd([dstkey, member])
   end
 
   # @conv {"SCARD" => ["SELECT"]}
-  def REDIS_SCARD(args)
-    REDIS_SMEMBERS(args).size
+  def redis_scard(args)
+    redis_smembers(args).size
   end
 
   # @conv {"SDIFF" => ["redisDeserialize@client","redisSerialize@client","GET"]}
-  def REDIS_SDIFF(args)
+  def redis_sdiff(args)
     common = []
     members_array = []
     args.each do |key|
-      members = REDIS_SMEMBERS([key])
+      members = redis_smembers([key])
       members_array += members
       if common.size.zero?
         common = members
@@ -531,17 +547,17 @@ module Redis2CassandraOperation
   end
 
   # @conv {"SDIFFSTORE" => ["redisDeserialize@client","redisSerialize@client","GET","SET"]}
-  def REDIS_SDIFFSTORE(args)
+  def redis_sdiffstore(args)
     dstkey = args.shift
-    value = REDIS_SDIFF(args)
-    REDIS_SADD([dstkey, value])
+    value = redis_sdiff(args)
+    redis_sadd([dstkey, value])
   end
 
   # @conv {"SINTER" => ["SELECT"]}
-  def REDIS_SINTER(args)
+  def redis_sinter(args)
     result = []
     args.each do |key|
-      members = REDIS_SMEMBERS([key])
+      members = redis_smembers([key])
       result = if result.size.zero?
                  members
                else
@@ -552,27 +568,27 @@ module Redis2CassandraOperation
   end
 
   # @conv {"SINTERSTORE" => ["SELECT","INSERT"]}
-  def REDIS_SINTERSTORE(args)
+  def redis_sinterstore(args)
     dstkey = args.shift
-    result = REDIS_SINTER(args)
-    REDIS_SADD([dstkey, result])
+    result = redis_sinter(args)
+    redis_sadd([dstkey, result])
   end
 
   # @conv {"SUNION" => ["SELECT"]}
-  def REDIS_SUNION(args)
+  def redis_sunion(args)
     value = []
     args.each do |key|
-      members = REDIS_SMEMBERS([key])
+      members = redis_smembers([key])
       value += members
     end
     value
   end
 
   # @conv {"SUNION" => ["SELECT","INSERT"]}
-  def REDIS_SUNIONSTORE(args)
+  def redis_sunionstore(args)
     dstkey = args.shift
-    result = REDIS_SUNION(args)
-    REDIS_SADD([dstkey, result])
+    result = redis_sunion(args)
+    redis_sadd([dstkey, result])
   end
 
   #################
@@ -580,7 +596,7 @@ module Redis2CassandraOperation
   #################
   # @conv {"ZADD" => ["UPDATE"]}
   ## args = [key, score, member]
-  def REDIS_ZADD(args, hash = nil)
+  def redis_zadd(args, hash = nil)
     ## hash { member => score}
     ## tablename = "sarray"
     table = @option[:keyspace] + ".sarray"
@@ -592,7 +608,7 @@ module Redis2CassandraOperation
                end
     command += " WHERE key = '#{args[0]}';"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.error(command)
       @logger.error(e.message)
@@ -603,32 +619,22 @@ module Redis2CassandraOperation
 
   # @conv {"ZREM" => ["DELETE"]}
   ## args = [key, member]
-  def REDIS_ZREM(args)
+  def redis_zrem(args)
     ## tablename = "sarray"
-    table = @option[:keyspace] + ".sarray"
-    command = "DELETE value['#{args[1]}'] FROM #{table}"
-    command += " WHERE key = '#{args[0]}';"
-    begin
-      DIRECT_EXECUTER(command)
-    rescue => e
-      @logger.debug(command)
-      @logger.error(e.message)
-      return false
-    end
-    true
+    redis_hdel_zrem(args, ".sarray")
   end
 
   # @conv {"ZINCRBY" => ["SELECT","UPDATE"]}
   ## args = [key, score, member]
-  def REDIS_ZINCRBY(args)
+  def redis_zincrby(args)
     value = redis_zget(args)
     value[args[2].to_sym] += args[1].to_f
-    REDIS_ZADD([args[0], value[args[2].to_sym], args[2]])
+    redis_zadd([args[0], value[args[2].to_sym], args[2]])
   end
 
   # @conv {"ZRANK" => ["SELECT"]}
   ## args = [key, member]
-  def REDIS_ZRANK(args)
+  def redis_zrank(args)
     value = redis_zget(args)
     data = Hash[value.sort_by { |_, v| v }]
     data.keys.find_index(args[1].to_sym) + 1
@@ -636,7 +642,7 @@ module Redis2CassandraOperation
 
   # @conv {"ZREVRANK" => ["SELECT"]}
   ## args = [key, member]
-  def REDIS_ZREVRANK(args)
+  def redis_zrevrank(args)
     value = redis_zget(args)
     data = Hash[value.sort_by { |_, v| -v }]
     data.keys.find_index(args[1].to_sym) + 1
@@ -644,30 +650,23 @@ module Redis2CassandraOperation
 
   # @conv {"ZRANGE" => ["SELECT","sort@client"]}
   ## args = [key, first, last]
-  def REDIS_ZRANGE(args)
-    first = args[1].to_i - 1
-    last  = args[2].to_i - 1
+  def redis_zrange(args)
     value = redis_zget(args)
     data = Hash[value.sort_by { |_, v| v }].keys
-    if last < 0
-      last = data.size
-    end
-    result = []
-    data.each_index do |index|
-      if index >= first && index <= last
-        result.push(data[index].to_s)
-      end
-    end
-    result
+    zrange(data, args)
   end
 
   # @conv {"ZREVRANGE" => ["SELECT","sort@client"]}
   ## args = [key, first, last]
-  def REDIS_ZREVRANGE(args)
-    first = args[1].to_i - 1
-    last  = args[2].to_i - 1
+  def redis_zrevrange(args)
     value = redis_zget(args)
     data = Hash[value.sort_by { |_, v| -v }].keys
+    zrange(data, args)
+  end
+
+  def zrange(data, args)
+    first = args[1].to_i - 1
+    last  = args[2].to_i - 1
     result = []
     if last < 0
       last = data.size
@@ -682,7 +681,7 @@ module Redis2CassandraOperation
 
   # @conv {"ZRANGEBYSCORE" => ["SELECT"]}
   ## args = [key, min, max]
-  def REDIS_ZRANGEBYSCORE(args)
+  def redis_zrangebyscore(args)
     min = args[1].to_i
     max = args[2].to_i
     value = redis_zget(args)
@@ -698,39 +697,39 @@ module Redis2CassandraOperation
 
   # @conv {"ZCOUNT" => ["SELECT","count@client"]}
   ## args = [key, min, max]
-  def REDIS_ZCOUNT(args)
-    selected = REDIS_ZRANGEBYSCORE(args)
+  def redis_zcount(args)
+    selected = redis_zrangebyscore(args)
     selected.size
   end
 
   # @conv {"ZCARD" => ["SELECT","count@client"]}
   ## args = [key]
-  def REDIS_ZCARD(args)
+  def redis_zcard(args)
     selected = redis_zget(args)
     selected.keys.size
   end
 
   # @conv {"ZSCORE" => ["SELECT"]}
   ## args = [key,member]
-  def REDIS_ZSCORE(args)
+  def redis_zscore(args)
     value = redis_zget(args)
     value[args[1].to_sym]
   end
 
   # @conv {"ZREMRANGEBYSCORE" => ["SELECT","UPDATE"]}
   ## args = [key,min,max]
-  def REDIS_ZREMRANGEBYSCORE(args)
+  def redis_zremrangebyscore(args)
     all = redis_zget(args)
-    remKey = REDIS_ZRANGEBYSCORE(args)
-    remKey.each do |rkey|
+    remkey = redis_zrangebyscore(args)
+    remkey.each do |rkey|
       all.delete(rkey.to_sym)
     end
-    REDIS_ZADD(args, all)
+    redis_zadd(args, all)
   end
 
   # @conv {"ZREMRANGEBYRANK" => ["SELECT","UPDATE"]}
   ## args = [key,min,max]
-  def REDIS_ZREMRANGEBYRANK(args)
+  def redis_zremrangebyrank(args)
     all = redis_zget(args)
     min = args[1].to_i - 1
     max = args[2].to_i - 1
@@ -743,14 +742,14 @@ module Redis2CassandraOperation
         all.delete(keys[index].to_sym)
       end
     end
-    REDIS_ZADD(args, all)
+    redis_zadd(args, all)
   end
 
   # @conv {"ZUNIONSTORE" => ["SELECT","UPDATE"]}
   ## args {"key"      => dstKey,
   ##       "args"     => [srcKey0,srcKey1,...],
   ##       "option"  => {:weights => [1,2,...],:aggregete => SUM/MAX/MIN}
-  def REDIS_ZUNIONSTORE(args)
+  def redis_zunionstore(args)
     data = {} ## value => score
     args["args"].each_index do |index|
       result = redis_zget([args["args"][index]])
@@ -768,29 +767,24 @@ module Redis2CassandraOperation
       end
     end
     ## UNION
-    unless data.keys.empty?
-      aggregate = "SUM"
-      if check_option(args, nil, "aggregate")
-        aggregate = args["option"][:aggregate].upcase
-      end
-      hash = createDocWithAggregate(data, aggregate)
-      return REDIS_ZADD([args["key"]], hash)
-    end
-    false
+    store_for_zunion(args, data)
   end
 
   # @conv {"ZINTERSTORE" => ["SELECT","UPDATE"]}
   ## args {"key" => dstKey, "args" => [srcKey0,srcKey1,...], "option" => {:weights => [1,2,...], :aggregete => SUM/MAX/MIN}
-  def REDIS_ZINTERSTORE(args)
+  def redis_zinterstore(args)
     data = create_zinterstore(args)
+    store_for_zunion(args, data)
+  end
+
+  def store_for_zunion(args, data)
     unless data.keys.empty?
-      ## UNION
       aggregate = "SUM"
       if check_option(args, nil, "aggregate")
         aggregate = args["option"][:aggregate].upcase
       end
-      hash = createDocWithAggregate(data, aggregate)
-      return REDIS_ZADD([args["key"]], hash)
+      hash = create_doc_with_aggregate(data, aggregate)
+      return redis_zadd([args["key"]], hash)
     end
     false
   end
@@ -834,7 +828,7 @@ module Redis2CassandraOperation
     command = "SELECT value FROM #{table}"
     command += " WHERE key = '#{args[0]}';"
     begin
-      result = DIRECT_SELECT(command)
+      result = direct_select(command)
       if result
         return eval(result)
       end
@@ -845,7 +839,7 @@ module Redis2CassandraOperation
     {}
   end
 
-  def createDocWithAggregate(data, aggregate)
+  def create_doc_with_aggregate(data, aggregate)
     doc = {}
     case aggregate
     when "SUM" then
@@ -867,11 +861,11 @@ module Redis2CassandraOperation
   end
 
   ############
-  ## Hashes ##
+  ## hashes ##
   ############
   # @conv {"HSET" => ["UPDATE"]}
   ## args = [key, field, value]
-  def REDIS_HSET(args, hash = nil)
+  def redis_hset(args, hash = nil)
     ## hash {field => value}
     ## tablename = "hash"
     table = @option[:keyspace] + ".hash"
@@ -883,7 +877,7 @@ module Redis2CassandraOperation
                end
     command += " WHERE key = '#{args[0]}';"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.debug(command)
       @logger.error(e.message)
@@ -894,12 +888,12 @@ module Redis2CassandraOperation
 
   # @conv {"HGET" => ["SELECT"]}
   ## args = [key, field]
-  def REDIS_HGET(args)
+  def redis_hget(args)
     ## tablename = "hash"
     table = @option[:keyspace] + ".hash"
     command = "SELECT value FROM #{table} WHERE key = '#{args[0]}';"
     begin
-      value = DIRECT_EXECUTER(command)
+      value = direct_executer(command)
       data = eval(value)
       if args[1]
         return data[args[1].to_sym]
@@ -913,14 +907,14 @@ module Redis2CassandraOperation
 
   # @conv {"HMGET" => ["SELECT"]}
   ## args = {"key" => key, "args"=> [field0,field1,...]]
-  def REDIS_HMGET(args)
+  def redis_hmget(args)
     ## tablename = "hash"
     table = @option[:keyspace] + ".hash"
     command = "SELECT value FROM #{table}"
     command += " WHERE key = '#{args["key"]}';"
     result = []
     begin
-      value = DIRECT_EXECUTER(command)
+      value = direct_executer(command)
       data = eval(value)
       if args["args"]
         args["args"].each do |field|
@@ -937,22 +931,22 @@ module Redis2CassandraOperation
 
   # @conv {"HMSET" => ["UPDATE"]}
   ## args = {"key" => key, "args"=> {field0=>member0,field1=>member1,...}}
-  def REDIS_HMSET(args)
-    REDIS_HSET([args["key"]], args["args"])
+  def redis_hmset(args)
+    redis_hset([args["key"]], args["args"])
   end
 
   # @conv {"HINCRBY" => ["SELECT","UPDATE"]}
   ## args = [key, field, integer]
-  def REDIS_HINCRBY(args)
-    hash = REDIS_HGET(args)
+  def redis_hincrby(args)
+    hash = redis_hget(args)
     value = hash.to_i + args[2].to_i
-    REDIS_HSET([args[0], args[1], value])
+    redis_hset([args[0], args[1], value])
   end
 
   # @conv {"HEXISTS" => ["SELECT"]}
   ## args = [key, field]
-  def REDIS_HEXISTS(args)
-    if REDIS_HGET(args)
+  def redis_hexists(args)
+    if redis_hget(args)
       return true
     end
     false
@@ -960,13 +954,17 @@ module Redis2CassandraOperation
 
   # @conv {"HDEL" => ["DELETE"]}
   ## args = [key, field]
-  def REDIS_HDEL(args)
+  def redis_hdel(args)
     ## tablename = "hash"
-    table = @option[:keyspace] + ".hash"
+    redis_hdel_zrem(args, ".hash")
+  end
+
+  def redis_hdel_zrem(args, type)
+    table = @option[:keyspace] + type
     command = "DELETE value['#{args[1]}'] FROM #{table}"
     command += " WHERE key = '#{args[0]}';"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.debug(command)
       @logger.error(e.message)
@@ -977,30 +975,30 @@ module Redis2CassandraOperation
 
   # @conv {"HLEN" => ["SELECT"]}
   ## args = [key]
-  def REDIS_HLEN(args)
+  def redis_hlen(args)
     @schemas[args[0]].fields.size
   end
 
   # @conv {"HKEYS" => ["SELECT"]
   ## args = [key]
-  def REDIS_HKEYS(args)
+  def redis_hkeys(args)
     @schemas[args[0]].fields
   end
 
   # @conv {"HVALS" => ["SELECT"]}
   ## args = [key]
-  def REDIS_HVALS(args)
-    hash = REDIS_HGETALL("key" => args[0])
+  def redis_hvals(args)
+    hash = redis_hgetall("key" => args[0])
     hash.values
   end
 
   # @conv {"HGETALL" => ["SELECT"]}
   ## args = [key]
-  def REDIS_HGETALL(args)
+  def redis_hgetall(args)
     hash = {}
-    keys = REDIS_HKEYS([args["key"]])
+    keys = redis_hkeys([args["key"]])
     args["args"] = keys
-    values = REDIS_HMGET(args)
+    values = redis_hmget(args)
     keys.each_index do |index|
       hash[keys[index]] = values[index]
     end
@@ -1011,16 +1009,16 @@ module Redis2CassandraOperation
   ## OTHRES ##
   ############
   # @conv {"FLUSHALL" => ["reset@client"]}
-  def REDIS_FLUSHALL
+  def redis_flushall
     queries = []
     queries.push("drop keyspace if exists #{@option[:keyspace]};")
     queries.push("create keyspace #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3};")
     @schemas.each do |_, s|
-      queries.push(s.createQuery)
+      queries.push(s.create_query)
     end
     queries.each do |query|
       begin
-        DIRECT_EXECUTER(query)
+        direct_executer(query)
       rescue => e
         @logger.error(query)
         @logger.error(e.message)
@@ -1035,14 +1033,14 @@ module Redis2CassandraOperation
   #############
   def prepare_redis(operand, args)
     result = {}
-    result["operand"] = "REDIS_#{operand}"
-    result["args"] = if %w[ZUNIONSTORE ZINTERSTORE].include?(operand)
-                       @parser.extractZ_X_STORE_ARGS(args)
-                     elsif %w[MSET MGET MSETNX].include?(operand)
+    result["operand"] = "redis_#{operand}"
+    result["args"] = if %w[zunionstore zinterstore].include?(operand)
+                       @parser.extract_z_x_store_args(args)
+                     elsif %w[mset mget msetnx].include?(operand)
                        @parser.args2hash(args)
-                     elsif %w[HMGET].include?(operand)
+                     elsif %w[hmget].include?(operand)
                        @parser.args2key_args(args)
-                     elsif %w[HMSET].include?(operand)
+                     elsif %w[hmset].include?(operand)
                        @parser.args2key_hash(args)
                      else
                        args

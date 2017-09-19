@@ -184,23 +184,23 @@ module Cassandra2MemcachedOperationUnitTest
         hash  = {"f0"=>"v0","f1"=>"v1"}
         args = {"fields" => ["*"]}
         ans  = {"f0"=>"v0","f1"=>"v1"}
-        expect(@tester.send(:selectField,hash,args)).to include ans
+        expect(@tester.send(:select_field,hash,args)).to include ans
       end
       it "selectField specific" do
         hash  = {"f0"=>"v0","f1"=>"v1"}
         args = {"fields" => ["f0,f1"]}
         ans  = {"f0"=>"v0","f1"=>"v1"}
-        expect(@tester.send(:selectField,hash,args)).to include ans
+        expect(@tester.send(:select_field,hash,args)).to include ans
       end
       it "cassandraSerialize" do
         arg = ["a","b"]
         ans = "a__A__b"
-        expect(@tester.send(:cassandraSerialize,arg)).to eq ans
+        expect(@tester.send(:cassandra_serialize,arg)).to eq ans
       end
       it "cassandraDeseriealize" do
         arg = "a__A__b"
         ans = ["a","b"]
-        expect(@tester.send(:cassandraDeserialize,arg)).to match_array ans
+        expect(@tester.send(:cassandra_deserialize,arg)).to match_array ans
       end
     end
   end

@@ -36,76 +36,76 @@ module RedisOperation
   ## String ##
   ############
 
-  def SET(args)
+  def set(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def GET(args, attime = false)
+  def get(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def SETNX(args)
+  def setnx(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def SETEX(args)
+  def setex(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def PSETEX(args)
+  def psetex(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def MSET(args)
+  def mset(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def MGET(args)
+  def mget(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command, true)
   end
 
-  def MSETNX(args)
+  def msetnx(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def INCR(args)
+  def incr(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def INCRBY(args)
+  def incrby(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def DECR(args)
+  def decr(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def DECRBY(args)
+  def decrby(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def APPEND(args)
+  def append(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def GETSET(args)
+  def getset(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command, true)
   end
 
-  def STRLEN(args)
+  def strlen(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command, true)
   end
@@ -113,57 +113,57 @@ module RedisOperation
   ## Lists ##
   ###########
 
-  def LPUSH(args)
+  def lpush(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def RPUSH(args)
+  def rpush(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def LPOP(args)
+  def lpop(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def RPOP(args)
+  def rpop(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def LRANGE(args)
+  def lrange(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command, true)
   end
 
-  def LREM(args)
+  def lrem(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def LINDEX(args)
+  def lindex(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command, true)
   end
 
-  def RPOPLPUSH(args)
+  def rpoplpush(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command, true)
   end
 
-  def LSET(args)
+  def lset(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def LTRIM(args)
+  def ltrim(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def LLEN(args)
+  def llen(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command, true)
   end
@@ -171,62 +171,62 @@ module RedisOperation
   ## Set ##
   #########
 
-  def SRANDMEMBER(args, attime = false)
+  def srandmember(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def SMEMBERS(args, attime = false)
+  def smembers(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def SDIFF(args, attime = false)
+  def sdiff(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def SDIFFSTORE(args)
+  def sdiffstore(args)
     s_store(__method__, args)
   end
 
-  def SINTER(args, attime = false)
+  def sinter(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def SINTERSTORE(args)
+  def sinterstore(args)
     s_store(__method__, args)
   end
 
-  def SUNION(args, attime = false)
+  def sunion(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def SUNIONSTORE(args)
+  def sunionstore(args)
     s_store(__method__, args)
   end
 
-  def SISMEMBER(args, attime = false)
+  def sismember(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def SREM(args)
+  def srem(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def SMOVE(args)
+  def smove(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def SCARD(args, attime = false)
+  def scard(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def SADD(args)
+  def sadd(args)
     command = "#{__method__} #{args["key"]} #{args["args"]}"
     redis_cxx_executer(__method__, command)
   end
 
-  def SPOP(args)
+  def spop(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command, true)
   end
@@ -234,117 +234,117 @@ module RedisOperation
   ## Sorted Sets ##
   #################
 
-  def ZADD(args)
+  def zadd(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def ZREM(args)
+  def zrem(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def ZINCRBY(args)
+  def zincrby(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def ZRANK(args, attime = false)
+  def zrank(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZREVRANK(args, attime = false)
+  def zrevrank(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZRANGE(args, attime = false)
+  def zrange(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZREVRANGE(args, attime = false)
+  def zrevrange(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZRANGEBYSCORE(args, attime = false)
+  def zrangebyscore(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZCOUNT(args, attime = false)
+  def zcount(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZCARD(args, attime = false)
+  def zcard(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZSCORE(args, attime = false)
+  def zscore(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZREMRANGEBYSCORE(args, attime = false)
+  def zremrangebyscore(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZREMRANGEBYRANK(args, attime = false)
+  def zremrangebyrank(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def ZUNIONSTORE(args)
+  def zunionstore(args)
     z_xstore(__method__, args)
   end
 
-  def ZINTERSTORE(args)
+  def zinterstore(args)
     z_xstore(__method__, args)
   end
   ############
   ## Hashes ##
   ############
 
-  def HSET(args)
+  def hset(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def HGET(args, attime = false)
+  def hget(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def HMGET(args, attime = false)
+  def hmget(args, attime = false)
     command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
     redis_cxx_executer(__method__, command, true, attime)
   end
 
-  def HMSET(args)
+  def hmset(args)
     s_store(__method__, args)
   end
 
-  def HINCRBY(args)
+  def hincrby(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def HEXISTS(args, attime = false)
+  def hexists(args, attime = false)
     get_type_operation(__method__, args, attime)
   end
 
-  def HDEL(args)
+  def hdel(args)
     command = "#{__method__} #{args.join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
-  def HLEN(args, attime = false)
+  def hlen(args, attime = false)
     hlen_type_operation(__method__, args, attime)
   end
 
-  def HKEYS(args, attime = false)
+  def hkeys(args, attime = false)
     hlen_type_operation(__method__, args, attime)
   end
 
-  def HVALS(args, attime = false)
+  def hvals(args, attime = false)
     hlen_type_operation(__method__, args, attime)
   end
 
-  def HGETALL(args, attime = false)
+  def hgetall(args, attime = false)
     hlen_type_operation(__method__, args, attime)
   end
 
@@ -352,7 +352,7 @@ module RedisOperation
   ## OTHRES ##
   ############
 
-  def FLUSHALL(args, initFlag = false)
+  def flushall(args, initFlag = false)
     @logger.debug("GENERATED QUERY: #{__method__}")
     connect
     if @option[:async]
@@ -382,12 +382,12 @@ module RedisOperation
     v
   end
 
-  def DEL(args)
+  def del(args)
     command = "#{__method__} #{args[0]}"
     redis_cxx_executer(__method__, command)
   end
 
-  def KEYS(pattern, type)
+  def keys(pattern, type)
     keys = @client.keys
     targets = []
     if type == "keyspace"
@@ -436,11 +436,11 @@ module RedisOperation
     result = {}
     result["operand"] = operand
     result["args"] = args
-    case1 = %w[ZUNIONSTORE ZINTERSTORE].freeze
-    case2 = %w[MSET MGET MSETNX].freeze
-    case3 = %w[HMSET HMGET SDIFFSTORE SINTERSTORE SUNIONSTORE].freeze
+    case1 = %w[zunionstore zinterstore].freeze
+    case2 = %w[mset mget msetnx].freeze
+    case3 = %w[hmset hmget sdiffstore sinterstore sunionstore].freeze
     if case1.include?(operand)
-      result["args"] = @parser.extractZ_X_STORE_ARGS(args)
+      result["args"] = @parser.extract_z_x_store_args(args)
     elsif case2.include?(operand)
       result["args"] = @parser.args2hash(args)
     elsif case3.include?(operand)

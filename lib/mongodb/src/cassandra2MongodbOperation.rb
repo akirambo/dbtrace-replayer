@@ -37,17 +37,17 @@ module Cassandra2MongodbOperation
   # collection => column family
   #  doc => {"fieldname"=> "value",....}
   # @conv {"INSERT" => ["INSERT"]}
-  def CASSANDRA_INSERT(args)
+  def cassandra_insert(args)
     docname = args["table"]
     doc = args["args"]
     primarykey = args["primaryKey"]
     doc["_id"] = doc[primarykey]
     doc.delete(primarykey)
-    INSERT([[docname, doc]])
+    insert([[docname, doc]])
   end
 
   # @conv {"SELECT" => ["FIND"]}
-  def CASSANDRA_SELECT(args)
+  def cassandra_select(args)
     cond = {
       "key" => args["table"],
       "filter" => { "_id" => get_primarykey(args) },
@@ -62,7 +62,7 @@ module Cassandra2MongodbOperation
       end
     end
     result = []
-    FIND(cond).each do |doc|
+    find(cond).each do |doc|
       doc.delete("_id")
       result = doc.values
     end
@@ -70,17 +70,17 @@ module Cassandra2MongodbOperation
   end
 
   # @conv {"UPDATE" => ["UPDATE"]}
-  def CASSANDRA_UPDATE(args)
+  def cassandra_update(args)
     cond = {
       "key" => args["table"],
       "query" => { "_id" => get_primarykey(args) },
       "update" => { "$set" => args["set"] },
     }
-    UPDATE(cond)
+    update(cond)
   end
 
   # @conv {"DELETE" => ["UPDATE"]}
-  def CASSANDRA_DELETE(args)
+  def cassandra_delete(args)
     cond = {
       "key" => args["table"],
       "query" => { "_id" => get_primarykey(args) },
@@ -89,15 +89,15 @@ module Cassandra2MongodbOperation
     args["fields"].each do |field|
       cond["update"]["$unset"][field] = 1
     end
-    UPDATE(cond)
+    update(cond)
   end
 
   # @conv {"DROP" => [""]}
-  def CASSANDRA_DROP(args)
+  def cassandra_drop(args)
     unless args.empty?
       @logger.warn("Unsupported CASSANDRA_DROP with #{args}.")
     end
-    DROP([])
+    drop([])
   end
 
   #############
@@ -106,12 +106,12 @@ module Cassandra2MongodbOperation
   def prepare_cassandra(operand, args)
     ## PREPARE OPERATION & ARGS
     result = {}
-    result["operand"] = "CASSANDRA_#{operand.upcase}"
-    result["args"] = @parser.exec(operand.upcase, args)
+    result["operand"] = "cassandra_#{operand}"
+    result["args"] = @parser.exec(operand, args)
     result
   end
 
-  def CASSANDRA_JUDGE(result, args)
+  def cassandra_judge(result, args)
     ## where
     args["where"].each do |cond__|
       cond__ = cond__.split("=")
@@ -136,11 +136,11 @@ module Cassandra2MongodbOperation
     row
   end
 
-  def cassandraSerialize(hash)
+  def cassandra_serialize(hash)
     convert_json(hash)
   end
 
-  def cassandraDeserialize(array)
+  def cassandra_deserialize(array)
     result = []
     array.each do |row|
       result.push(parse_json(row))

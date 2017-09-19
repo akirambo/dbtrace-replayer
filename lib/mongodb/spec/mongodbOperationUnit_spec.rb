@@ -121,53 +121,53 @@ module MongodbOperationTester
       it "INSERT (empty) sync" do
         @tester.sync
         @tester.setResult(true)
-        expect(@tester.send("INSERT", [])).to eq true
+        expect(@tester.send("insert", [])).to eq true
       end
-      it "INSERT (empty) async" do
+      it "insert (empty) async" do
         @tester.async
         @tester.setResult(true)
-        expect(@tester.send("INSERT", [])).to eq true
+        expect(@tester.send("insert", [])).to eq true
       end
-      it "INSERT (single) sync" do
+      it "insert (single) sync" do
         doc = {"val" => 'a', "_id" => 'key00'}
         @tester.sync
         @tester.setResult(true)
-        expect(@tester.send("INSERT", [["test",doc]])).to eq true
+        expect(@tester.send("insert", [["test",doc]])).to eq true
       end
-      it "INSERT (single) async" do
+      it "insert (single) async" do
         doc = {"val" => 'a', "_id" => 'key00'}
         @tester.async
         @tester.setResult(true)
-        expect(@tester.send("INSERT", [["test",doc]])).to eq true
+        expect(@tester.send("insert", [["test",doc]])).to eq true
       end
-      it "INSERT (multi) sync" do
+      it "insert (multi) sync" do
         doc00 = {:val => 'a', :_id => 'key00'}
         doc01 = {:val => 'a', :_id => 'key01'}
         @tester.sync
         @tester.setResult(true)
-        expect(@tester.send("INSERT", [["test",doc00],["test",doc01]])).to eq true
+        expect(@tester.send("insert", [["test",doc00],["test",doc01]])).to eq true
       end
-      it "INSERT (multi) async" do
+      it "insert (multi) async" do
         doc00 = {:val => 'a', :_id => 'key00'}
         doc01 = {:val => 'a', :_id => 'key01'}
         @tester.async
         @tester.setResult(true)
-        expect(@tester.send("INSERT", [["test",doc00],["test",doc01]])).to eq true
+        expect(@tester.send("insert", [["test",doc00],["test",doc01]])).to eq true
       end
-      it "INSERT (single) false" do
+      it "insert (single) false" do
         @tester.async
         @tester.setResult(false)
         doc = {"val" => 'a', "_id" => 'key00'}
-        expect(@tester.send("INSERT", [["test",doc]])).to eq false
+        expect(@tester.send("insert", [["test",doc]])).to eq false
       end
-      it "INSERT (multi) false" do
+      it "insert (multi) false" do
         doc00 = {:val => 'a', :_id => 'key00'}
         doc01 = {:val => 'a', :_id => 'key01'}
         @tester.async
         @tester.setResult(false)
-        expect(@tester.send("INSERT", [["test",doc00],["test",doc01]])).to eq false
+        expect(@tester.send("insert", [["test",doc00],["test",doc01]])).to eq false
       end
-      it "UPDATE (single/multi)" do
+      it "update (single/multi)" do
         @tester.setResult(true)
         ## Exec
         cond = {
@@ -176,9 +176,9 @@ module MongodbOperationTester
           "query"  => {"val" =>  'a0'},
           "update" => {'$set' => {"val" => 'b'}}
         }
-        expect(@tester.send("UPDATE", cond)).to eq true
+        expect(@tester.send("update", cond)).to eq true
       end
-      it "FIND" do
+      it "find" do
         # Setup
         @tester.setQuerySuccess(true)
         result = []
@@ -191,27 +191,27 @@ module MongodbOperationTester
           "projection" => nil,
           "filter" => {"_id" => "key01"}
         }
-        expect(@tester.send("FIND", cond)).to eq [{"_id"=>"key01", "val"=>"a0"}]
+        expect(@tester.send("find", cond)).to eq [{"_id"=>"key01", "val"=>"a0"}]
       end
-      it "DELETE" do
+      it "delete" do
         ## Setup
         @tester.setResult(true)
         cond = {
           "key"  => "test",
           "filter" => {"val" => 'a0'}
         }
-        expect(@tester.send("DELETE", cond)).to eq true
+        expect(@tester.send("delete", cond)).to eq true
       end
-      it "COUNT" do
+      it "count" do
         ## Setup
         @tester.setResult(1)
         cond = {
           "key"  => "a.b",
           "query" => {"val" => 'a0'}
         }
-        expect(@tester.send("COUNT", cond)).to eq 1
+        expect(@tester.send("count", cond)).to eq 1
       end
-      it "AGGREGATE" do
+      it "aggregate" do
         ## Setup
         @tester.setQuerySuccess(true)
         @tester.setResult("test")
@@ -219,26 +219,25 @@ module MongodbOperationTester
           "key"  => "a.b",
           "match"=> {"val" => 'a0'}
         }
-        expect(@tester.send("AGGREGATE", cond)).to eq "test"
+        expect(@tester.send("aggregate", cond)).to eq "test"
         @tester.setQuerySuccess(false)
-        expect(@tester.send("AGGREGATE", cond)).to eq ""
+        expect(@tester.send("aggregate", cond)).to eq ""
       end
-      it "DROP" do
+      it "drop" do
         cond = ["a"]
-        expect(@tester.send("DROP", cond)).to be true
+        expect(@tester.send("drop", cond)).to be true
         cond = ["a.b"]
-        expect(@tester.send("DROP", cond)).to be true
+        expect(@tester.send("drop", cond)).to be true
         cond = ["a.b","c"]
-        expect(@tester.send("DROP", cond)).to be false
+        expect(@tester.send("drop", cond)).to be false
       end
       it "prepare_mongodb" do
         ans = { "operand" => "test", "args"=>"ARGS"}
         expect(@tester.send("prepare_mongodb", "test","")).to include ans 
       end
-      it "MAPREDUCE" do
-        @tester.send("MAPREDUCE", {})
+      it "mapreduce" do
+        @tester.send("mapreduce", {})
       end
-    
     end
   end
 end

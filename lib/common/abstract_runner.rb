@@ -104,7 +104,7 @@ class AbstractRunner
   def operation(operand, args)
     ## prepare
     begin
-      conv = send("prepare_#{@log_dbname}", operand, args)
+      conv = send("prepare_#{@log_dbname}", operand.downcase, args)
     rescue => e
       @logger.fatal("Crash @ prepare_#{@log_dbname}")
       @logger.error(e.message)

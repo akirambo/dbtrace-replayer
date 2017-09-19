@@ -31,11 +31,11 @@
 module MemcachedOperation
   private
 
-  def SET(args)
+  def set(args)
     execute_query(__method__.to_s, args[0].to_s, args[1].to_s, expiretime(args))
   end
 
-  def GET(args, asyncable = true)
+  def get(args, asyncable = true)
     @logger.debug("GENERATED QUERY: #{__method__} #{args[0]}")
     value = ""
     connect
@@ -54,45 +54,45 @@ module MemcachedOperation
     value
   end
 
-  def ADD(args)
+  def add(args)
     execute_query(__method__.to_s, args[0].to_s, args[1].to_s)
   end
 
-  def REPLACE(args)
+  def replace(args)
     execute_query(__method__.to_s, args[0].to_s, args[1].to_s, expiretime(args))
   end
 
-  def APPEND(args)
+  def append(args)
     execute_query(__method__.to_s, args[0].to_s, args[1].to_s)
   end
 
-  def PREPEND(args)
+  def prepend(args)
     execute_query(__method__.to_s, args[0].to_s, args[1].to_s)
   end
 
-  def CAS(args)
+  def cas(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     @logger.warn("Unimplemented..")
     false
   end
 
-  def INCR(args)
+  def incr(args)
     execute_query(__method__.to_s, args[0], args[1])
   end
 
-  def DECR(args)
+  def decr(args)
     execute_query(__method__.to_s, args[0], args[1])
   end
 
-  def DELETE(args)
+  def delete(args)
     execute_query(__method__.to_s, args[0], args[1])
   end
 
-  def FLUSH(_, initflag = false)
+  def flush(_, initflag = false)
     execute_query(__method__.to_s, "", "", 0, initflag)
   end
 
-  def KEYLIST
+  def keylist
     connect
     keys = @client.keys
     close
@@ -104,8 +104,8 @@ module MemcachedOperation
   #############
   def prepare_memcached(operand, args)
     result = {}
-    result["operand"] = operand.upcase
-    result["args"] = @parser.exec(operand.upcase, args)
+    result["operand"] = operand.downcase
+    result["args"] = @parser.exec(operand.downcase, args)
     result
   end
 
