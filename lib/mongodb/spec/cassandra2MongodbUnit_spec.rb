@@ -28,27 +28,27 @@ module Cassandra2MongodbTester
     def setFindValue(v)
       @findReturn = v
     end
-    def INSERT(a)
+    def insert(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def UPDATE(a)
+    def update(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def DELETE(a)
+    def delete(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def DROP(a)
+    def drop(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def FIND(a)
+    def find(a)
       @value = a
       @command = "#{__method__}"
       return @findReturn
@@ -69,8 +69,8 @@ module Cassandra2MongodbTester
       it "CASSANDRA_INSERT" do
         @tester.setQueryValue(true)
         arg = {"table"=>"t1", "args"=>{"pkey"=>"aaa"}, "primaryKey"=>"pkey"}
-        expect(@tester.send(:CASSANDRA_INSERT,arg)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:cassandra_insert,arg)).to be true
+        expect(@tester.command).to eq "insert"
       end
       it "CASSANDRA_SELECT" do
         @tester.setQueryValue(true)
@@ -81,8 +81,8 @@ module Cassandra2MongodbTester
           "primaryKey"=>"pkey",
           "cond_keys"=>["pkey"],
           "cond_values"=>["v"]}
-        expect(@tester.send(:CASSANDRA_SELECT,arg)).to match_array ["v1","v2"]
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:cassandra_select,arg)).to match_array ["v1","v2"]
+        expect(@tester.command).to eq "find"
       end
       it "CASSANDRA_UPDATE" do
         @tester.setQueryValue(true)
@@ -92,8 +92,8 @@ module Cassandra2MongodbTester
           "primaryKey"=>"pkey",
           "cond_keys"=>["pkey"],
           "cond_values"=>["v"]}
-        expect(@tester.send(:CASSANDRA_UPDATE,arg)).to eq true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:cassandra_update,arg)).to eq true
+        expect(@tester.command).to eq "update"
       end
       it "CASSANDRA_DELETE" do
         @tester.setQueryValue(true)
@@ -103,27 +103,27 @@ module Cassandra2MongodbTester
           "primaryKey"=>"pkey",
           "cond_keys"=>["pkey"],
           "cond_values"=>["v"]}
-        expect(@tester.send(:CASSANDRA_DELETE,arg)).to eq true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:cassandra_delete,arg)).to eq true
+        expect(@tester.command).to eq "update"
       end
       it "CASSANDRA_DROP" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:CASSANDRA_DROP,[])).to eq true
-        expect(@tester.command).to eq "DROP"
+        expect(@tester.send(:cassandra_drop,[])).to eq true
+        expect(@tester.command).to eq "drop"
       end
     end
     context "Private Method" do
       it "prepare_cassandra" do
-        ans = {"operand"=>"CASSANDRA_TEST","args"=>"test_args"}
+        ans = {"operand"=>"cassandra_test","args"=>"test_args"}
         expect(@tester.send(:prepare_cassandra,"test","test_args")).to include ans
       end
       it "CASSANDRA_JUDGE" do
         result = {"f1"=>"v1"} 
         arg    = {"where"=>["f1=v1"]}
-        expect(@tester.send(:CASSANDRA_JUDGE,result,arg)).to be true
+        expect(@tester.send(:cassandra_judge,result,arg)).to be true
         result = {"f1"=>"v2"} 
         arg    = {"where"=>["f1=v1"]}
-        expect(@tester.send(:CASSANDRA_JUDGE,result,arg)).to be false
+        expect(@tester.send(:cassandra_judge,result,arg)).to be false
       end
       it "selected_field" do
         ans  = {"f1"=>"v1","f2"=>"v2"}
@@ -135,11 +135,11 @@ module Cassandra2MongodbTester
       end
       it "cassandraSerialize" do
         dummy = {}
-        expect(@tester.send(:cassandraSerialize,dummy)).to eq "{f1:\"v1\",f2:\"v2\"}"
+        expect(@tester.send(:cassandra_serialize,dummy)).to eq "{f1:\"v1\",f2:\"v2\"}"
       end
       it "cassandraDeserialize" do
         dummy = ["d1"]
-        expect(@tester.send(:cassandraDeserialize,dummy)).to eq [{"f1"=>"v1","f2"=>"v2"}]
+        expect(@tester.send(:cassandra_deserialize,dummy)).to eq [{"f1"=>"v1","f2"=>"v2"}]
       end
     end
   end

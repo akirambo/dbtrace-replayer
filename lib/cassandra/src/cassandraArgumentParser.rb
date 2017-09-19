@@ -61,9 +61,7 @@ class CassandraArgumentParser
     ## table name
     result["table"] = args[2]
     ## primary key
-    if @schemas && @schemas[result["table"]]
-      result["primaryKey"] = @schemas[result["table"]].primaryKeys[0]
-    end
+    result["primaryKey"] = get_primarykey_from_schemas(result["table"])
     ## field name
     field_names = args[3].sub(/\A\(/, "").sub(/\)\Z/, "").split(",")
     ## schema fields
@@ -122,12 +120,17 @@ class CassandraArgumentParser
     ## key
     result = cassandra_prepare_select_parse(args)
     ## primary key
-    if @schemas && @schemas[result["table"]]
-      result["primaryKey"] = @schemas[result["table"]].primaryKeys[0]
-    end
+    result["primaryKey"] = get_primarykey_from_schemas(result["table"])
     ## schema fields
     result["schema_fields"] = @schemas[result["table"]].fields.size
     result
+  end
+
+  def get_primarykey_from_schemas(name)
+    if @schemas && @schemas[name]
+      @schemas[name].primarykeys[0]
+    end
+    nil
   end
 
   def cassandra_prepare_select_parse(args)
@@ -147,10 +150,9 @@ class CassandraArgumentParser
         select_target_flag = false
         result["table"] = args[index + 1]
       when "where" then
-        @logger.debug("Unsupported Multi Condition with AND/OR ")
-        result["cond_keys"].push(args[index + 1])
-        if args[index + 2] == "=" && args.size >= index + 3
-          result["cond_values"].push(args[index + 3])
+        ret = cassandra_prepare_select_where_parse(args, index)
+        %w[cond_keys cond_values].each do |k_|
+          result[k_].concat(ret[k_])
         end
       when "limit" then
         result["limit"] = args[index + 1]
@@ -161,6 +163,16 @@ class CassandraArgumentParser
       end
     end
     result
+  end
+
+  def cassandra_prepare_select_where_parse(args, index)
+    ret = { "cond_keys" => [], "cond_values" => [] }
+    @logger.debug("Unsupported Multi Condition with AND/OR ")
+    ret["cond_keys"].push(args[index + 1])
+    if args[index + 2] == "=" && args.size >= index + 3
+      ret["cond_values"].push(args[index + 3])
+    end
+    ret
   end
 
   def prepare_args_select_basic(args)
@@ -310,7 +322,7 @@ class CassandraArgumentParser
         end
       end
       ## Primary Key's Field Type
-      result["rowValue"] = if @schemas[result["table"]].primaryKeyType != "blob"
+      result["rowValue"] = if @schemas[result["table"]].primarykey_type != "blob"
                              rowkey.delete!("'")
                            else
                              "0x" + rowkey.delete!("'")
@@ -340,12 +352,12 @@ class CassandraArgumentParser
               if index.zero?
                 ## name
                 key = [key_value[1].delete(" ")].pack("H*")
-                key = @schemas[result["table"]].getKey(key.sub("C", "").to_i + 1)
+                key = @schemas[result["table"]].get_key(key.sub("C", "").to_i + 1)
               elsif index == 1
                 ## value
-                kv[key] = if @schemas[result["table"]].fieldType(key) == "blob" && cassandra
+                kv[key] = if @schemas[result["table"]].field_type(key) == "blob" && cassandra
                             "0x" + key_value[1].delete(" ")
-                          elsif @schemas[result["table"]].fieldType(key) == "counter" && cassandra
+                          elsif @schemas[result["table"]].field_type(key) == "counter" && cassandra
                             key_value[1].delete(" ").to_i
                           else
                             [key_Value[1].delete(" ")].pack("H*")
@@ -367,15 +379,15 @@ class CassandraArgumentParser
             key_value = cols[index].split(":")
             if index.zero?
               ## Name
-              key_name = @schemas[result["table"]].getKey(1)
-              kv[key_name] = if @schemas[result["table"]].fieldType(key) == "blob" && cassandra
+              key_name = @schemas[result["table"]].get_key(1)
+              kv[key_name] = if @schemas[result["table"]].field_type(key) == "blob" && cassandra
                                "0x" + key_value[1].delete(" ")
                              else
                                [key_value[1].delete(" ")].pack("H*")
                              end
             elsif index == 1
               ## Counter
-              key = @schemas[result["table"]].counterKey
+              key = @schemas[result["table"]].counter_key
               if key
                 ckv[key] = key_value[1].delete(" ").to_i
               end
@@ -393,15 +405,11 @@ class CassandraArgumentParser
     result
   end
 
-  def counterColumn
-    # do nothing
-  end
-
   #------------------------------#
   # PREPARE for GET_RANGE_SLICES #
   #------------------------------#
   def prepare_args_get_range_slices_java(args)
-    data = parseGetRangeSlicesParameter(args, false)
+    data = parse_get_range_slices_parameter(args, false)
     result = {
       "key"   => data["table"],
       "limit" => data["count"],
@@ -409,7 +417,8 @@ class CassandraArgumentParser
       "fields" => "*",
     }
     %w[start_key end_key].each do |name|
-      if key = prepare_condition_query(data, name)
+      key = prepare_condition_query(data, name)
+      if key
         result["where"].push(key)
       end
     end
@@ -423,7 +432,7 @@ class CassandraArgumentParser
     nil
   end
 
-  def parseGetRangeSlicesParameter(args, _)
+  def parse_get_range_slices_parameter(args, _)
     result = {
       "table" => nil,
       "cf"    => nil,
@@ -441,12 +450,12 @@ class CassandraArgumentParser
     ## Range
     if args.match(/KeyRange\((.+?)\)/)
       $1.split(",").each do |kv__|
-        kv = kv__.gsub(/\s/,"").split(":")
-        if kv[0] == "start_key" && kv[0] == "end_key" && kv[1]
-          result[kv[0]] = [kv[1].delete(" ")].pack("H*")
-        else
-          result[kv[0]] = kv[1]
-        end
+        kv = kv__.gsub(/\s/, "").split(":")
+        result[kv[0]] = if kv[0] == "start_key" && kv[0] == "end_key" && kv[1]
+                          [kv[1].delete(" ")].pack("H*")
+                        else
+                          kv[1]
+                        end
       end
     end
     result
@@ -456,7 +465,7 @@ class CassandraArgumentParser
   # GET_SLICE #
   #-----------#
   def prepare_args_get_slice_jave(args)
-    data = parseGetSliceParameter(args, false)
+    data = parse_get_slice_parameter(args, false)
     result = {
       "key"   => data["table"],
       "limit" => data["count"],
@@ -466,7 +475,7 @@ class CassandraArgumentParser
     result
   end
 
-  def parseGetSliceParameter(args, cassandra = true)
+  def parse_get_slice_parameter(args, cassandra = true)
     result = {
       "table" => nil,
       "cf"    => nil,
@@ -479,18 +488,17 @@ class CassandraArgumentParser
       result["cf"] = $1
     end
     ## Find Keyspace
-    @schemas.keys.each do |ks_tb|
-      if ks_tb.include?(result["cf"])
-        result["table"] = ks_tb
-        result["primaryKey"] = @schemas[ks_tb].primaryKeys[0]
-      end
+    ret = find_keyspace(result["cf"])
+    if ret["table"]
+      result["table"] = ret["table"]
+      result["primaryKey"] = ret["primaryKey"]
     end
     ## Get Target Key
     if args.match(/.+key': '(\w+?)'.+/)
-      result["targetKey"] = if @schemas[result["table"]].primaryKeyType == "blob" && cassandra
+      result["targetKey"] = if @schemas[result["table"]].primarykey_type == "blob" && cassandra
                               "0x" + $1
                             else
-                              [$1.delete(" ","")].pack("H*")
+                              [$1.delete(" ", "")].pack("H*")
                             end
     end
     ## Get Count
@@ -516,13 +524,23 @@ class CassandraArgumentParser
       result["cf"] = $1
     end
     ## Find Keyspace
-    @schemas.keys.each do |ks_tb|
-      if ks_tb.include?(result["cf"])
-        result["table"] = ks_tb
-        result["primaryKey"] = @schemas[ks_tb].primaryKeys[0]
-      end
+    ret = find_keyspace(result["cf"])
+    if ret["table"]
+      result["table"] = ret["table"]
+      result["primaryKey"] = ret["primaryKey"]
     end
     result
+  end
+
+  def find_keyspace(cf)
+    ret = {}
+    @schemas.keys.each do |ks_tb|
+      if ks_tb.include?(cf)
+        ret["table"] = ks_tb
+        ret["primaryKey"] = @schemas[ks_tb].primarykeys[0]
+      end
+    end
+    ret
   end
 
   ## --------------------##
@@ -542,7 +560,7 @@ class CassandraArgumentParser
     result
   end
 
-  def prepare_multiget_slice_parameter(args, cassandra = true)
+  def prepare_multiget_slice_parameter(args, __cassandra)
     result = {
       "table" => nil,
       "primaryKey" => "key",
@@ -557,14 +575,8 @@ class CassandraArgumentParser
     result["primaryKey"] = res["primaryKey"]
     if args.match(/'keys':\s'\[(.+)\]/)
       array = $1.delete(" ").split(",")
-      if @schemas[result["table"]].primaryKeyType == "blob" && cassandra
-        array.uniq.each do |v|
-          result["keys"].push("0x#{v}")
-        end
-      else
-        array.uniq.each do |v|
-          result["keys"].push("0x#{v}")
-        end
+      array.uniq.each do |v|
+        result["keys"].push("0x#{v}")
       end
     end
     result
@@ -596,17 +608,16 @@ class CassandraArgumentParser
   ###############
   def get_column_family(str)
     if str.match(/.+column_family:(\w+?)\).*/)
-      return $1
+      $1
     end
   end
 
   def get_tablename_and_primarykey(_, cf)
     result = { "table" => nil, "primaryKey" => nil }
-    @schemas.keys.each do |ks_tb|
-      if ks_tb.include?(cf)
-        result["table"] = ks_tb
-        result["primaryKey"] = @schemas[ks_tb].primaryKeys[0]
-      end
+    ret = find_keyspace(cf)
+    if ret["table"]
+      result["table"] = ret["table"]
+      result["primaryKey"] = ret["primaryKey"]
     end
     result
   end
@@ -628,7 +639,7 @@ class CassandraArgumentParser
           name = newschema.name
           @schemas[name] = newschema
         elsif query.downcase.include?("create index")
-          @schemas[name].pushCreateIndex(query)
+          @schemas[name].push_create_index(query)
         end
       end
     end
@@ -637,7 +648,7 @@ class CassandraArgumentParser
   def get_primarykey(result)
     ## primary key
     if @schemas && @schemas[result]
-      return @schemas[result].primaryKeys[0]
+      return @schemas[result].primarykeys[0]
     end
     nil
   end

@@ -244,11 +244,7 @@ module MongoDB2RedisOperation
   end
 
   def mongo_query_fieldmatching(value, cond)
-    if cond.is_a?(Hash) && !@query_processor.query(cond, value)
-      return false
-    elsif value.class.to_s == "String" &&
-          value.delete("\"").delete(" ") != cond.delete(" ")
-      ## Field Matching
+    if mongo_query_field_nonmatch(value, cond)
       return false
     elsif value.class.to_s == "Float"
       return value == cond.to_f
@@ -256,6 +252,17 @@ module MongoDB2RedisOperation
       return value == cond.to_i
     end
     true
+  end
+
+  def mongo_query_field_nonmatch(value, cond)
+    if cond.is_a?(Hash) && !@query_processor.query(cond, value)
+      return true
+    elsif value.class.to_s == "String" &&
+          value.delete("\"").delete(" ") != cond.delete(" ")
+      ## Field Matching
+      return true
+    end
+    false
   end
 
   def generate_query(k, val)

@@ -29,27 +29,27 @@ module Memcahed2MongodbTester
     def setFindValue(v)
       @findReturn = v
     end
-    def INSERT(a)
+    def insert(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def UPDATE(a)
+    def update(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def DELETE(a)
+    def delete(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def DROP(a)
+    def drop(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def FIND(a)
+    def find(a)
       @value = a
       @command = "#{__method__}"
       return @findReturn
@@ -73,103 +73,103 @@ module Memcahed2MongodbTester
       it "MEMCACHED_SET(argument size :: 2)" do
         args = ["key",5]
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_SET, args)).to eq true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:memcached_set, args)).to eq true
+        expect(@tester.command).to eq "insert"
       end
       it "MEMCACHED_SET(argument size :: 3)" do
         args = ["key0",5,0]
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_SET, args)).to eq true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:memcached_set, args)).to eq true
+        expect(@tester.command).to eq "insert"
       end
       it "MEMCACHED_SET(argument size is not 2 and 3 )" do
         args = ["key0",5,0,4]
-        expect(@tester.send(:MEMCACHED_SET, args)).to eq false
+        expect(@tester.send(:memcached_set, args)).to eq false
       end
       it "MEMCACHED_GET" do
         args = ["id0"]
         ans = [{"value"=>"a"}]
         @tester.setFindValue(ans)
-        expect(@tester.send(:MEMCACHED_GET, ans)).to eq "a"
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:memcached_get, ans)).to eq "a"
+        expect(@tester.command).to eq "find"
       end
       it "MEMCACHED_ADD" do 
         args = ["key0",5,0]
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_ADD, args)).to eq true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:memcached_add, args)).to eq true
+        expect(@tester.command).to eq "insert"
         args = ["key0",6,0]
         @tester.setQueryValue(false)
-        expect(@tester.send(:MEMCACHED_ADD, args)).to eq false
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:memcached_add, args)).to eq false
+        expect(@tester.command).to eq "insert"
       end
       it "MEMCACHED_REPLACE" do
         args = ["key0",6,0]
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_REPLACE, args)).to eq true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:memcached_replace, args)).to eq true
+        expect(@tester.command).to eq "update"
       end 
      it "MEMCACHED_GETS" do
         args = ["id0"]
         ans = [{"value"=>"a"},{"value"=>"a"}]
         @tester.setFindValue(ans)
-        expect(@tester.send(:MEMCACHED_GETS, ans)).to eq "a,a"
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:memcached_gets, ans)).to eq "a,a"
+        expect(@tester.command).to eq "find"
       end
       it "MEMCACHED_APPEND" do
         args = [{"_id" => "id00"},"v"]
         ans = [{"value"=>"a"}]
         @tester.setFindValue(ans)
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_APPEND, args)).to eq true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:memcached_append, args)).to eq true
+        expect(@tester.command).to eq "update"
       end
       it "MEMCACHED_PREPEND" do
         args = [{"_id" => "id00"},"f"]
         ans = [{"value"=>"a"}]
         @tester.setFindValue(ans)
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_PREPEND, args)).to eq true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:memcached_prepend, args)).to eq true
+        expect(@tester.command).to eq "update"
       end
       it "MEMCACHED_CAS" do
         args = ["casid","key0",5,0]
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_CAS, args)).to eq true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:memcached_cas, args)).to eq true
+        expect(@tester.command).to eq "insert"
       end
       it "MEMCACHED_INCR" do
         args = ["key0",100]
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_INCR, args)).to eq true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:memcached_incr, args)).to eq true
+        expect(@tester.command).to eq "update"
       end
       it "MEMCACHED_DECR" do
         args = ["key0",100]
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_DECR, args)).to eq true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:memcached_decr, args)).to eq true
+        expect(@tester.command).to eq "update"
       end
       it "MEMCACHED_DELETE" do
         args = ["key0"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_DELETE, args)).to eq true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:memcached_delete, args)).to eq true
+        expect(@tester.command).to eq "delete"
       end
       it "MEMCACHED_FLUSH" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:MEMCACHED_FLUSH, [])).to eq true
-        expect(@tester.command).to eq "DROP"
+        expect(@tester.send(:memcached_flush, [])).to eq true
+        expect(@tester.command).to eq "drop"
       end
     end
     context " Private Method" do
       it "prepare_memcached (FLUSHALL)" do
-        ans = {"operand" => "FLUSHALL"}
+        ans = {"operand" => "flushall"}
         expect(@tester.send(:prepare_memcached,"flushall","test_args")).to include ans
       end
 
       it "prepare_memcached (others)" do
-        ans = {"operand" => "MEMCACHED_TEST","args" => "test_args"}
+        ans = {"operand" => "memcached_test","args" => "test_args"}
         expect(@tester.send(:prepare_memcached,"test","test_args")).to include ans
       end
     end

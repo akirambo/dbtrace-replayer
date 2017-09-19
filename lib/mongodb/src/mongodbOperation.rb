@@ -32,7 +32,7 @@
 module MongodbOperation
   private
 
-  def INSERT(args)
+  def insert(args)
     v = false
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     if args.empty?
@@ -64,7 +64,7 @@ module MongodbOperation
     v
   end
 
-  def UPDATE(args)
+  def update(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
     names = args["key"].split(".")
@@ -77,7 +77,7 @@ module MongodbOperation
     v
   end
 
-  def FIND(args)
+  def find(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
     results = []
@@ -102,7 +102,7 @@ module MongodbOperation
     results
   end
 
-  def DELETE(args)
+  def delete(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
     names = args["key"].split(".")
@@ -115,7 +115,7 @@ module MongodbOperation
     v
   end
 
-  def COUNT(args)
+  def count(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
     names = args["key"].split(".")
@@ -128,7 +128,7 @@ module MongodbOperation
     count
   end
 
-  def AGGREGATE(args)
+  def aggregate(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
     %w[match group unwind].each do |type|
@@ -145,24 +145,18 @@ module MongodbOperation
     ""
   end
 
-  def MAPREDUCE(args)
+  def mapreduce(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     @logger.warn("Unimplemented..")
   end
 
-  def DROP(args, init_flag = false)
+  def drop(args, init_flag = false)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     connect
     r = false
     if args.size == 1
       names = args[0].split(".")
-      if names[0] && names[1]
-        @client.setDatabaseName(names[0])
-        @client.setCollectionName(names[1])
-      elsif names[0]
-        @client.setDatabaseName(names[0])
-        @client.clearCollectionName
-      end
+      drop_exec(names)
       r = @client.drop
       if @metrics && !init_flag
         add_duration(@client.getDuration, "database", __method__)
@@ -170,6 +164,16 @@ module MongodbOperation
     end
     close
     r
+  end
+
+  def drop_exec(names)
+    if names[0] && names[1]
+      @client.setDatabaseName(names[0])
+      @client.setCollectionName(names[1])
+    elsif names[0]
+      @client.setDatabaseName(names[0])
+      @client.clearCollectionName
+    end
   end
 
   def reply2rows(str)

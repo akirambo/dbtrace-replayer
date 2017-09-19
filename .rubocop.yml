@@ -48,6 +48,9 @@ Style/TrailingCommaInLiteral:
 Style/GuardClause:
   Enabled: false
 
+Style/RedundantMatch:
+  Enabled: false
+
 # We avoid IfUnlessModifier because it can result in "suprise if"
 Style/IfUnlessModifier:
   Enabled: false

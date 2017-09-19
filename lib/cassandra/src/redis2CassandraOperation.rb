@@ -1014,7 +1014,7 @@ module Redis2CassandraOperation
     queries.push("drop keyspace if exists #{@option[:keyspace]};")
     queries.push("create keyspace #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3};")
     @schemas.each do |_, s|
-      queries.push(s.createQuery)
+      queries.push(s.create_query)
     end
     queries.each do |query|
       begin

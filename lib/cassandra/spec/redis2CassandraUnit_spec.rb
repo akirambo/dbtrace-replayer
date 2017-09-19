@@ -23,7 +23,7 @@ module Redis2CassandraOperationTester
   end
   class CassandraSchemaMock
     attr_accessor :fields
-    def createQuery
+    def create_query
       return "dummy query"
     end
   end

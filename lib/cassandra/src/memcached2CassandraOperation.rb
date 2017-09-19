@@ -32,11 +32,11 @@ module Memcached2CassandraOperation
   private
 
   # @conv {"SET" => ["INSERT"]}
-  def MEMCACHED_SET(args)
+  def memcached_set(args)
     table = @option[:keyspace] + "." + @option[:columnfamily]
     command = "INSERT INTO #{table} (key,value) VALUES ('#{args[0]}','#{args[1]}');"
     begin
-      DIRECT_EXECUTER(command)
+      direct_executer(command)
     rescue => e
       @logger.error(e.message)
       @logger.error(command)
@@ -46,11 +46,11 @@ module Memcached2CassandraOperation
   end
 
   # @conv {"GET" => ["SELECT"]}
-  def MEMCACHED_GET(args)
+  def memcached_get(args)
     table = @option[:keyspace] + "." + @option[:columnfamily]
     command = "SELECT value FROM #{table} WHERE key = '#{args[0]}';"
     begin
-      value = DIRECT_EXECUTER(command)
+      value = direct_executer(command)
       unless value.empty?
         return value
       end
@@ -62,61 +62,61 @@ module Memcached2CassandraOperation
   end
 
   # @conv {"ADD" => ["INSERT","SELECT"]}
-  def MEMCACHED_ADD(args)
-    if MEMCACHED_GET([args[0]]) == ""
-      return MEMCACHED_SET(args)
+  def memcached_add(args)
+    if memcached_get([args[0]]) == ""
+      return memcached_set(args)
     end
     true
   end
 
   # @conv {"REPLACE" => ["INSERT"]}
-  def MEMCACHED_REPLACE(args)
-    MEMCACHED_SET(args)
+  def memcached_replace(args)
+    memcached_set(args)
   end
 
   # @conv {"GETS" => ["SELECT"]}
-  def MEMCACHED_GETS(args)
-    MEMCACHED_GET(args)
+  def memcached_gets(args)
+    memcached_get(args)
   end
 
   # @conv {"APPEND" => ["SELECT","INSERT"]}
-  def MEMCACHED_APPEND(args)
-    str = MEMCACHED_GET(args)
+  def memcached_append(args)
+    str = memcached_get(args)
     monitor("client", "Processing")
     str += args[args.length - 1].to_s
     args[args.length - 1] = change_numeric_when_numeric(str)
     monitor("client", "Processing")
-    MEMCACHED_SET(args)
+    memcached_set(args)
   end
 
   # @conv {"PREPEND(args x3)" => ["SELECT","INSERT"]}
-  def MEMCACHED_PREPEND(args)
-    str = MEMCACHED_GET(args).to_s
+  def memcached_prepend(args)
+    str = memcached_get(args).to_s
     monitor("client", "Processing")
     str = args[args.length - 1].to_s + str
     args[args.length - 1] = change_numeric_when_numeric(str)
     monitor("client", "Processing")
-    MEMCACHED_SET(args)
+    memcached_set(args)
   end
 
   # @conv {"CAS)" => ["SELECT"]}
-  def MEMCACHED_CAS(args)
+  def memcached_cas(args)
     args.pop
-    MEMCACHED_SET(args)
+    memcached_set(args)
   end
 
-  # @conv {"INCR" => ["SELECT","INSERT"]}
-  def MEMCACHED_INCR(args)
+  # @conv {"incr" => ["select","insert"]}
+  def memcached_incr(args)
     memcached_incr_decr(args, "incr")
   end
 
-  # @conv {"DECR" => ["SELECT","INSERT"]}
-  def MEMCACHED_DECR(args)
+  # @conv {"decr" => ["select","insert"]}
+  def memcached_decr(args)
     memcached_incr_decr(args, "decr")
   end
 
   def memcached_incr_decr(args, type)
-    val = MEMCACHED_GET(args).to_i
+    val = memcached_get(args).to_i
     monitor("client", "Processing")
     args[args.length - 1] = if type == "incr"
                               val + args[args.length - 1].to_i
@@ -124,27 +124,27 @@ module Memcached2CassandraOperation
                               val - args[args.length - 1].to_i
                             end
     monitor("client", "Processing")
-    MEMCACHED_SET(args)
+    memcached_set(args)
   end
 
   # @conv {"DELETE" => ["DELETE"]}
-  def MEMCACHED_DELETE(args)
+  def memcached_delete(args)
     table = @option[:keyspace] + "." + @option[:columnfamily]
     command = "DELETE FROM #{table} WHERE key = '#{args[0]}'"
-    DIRECT_EXECUTER(command)
+    direct_executer(command)
   end
 
   # @conv {"FLUSH" => ["TRUNCATE"]}
-  def MEMCACHED_FLUSH
+  def memcached_flush
     queries = []
     queries.push("drop keyspace if exists #{@option[:keyspace]}")
     queries.push("create keyspace #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3}")
     @schemas.each do |_, v|
-      queries.push(v.createQuery)
+      queries.push(v.create_query)
     end
     queries.each do |query|
       begin
-        DIRECT_EXECUTER(query)
+        direct_executer(query)
       rescue => e
         @logger.error(e.message)
         @logger.error(command)
@@ -160,13 +160,13 @@ module Memcached2CassandraOperation
   def prepare_memcached(operand, args)
     result = {}
     ## PREPARE SPECIAL OPERATION
-    if ["FLUSHALL"].include?(operand)
+    if %w[flushall].include?(operand)
       result["operand"] = operand
       return result
     end
     ## PREPARE OPERATION & ARGS
-    result["operand"] = "MEMCACHED_#{operand.upcase}"
-    result["args"] = @parser.exec(operand.upcase, args)
+    result["operand"] = "memcached_#{operand.downcase}"
+    result["args"] = @parser.exec(operand.downcase, args)
     result
   end
 end

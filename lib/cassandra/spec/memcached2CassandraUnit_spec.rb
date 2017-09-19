@@ -12,7 +12,7 @@ module Memcached2CassandraOperationTester
   end
   class CassandraSchemaMock
     attr_accessor :fields
-    def createQuery
+    def create_query
       return "dummy query"
     end
   end
@@ -29,14 +29,14 @@ module Memcached2CassandraOperationTester
         :columnfamily => "f"
       }
     end
-    def DIRECT_EXECUTER(a,b=false)
+    def direct_executer(a,b=false)
       @command = a
       if(@raiseError)then
         raise ArgumentError, "Error"
       end
       return @value
     end
-    def DIRECT_SELECT(a)
+    def direct_select(a)
       @command = a
       if(@raiseError)then
         raise ArgumentError, "Error"
@@ -56,33 +56,33 @@ module Memcached2CassandraOperationTester
       it "MEMCACHED_SET (success)" do
         @tester.raiseError = false
         args = ["key00","val00"]
-        expect(@tester.send(:MEMCACHED_SET, args)).to eq true
+        expect(@tester.send(:memcached_set, args)).to eq true
         command = "INSERT INTO k.f (key,value) VALUES ('key00','val00');"
         expect(@tester.command).to eq command
       end
       it "MEMCACHED_SET (error)" do
         @tester.raiseError = true
         args = ["key00","val00"]
-        expect(@tester.send(:MEMCACHED_SET, args)).to eq false
+        expect(@tester.send(:memcached_set, args)).to eq false
       end
       it "MEMCACHED_GET (success)" do
         @tester.raiseError = false
         @tester.value = "v0"
         args = ["key00"]
-        expect(@tester.send(:MEMCACHED_GET, args)).to eq "v0"
+        expect(@tester.send(:memcached_get, args)).to eq "v0"
         command = "SELECT value FROM k.f WHERE key = 'key00';"
         expect(@tester.command).to eq command
       end
       it "MEMCACHED_GET (error)" do
         @tester.raiseError = true
         args = ["key00"]
-        expect(@tester.send(:MEMCACHED_GET, args)).to eq ""
+        expect(@tester.send(:memcached_get, args)).to eq ""
       end
       it "MEMCACHED_ADD (success)" do
         @tester.raiseError = false
         @tester.value = ""
         args = ["key00","val00"]
-        expect(@tester.send(:MEMCACHED_ADD, args)).to eq true
+        expect(@tester.send(:memcached_add, args)).to eq true
         command = "INSERT INTO k.f (key,value) VALUES ('key00','val00');"
         expect(@tester.command).to eq command
       end
@@ -90,12 +90,12 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = "val00"
         args = ["key00","val00"]
-        expect(@tester.send(:MEMCACHED_ADD, args)).to eq true
+        expect(@tester.send(:memcached_add, args)).to eq true
       end
       it "MEMCACHED_REPLACE" do
         @tester.raiseError = false
         args = ["key00","val00"]
-        expect(@tester.send(:MEMCACHED_REPLACE, args)).to eq true
+        expect(@tester.send(:memcached_replace, args)).to eq true
         command = "INSERT INTO k.f (key,value) VALUES ('key00','val00');"
         expect(@tester.command).to eq command
       end
@@ -103,7 +103,7 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = "v0"
         args = ["key00"]
-        expect(@tester.send(:MEMCACHED_GETS, args)).to eq "v0"
+        expect(@tester.send(:memcached_gets, args)).to eq "v0"
         command = "SELECT value FROM k.f WHERE key = 'key00';"
         expect(@tester.command).to eq command
       end
@@ -111,7 +111,7 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = "appe"
         args = ["key00","nd"]
-        expect(@tester.send(:MEMCACHED_APPEND, args)).to eq true
+        expect(@tester.send(:memcached_append, args)).to eq true
         command = "INSERT INTO k.f (key,value) VALUES ('key00','append');"
         expect(@tester.command).to eq command
       end
@@ -119,7 +119,7 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = "pend"
         args = ["key00","pre"]
-        expect(@tester.send(:MEMCACHED_PREPEND, args)).to eq true
+        expect(@tester.send(:memcached_prepend, args)).to eq true
         command = "INSERT INTO k.f (key,value) VALUES ('key00','prepend');"
         expect(@tester.command).to eq command
       end
@@ -127,7 +127,7 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = "v0"
         args = ["key00","v0",""]
-        expect(@tester.send(:MEMCACHED_CAS, args)).to eq true
+        expect(@tester.send(:memcached_cas, args)).to eq true
         command = "INSERT INTO k.f (key,value) VALUES ('key00','v0');"
         expect(@tester.command).to eq command
       end
@@ -135,7 +135,7 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = "10"
         args = ["key00","20"]
-        expect(@tester.send(:MEMCACHED_INCR, args)).to eq true
+        expect(@tester.send(:memcached_incr, args)).to eq true
         command = "INSERT INTO k.f (key,value) VALUES ('key00','30');"
         expect(@tester.command).to eq command
       end
@@ -143,7 +143,7 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = "50"
         args = ["key00","20"]
-        expect(@tester.send(:MEMCACHED_DECR, args)).to eq true
+        expect(@tester.send(:memcached_decr, args)).to eq true
         command = "INSERT INTO k.f (key,value) VALUES ('key00','30');"
         expect(@tester.command).to eq command
       end
@@ -151,7 +151,7 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = true
         args = ["key00"]
-        expect(@tester.send(:MEMCACHED_DELETE, args)).to eq true
+        expect(@tester.send(:memcached_delete, args)).to eq true
         command = "DELETE FROM k.f WHERE key = 'key00'"
         expect(@tester.command).to eq command
       end
@@ -159,21 +159,21 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = true
         @tester.schemas = {"k" => CassandraSchemaMock.new}
-        expect(@tester.send(:MEMCACHED_FLUSH)).to eq true
+        expect(@tester.send(:memcached_flush)).to eq true
       end
       it "MEMCACHED_FLUSH(error)" do
         @tester.raiseError = true
         @tester.schemas = {"k" => CassandraSchemaMock.new}
-        expect(@tester.send(:MEMCACHED_FLUSH)).to eq false
+        expect(@tester.send(:memcached_flush)).to eq false
       end
     end
     context "Private Method" do
       it "prepare_memcached (FLUSHALL)" do
-        ans = {"operand"=>"FLUSHALL"}
-        expect(@tester.send(:prepare_memcached,"FLUSHALL","OK")).to include ans
+        ans = {"operand"=>"flushall"}
+        expect(@tester.send(:prepare_memcached,"flushall","OK")).to include ans
       end
       it "prepare_memcached (OTHERS)" do
-        ans = {"operand"=>"MEMCACHED_OTHERS","args" => "OK"}
+        ans = {"operand"=>"memcached_others","args" => "OK"}
         expect(@tester.send(:prepare_memcached,"others","OK")).to include ans
       end
     end

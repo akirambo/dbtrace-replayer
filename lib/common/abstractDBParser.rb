@@ -29,10 +29,10 @@
 #
 
 class AbstractDBParser
-  def initialize(filename, logs, supportedCommand, option, logger)
+  def initialize(filename, logs, supported_command, option, logger)
     @filename = File.expand_path(filename)
     @logs     = logs
-    @supportedCommand = supportedCommand
+    @supported_command = supported_command
     @option = option
     @logger = logger
   end

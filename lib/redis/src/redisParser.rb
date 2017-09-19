@@ -117,7 +117,7 @@ class RedisParser < AbstractDBParser
     @type_position.each do |index|
       if data.size > index
         command = data[index].sub(/\"/, "").downcase
-        if @supportedCommand.include?(command)
+        if @supported_command.include?(command)
           result = {}
           args = data.delete_if(&:empty?)
           ## Skip [time]

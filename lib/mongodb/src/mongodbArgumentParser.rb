@@ -33,19 +33,11 @@ require_relative "../../common/utils"
 
 class MongodbArgumentParser
   MONGODB_ACCUMULATORS = %w[$sum $avg $first $last $max $min $push $addToSet].freeze
-  MONGODB_AGGREGATE_OPERATORS = [
-    "$collStats", "$project", "$match", "$redact",
-    "$limit", "$skip", "$unwind", "$group", "$sample",
-    "$sort", "$geoNear", "$lookup", "$out", "$indexStats",
-    "$facet", "$bucket", "$bucketAuto", "$sortByCount",
-    "$addFields", "$replaceRoot", "$count", "$graphLookup",
-    "$unwind"
-  ].freeze
+  MONGODB_AGGREGATE_OPERATORS = %w[$collStats $project $match $redact $limit $skip $unwind $group $sample $sort $geoNear $lookup $out $indexStats $facet $bucket $bucketAuto $sortByCount $addFields $replaceRoot $count $graphLookup $unwind].freeze
 
   def initialize(logger)
     @logger = logger
     @utils  = Utils.new
-
     @key_value_num = 5
     @byte_size = 5
   end
@@ -60,7 +52,7 @@ class MongodbArgumentParser
 
   private
 
-  def parseLog(log_)
+  def parse_log(log_)
     log = '{ "key" :' + log_
     log.tr!("\"", '"')
     log.gsub!(/(\w+):/, '"\1":')
@@ -80,10 +72,10 @@ class MongodbArgumentParser
     hash
   end
 
-  def INSERT(args, no_string)
+  def insert(args, no_string)
     ## Parse Arguments
     result = []
-    log = parseLog(args)
+    log = parse_log(args)
     key = log["key"]
     doc = log["documents"]
     if doc.instance_of?(Array)
@@ -106,7 +98,7 @@ class MongodbArgumentParser
     result
   end
 
-  def UPDATE(args, _)
+  def update(args, _)
     result = {
       "key"    => nil,
       "query"  => nil,
@@ -131,7 +123,7 @@ class MongodbArgumentParser
     result
   end
 
-  def COUNT(args, _)
+  def count(args, _)
     result = {
       "key"   => nil,
       "query" => nil,
@@ -139,7 +131,7 @@ class MongodbArgumentParser
     }
     ## key
     result["key"] = args.split(",")[0].delete("\"").delete(" ")
-    str = "{" + args.sub(",", "").sub(result["key"], "").sub(/\"/, "").sub(/\"/, "")
+    str = get_non_key_string(args, result["key"])
     ## query
     hash = @utils.parse_json(str)
     result["query"] = hash["query"]
@@ -148,18 +140,18 @@ class MongodbArgumentParser
     result
   end
 
-  def GROUP(_, _)
+  def group(_, _)
     nil
   end
 
-  def FIND(args, _)
+  def find(args, _)
     result = {
       "key"    => nil,
       "filter" => nil,
     }
     ## key
     result["key"] = args.split(",")[0].delete("\"").delete(" ")
-    str = "{" + args.sub(",", "").sub(result["key"], "").sub(/\"/, "").sub(/\"/, "")
+    str = get_non_key_string(args, result["key"])
     ## filter
     hash = @utils.parse_json(str)
     if hash["filter"]
@@ -170,11 +162,15 @@ class MongodbArgumentParser
     result
   end
 
-  def DELETE(args, no_string)
-    FIND(args, no_string)
+  def get_non_key_string(args, key)
+    "{" + args.sub(",", "").sub(key, "").sub(/\"/, "").sub(/\"/, "")
   end
 
-  def AGGREGATE(args, _)
+  def delete(args, no_string)
+    find(args, no_string)
+  end
+
+  def aggregate(args, _)
     result = {
       "key"    => nil,
       "match"  => nil,
@@ -182,7 +178,7 @@ class MongodbArgumentParser
       "unwind" => nil,
     }
     result["key"] = args.split(",")[0].delete("\"").delete(" ")
-    str = "{" + args.sub(",", "").sub(result["key"], "").sub(/\"/, "").sub(/\"/, "")
+    str = get_non_key_string(args, result["key"])
     @utils.parse_json(str)["pipeline"].each do |elem|
       MONGODB_AGGREGATE_OPERATORS.each do |ope|
         if elem[ope]
@@ -200,7 +196,7 @@ class MongodbArgumentParser
     result
   end
 
-  def MAPREDUCE(_, _)
+  def mapreduce(_, _)
     @logger.warn("Unsupported MapReduce")
     {}
   end
