@@ -8,8 +8,8 @@ RSpec.describe 'Mongodb Unit TEST' do
     @parser = MongodbArgumentParser.new(DummyLogger.new)
   end
   context " Argument Parser" do
-    it "structureType" do
-      expect(@parser.send(:structureType,"operand",[])).to eq "others"
+    it "structure_type" do
+      expect(@parser.send(:structure_type,"operand",[])).to eq "others"
     end
     it "parseLog (basic) " do
       log = ' "a", "insert" : "test", "documents" : [{"b":"A"}]  }'

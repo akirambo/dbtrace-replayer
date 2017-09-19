@@ -74,6 +74,9 @@ Style/PredicateName:
   NamePrefixBlacklist:
   - is_
 
+Style/PerlBackrefs:
+  Enabled: false 
+
 # We use %w[ ], not %w( ) because the former looks like an array
 Style/PercentLiteralDelimiters:
   PreferredDelimiters:

@@ -54,7 +54,7 @@ class MongodbArgumentParser
     send(type.to_s, args, no_string)
   end
 
-  def structureType(_, _)
+  def structure_type(_, _)
     "others"
   end
 

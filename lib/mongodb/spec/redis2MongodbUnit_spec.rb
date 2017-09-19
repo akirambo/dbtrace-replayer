@@ -5,7 +5,7 @@ require_relative "../src/redis2MongodbOperation"
 
 module Redis2MongodbTester
   class ParserMock
-    def extractZ_X_STORE_ARGS(a)
+    def extract_z_x_store_args(a)
       return "#{__method__}"
     end
     def args2hash(a)
@@ -41,12 +41,12 @@ module Redis2MongodbTester
     def setAggregationValue(ret)
       @aggregationReturn = ret
     end
-    def INSERT(a)
+    def insert(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def FIND(a)
+    def find(a)
       @value = a
       @command = "#{__method__}"
       if(@findReturnHashFlag)then
@@ -54,27 +54,27 @@ module Redis2MongodbTester
       end
       return @findReturn
     end
-    def UPDATE(a)
+    def update(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def DELETE(a)
+    def delete(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
     end
-    def AGGREGATE(a)
+    def aggregate(a)
       @value = a
       @command = "#{__method__}"
       return @aggregationReturn
     end
-    def COUNT(a)
+    def count(a)
       @value = a
       @command = "#{__method__}"
       return 10
     end
-    def DROP(a)
+    def drop(a)
       @value = a
       @command = "#{__method__}"
       return @queryReturn
@@ -95,525 +95,525 @@ module Redis2MongodbTester
       @tester = Mock.new()
     end
     context "String Operation" do
-      it "REDIS_SET" do
+      it "redis_set" do
         args = ["id00","value00"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_SET,args)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_set,args)).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_SETEX" do
+      it "redis_setex" do
         args = ["id00","value00"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_SETEX,args)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_setex,args)).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_SETNX" do
+      it "redis_setnx" do
         args = ["id00","value00"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_SETNX,args)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_setnx,args)).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_PSETEX" do
+      it "redis_psetex" do
         args = ["id00","value00"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_PSETEX,args)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_psetex,args)).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_GET" do
+      it "redis_get" do
         args = ["id00","value00"]
         @tester.setFindValue([{"value"=>"results"}])
-        expect(@tester.send(:REDIS_GET,args)).to eq "results"
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_get,args)).to eq "results"
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_MSET" do
+      it "redis_mset" do
         args = ["id00","value00"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_MSET,args)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_mset,args)).to be true
+        expect(@tester.command).to eq "insert"
         @tester.setQueryValue(false)
-        expect(@tester.send(:REDIS_MSET,args)).to be false
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_mset,args)).to be false
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_MSETNX" do
+      it "redis_msetnx" do
         args = ["id00","value00"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_MSETNX,args)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_msetnx,args)).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_MGET" do
+      it "redis_mget" do
         args = ["id00","id01"]
         @tester.setFindValue([{"value"=>"results"},{"value"=>"results"}])
-        expect(@tester.send(:REDIS_MGET,args)).to match_array ["results","results"]
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_mget,args)).to match_array ["results","results"]
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_INCR" do
+      it "redis_incr" do
         args = ["id00"]
         @tester.setFindValue([{"value"=>"1"}])
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_INCR,args)).to be true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:redis_incr,args)).to be true
+        expect(@tester.command).to eq "update"
       end
-      it "REDIS_INCRBY" do
+      it "redis_incrby" do
         args = ["id00",1]
       @tester.setFindValue([{"value"=>"1"}])
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_INCRBY,args)).to be true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:redis_incrby,args)).to be true
+        expect(@tester.command).to eq "update"
       end
-      it "REDIS_DECR" do
+      it "redis_decr" do
         args = ["id00"]
         @tester.setFindValue([{"value"=>"1"}])
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_DECR,args)).to be true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:redis_decr,args)).to be true
+        expect(@tester.command).to eq "update"
       end
-      it "REDIS_DECRBY" do
+      it "redis_decrby" do
         args = ["id00",1]
         @tester.setFindValue([{"value"=>"1"}])
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_DECRBY,args)).to be true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:redis_decrby,args)).to be true
+        expect(@tester.command).to eq "update"
       end
-      it "REDIS_APPEND" do
+      it "redis_append" do
         args = ["id00","m"]
         @tester.setFindValue([{"value"=>"t"}])
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_APPEND,args)).to be true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:redis_append,args)).to be true
+        expect(@tester.command).to eq "update"
       end
-      it "REDIS_GETSET" do
+      it "redis_getset" do
         args = ["id00","m"]
         @tester.setFindValue([{"value"=>"t"}])
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_GETSET,args)).to eq "t"
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:redis_getset,args)).to eq "t"
+        expect(@tester.command).to eq "update"
       end
-      it "REDIS_STRLEN" do
+      it "redis_strlen" do
         args = ["id00","m"]
         @tester.setFindValue([{"value"=>"t"}])
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_STRLEN,args)).to eq 1
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_strlen,args)).to eq 1
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_DEL" do
+      it "redis_del" do
         args = ["id00"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_DEL,args)).to be true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:redis_del,args)).to be true
+        expect(@tester.command).to eq "delete"
       end
     end
-    context "LIST" do
-      it "REDIS_LPUSH" do
+    context "list" do
+      it "redis_lpush" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_LPUSH,["a","b"])).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_lpush,["a","b"])).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_RPUSH" do
+      it "redis_rpush" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_RPUSH,["a","b"])).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_rpush,["a","b"])).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_LLEN" do
+      it "redis_llen" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_LLEN,["a"])).to eq 10
-        expect(@tester.command).to eq "COUNT"
+        expect(@tester.send(:redis_llen,["a"])).to eq 10
+        expect(@tester.command).to eq "count"
       end
-      it "REDIS_LRANGE" do
+      it "redis_lrange" do
         values = [{"value"=>"a"},{"value"=>"a"},{"value"=>"a"}]
         @tester.setFindValue(values)
-        expect(@tester.send(:REDIS_LRANGE,["a","0","-1"])).to eq ["a","a","a"]
+        expect(@tester.send(:redis_lrange,["a","0","-1"])).to eq ["a","a","a"]
       end
-      it "REDIS_LTRIM" do
+      it "redis_ltrim" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_LTRIM,["a","0","-1"])).to be true
+        expect(@tester.send(:redis_ltrim,["a","0","-1"])).to be true
       end
-      it "REDIS_LINDEX" do
+      it "redis_lindex" do
         values = [{"value"=>"a"},{"value"=>"a"},{"value"=>"a"}]
         @tester.setFindValue(values)
         ans = ["a","a","a"]
-        expect(@tester.send(:REDIS_LINDEX,["a","0","-1"])).to match_array ans
+        expect(@tester.send(:redis_lindex,["a","0","-1"])).to match_array ans
       end
-      it "REDIS_LSET" do
+      it "redis_lset" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_LSET,["a","0","-1"])).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_lset,["a","0","-1"])).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_LREM" do
+      it "redis_lrem" do
         values = [{"value"=>"a","index"=>1},{"value"=>"a","index"=>2},{"value"=>"a","index"=>3}]
         @tester.setFindValue(values)
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_LREM,["a","4","-1"])).to be true
+        expect(@tester.send(:redis_lrem,["a","4","-1"])).to be true
       end
-      it "REDIS_LPOP" do
+      it "redis_lpop" do
         values = [{"value"=>"a","index"=>0}]
         @tester.setFindValue(values)
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_LPOP,["2"])).to eq "a"
+        expect(@tester.send(:redis_lpop,["2"])).to eq "a"
         values = [{"value"=>"a","index"=>1},{"value"=>"a","index"=>0}]
         @tester.setFindValue(values)
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_LPOP,["2"])).to eq ""
+        expect(@tester.send(:redis_lpop,["2"])).to eq ""
       end
-      it "REDIS_RPOP" do
+      it "redis_rpop" do
         values = [{"value"=>"a","index"=>0}]
         @tester.setFindValue(values)
-        expect(@tester.send(:REDIS_RPOP,["key"])).to eq "a"
+        expect(@tester.send(:redis_rpop,["key"])).to eq "a"
       end
-      it "REDIS_RPOPLPUSH" do
+      it "redis_rpoplpush" do
         values = [{"value"=>"a","index"=>0}]
         @tester.setFindValue(values)
-        expect(@tester.send(:REDIS_RPOPLPUSH,["key","key"])).to eq "a"
+        expect(@tester.send(:redis_rpoplpush,["key","key"])).to eq "a"
       end
     end
     context "SET Operation" do
-      it "REDIS_SADD" do
+      it "redis_sadd" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_SADD,["a","b"])).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_sadd,["a","b"])).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_SREM" do
+      it "redis_srem" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_SREM,["a","b"])).to be true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:redis_srem,["a","b"])).to be true
+        expect(@tester.command).to eq "delete"
       end
-      it "REDIS_SISMEMBER" do
+      it "redis_sismember" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_SISMEMBER,["a","b"])).to be true
-        expect(@tester.command).to eq "COUNT"
+        expect(@tester.send(:redis_sismember,["a","b"])).to be true
+        expect(@tester.command).to eq "count"
       end
-      it "REDIS_SPOP" do
+      it "redis_spop" do
         @tester.setFindValue([{"value" =>"good"},{"value"=>"good"}])
-        expect(@tester.send(:REDIS_SPOP,["a"])).to eq "good"
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:redis_spop,["a"])).to eq "good"
+        expect(@tester.command).to eq "delete"
       end
-      it "REDIS_SMOVE" do
+      it "redis_smove" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_SMOVE,["src","dst","member"])).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_smove,["src","dst","member"])).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_SCARD" do
+      it "redis_scard" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_SCARD,["src","dst"])).to eq 10
-        expect(@tester.command).to eq "COUNT"
+        expect(@tester.send(:redis_scard,["src","dst"])).to eq 10
+        expect(@tester.command).to eq "count"
       end
-      it "REDIS_SINTER" do
+      it "redis_sinter" do
         @tester.setFindValue([{"value" =>"good"}])
-        expect(@tester.send(:REDIS_SINTER,["a","b"])).to eq ["good"]
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_sinter,["a","b"])).to eq ["good"]
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_SINTERSTORE" do
+      it "redis_sinterstore" do
         @tester.setFindValue([{"value" =>"good"}])
-        expect(@tester.send(:REDIS_SINTERSTORE,["a","b"])).to eq ["good"]
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_sinterstore,["a","b"])).to eq ["good"]
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_SDIFF" do
+      it "redis_sdiff" do
         @tester.setFindValue({"b"=>[{"value"=>"good"}],
             "a"=>[{"value"=>"bad"},{"value"=>"good"}]},true)
-        expect(@tester.send(:REDIS_SDIFF,["a","b"])).to match_array ["bad"]
+        expect(@tester.send(:redis_sdiff,["a","b"])).to match_array ["bad"]
       end
-      it "REDIS_SDIFFSTORE" do
+      it "redis_sdiffstore" do
         @tester.setFindValue({"b"=>[{"value"=>"good"}],
             "a"=>[{"value"=>"bad"},{"value"=>"good"}]},true)
-        expect(@tester.send(:REDIS_SDIFFSTORE,["dst","a","b"])).to be true
+        expect(@tester.send(:redis_sdiffstore,["dst","a","b"])).to be true
       end
-      it "REDIS_SRANDMEMBER" do
+      it "redis_srandmember" do
         @tester.setFindValue([{"value" =>"good"},{"value" =>"good"}])
         hash = {"value" => "good"}
-        expect(@tester.send(:REDIS_SRANDMEMBER,["a","b"])).to include hash
+        expect(@tester.send(:redis_srandmember,["a","b"])).to include hash
       end
-      it "REDIS_SMEMBERS" do
+      it "redis_smembers" do
         @tester.setFindValue([{"value" =>"good"},{"value" =>"good"}])
         ans = ["good","good"]
-        expect(@tester.send(:REDIS_SMEMBERS,["a","b"])).to match_array ans
+        expect(@tester.send(:redis_smembers,["a","b"])).to match_array ans
       end
-      it "REDIS_SUNION" do
+      it "redis_sunion" do
         @tester.setFindValue({"a"=>[{"value"=>"good"}],"b"=>[{"value"=>"bad"}]},true)
-        expect(@tester.send(:REDIS_SUNION,["a","b"])).to match_array ["good","bad"]
+        expect(@tester.send(:redis_sunion,["a","b"])).to match_array ["good","bad"]
       end
-      it "REDIS_SUNIONSTORE" do
+      it "redis_sunionstore" do
         @tester.setFindValue([{"value" =>"good"}])
-        expect(@tester.send(:REDIS_SUNIONSTORE,["dst","a","b"])).to be true
+        expect(@tester.send(:redis_sunionstore,["dst","a","b"])).to be true
       end
     end
     context "Sorted SET Operation" do
-      it "REDIS_ZADD" do
+      it "redis_zadd" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_ZADD,["k",100,"v"])).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_zadd,["k",100,"v"])).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_ZREM" do
+      it "redis_zrem" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_ZREM,["k","v"])).to be true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:redis_zrem,["k","v"])).to be true
+        expect(@tester.command).to eq "delete"
       end
-      it "REDIS_ZINCRBY" do
+      it "redis_zincrby" do
         @tester.setQueryValue(false)
-        expect(@tester.send(:REDIS_ZINCRBY,["k",1,"v"])).to be false
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_zincrby,["k",1,"v"])).to be false
+        expect(@tester.command).to eq "insert"
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_ZINCRBY,["k",1,"v"])).to be true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:redis_zincrby,["k",1,"v"])).to be true
+        expect(@tester.command).to eq "update"
       end
-      it "REDIS_ZRANK" do
+      it "redis_zrank" do
         @tester.setFindValue([{"score"=>"100"}])
-        expect(@tester.send(:REDIS_ZRANK,["k","v"])).to eq 10
-        expect(@tester.command).to eq "COUNT"
+        expect(@tester.send(:redis_zrank,["k","v"])).to eq 10
+        expect(@tester.command).to eq "count"
         @tester.setFindValue([{"score"=>nil}])
-        expect(@tester.send(:REDIS_ZRANK,["k","v"])).to eq "v"
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_zrank,["k","v"])).to eq "v"
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_ZREVRANK" do
+      it "redis_zrevrank" do
         @tester.setFindValue([{"score"=>"100"}])
-        expect(@tester.send(:REDIS_ZREVRANK,["k","v"])).to eq 10
-        expect(@tester.command).to eq "COUNT"
+        expect(@tester.send(:redis_zrevrank,["k","v"])).to eq 10
+        expect(@tester.command).to eq "count"
         @tester.setFindValue([{"score"=>nil}])
-        expect(@tester.send(:REDIS_ZREVRANK,["k","v"])).to eq "v"
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_zrevrank,["k","v"])).to eq "v"
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_ZRAGNE" do
+      it "redis_zragne" do
         @tester.setAggregationValue([{"value"=>10},{"value"=>20}])
-        expect(@tester.send(:REDIS_ZRANGE,["k","v","10"])).to eq [10,20]
-        expect(@tester.command).to eq "AGGREGATE"
+        expect(@tester.send(:redis_zrange,["k","v","10"])).to eq [10,20]
+        expect(@tester.command).to eq "aggregate"
       end
-      it "REDIS_ZREVRANGE" do
+      it "redis_zrevrange" do
         @tester.setAggregationValue([{"value"=>10},{"value"=>20}])
-        expect(@tester.send(:REDIS_ZREVRANGE,["k","v","10"])).to eq [10,20]
-        expect(@tester.command).to eq "AGGREGATE"
+        expect(@tester.send(:redis_zrevrange,["k","v","10"])).to eq [10,20]
+        expect(@tester.command).to eq "aggregate"
       end
-      it "REDIS_ZRAGNEBYSCORE" do
+      it "redis_zragnebyscore" do
         @tester.setFindValue([{"value"=>10},{"value"=>20}])
-        expect(@tester.send(:REDIS_ZRANGEBYSCORE,["k","v","10"])).to eq "[{\"value\":10},{\"value\":20}]"
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_zrangebyscore,["k","v","10"])).to eq "[{\"value\":10},{\"value\":20}]"
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_ZCOUNT" do
+      it "redis_zcount" do
         @tester.setFindValue([{"value"=>10},{"value"=>20}])
-        expect(@tester.send(:REDIS_ZCOUNT,["k","v","10"])).to eq 10
-        expect(@tester.command).to eq "COUNT"
+        expect(@tester.send(:redis_zcount,["k","v","10"])).to eq 10
+        expect(@tester.command).to eq "count"
       end
-      it "REDIS_ZCARD" do
+      it "redis_zcard" do
         @tester.setFindValue([{"value"=>10},{"value"=>20}])
-        expect(@tester.send(:REDIS_ZCARD,["k","v","10"])).to eq 10
-        expect(@tester.command).to eq "COUNT"
+        expect(@tester.send(:redis_zcard,["k","v","10"])).to eq 10
+        expect(@tester.command).to eq "count"
       end
-      it "REDIS_ZSCORE" do
+      it "redis_zscore" do
         @tester.setFindValue([{"value"=>10},{"value"=>20}])
-        expect(@tester.send(:REDIS_ZSCORE,["k","v","10"])).to eq "[{\"value\":10},{\"value\":20}]"
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_zscore,["k","v","10"])).to eq "[{\"value\":10},{\"value\":20}]"
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_ZREMRANGEBYRANK" do
+      it "redis_zremrangebyrank" do
         @tester.setQueryValue(true)
         @tester.setAggregationValue([{"value"=>10},{"value"=>20}])
-        expect(@tester.send(:REDIS_ZREMRANGEBYRANK,["k","0","100"])).to eq true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:redis_zremrangebyrank,["k","0","100"])).to eq true
+        expect(@tester.command).to eq "delete"
       end
-      it "REDIS_ZREMRANGEBYSCORE" do
+      it "redis_zremrangebyscore" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_ZREMRANGEBYSCORE,["k","10","200"])).to eq true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:redis_zremrangebyscore,["k","10","200"])).to eq true
+        expect(@tester.command).to eq "delete"
       end
-      it "REDIS_UNIONSTORE" do
+      it "redis_unionstore" do
         @tester.setFindValue([{"value"=>"a"},{"value"=>"b"}])
         @tester.setQueryValue(true)
         args = {"args"=>["a","b"],"option"=>{:weights=>[1.2,1],:aggregate=>"sum"}}
-        expect(@tester.send(:REDIS_ZUNIONSTORE,args)).to eq true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_zunionstore,args)).to eq true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_ZINTERSTORE" do
+      it "redis_zinterstore" do
         @tester.setFindValue([{"value"=>"a"},{"value"=>"b"}])
         @tester.setQueryValue(true)
         args = {"args"=>["a","b"],"option"=>{:weights=>[1.2,1],:aggregate=>"sum"}}
-        expect(@tester.send(:REDIS_ZINTERSTORE,args)).to eq true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_zinterstore,args)).to eq true
+        expect(@tester.command).to eq "insert"
       end
     end
     context "HASH Operation" do
-      it "REDIS_HSET" do
+      it "redis_hset" do
         args = ["k","f","v"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_HSET,args)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_hset,args)).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_HGET" do
+      it "redis_hget" do
         args = ["k","f"]
         @tester.setQueryValue(true)
         ans = {"field"=>"f","value"=>"v"}
         @tester.setFindValue(ans)
-        expect(@tester.send(:REDIS_HGET,args)).to eq ans.to_json
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_hget,args)).to eq ans.to_json
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_HMGET" do
+      it "redis_hmget" do
         args = {"key"=>"k","args"=>["f1","v1"]}
         @tester.setQueryValue(true)
         ans = {"field"=>"f1","value"=>"v1"}
         @tester.setFindValue(ans)
-        expect(@tester.send(:REDIS_HMGET,args)).to eq ans.to_json
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_hmget,args)).to eq ans.to_json
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_HMSET" do
+      it "redis_hmset" do
         args = {"key"=>"k","args"=>{"f1"=>"2","f2"=>"v"}}
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_HMSET,args)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_hmset,args)).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_HINCRBY" do
+      it "redis_hincrby" do
         args = ["k","f",20]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_HINCRBY,args)).to be true
-        expect(@tester.command).to eq "UPDATE"
+        expect(@tester.send(:redis_hincrby,args)).to be true
+        expect(@tester.command).to eq "update"
         @tester.setQueryValue(false)
-        expect(@tester.send(:REDIS_HINCRBY,args)).to be false
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:redis_hincrby,args)).to be false
+        expect(@tester.command).to eq "insert"
       end
-      it "REDIS_HEXISTS" do
+      it "redis_hexists" do
         args = ["k","f"]
         @tester.setFindValue(["a","b"])
-        expect(@tester.send(:REDIS_HEXISTS,args)).to be true
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_hexists,args)).to be true
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_HDEL" do
+      it "redis_hdel" do
         args = ["k","f"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_HDEL,args)).to be true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:redis_hdel,args)).to be true
+        expect(@tester.command).to eq "delete"
       end
-      it "REDIS_HLEN" do
+      it "redis_hlen" do
         args = ["k"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_HLEN,args)).to eq 10
-        expect(@tester.command).to eq "COUNT"
+        expect(@tester.send(:redis_hlen,args)).to eq 10
+        expect(@tester.command).to eq "count"
       end
-      it "REDIS_HKEYS" do
+      it "redis_hkeys" do
         args = ["k"]
         ans = [{"field"=>"a"},{"field"=>"b"}]
         @tester.setFindValue(ans)
-        expect(@tester.send(:REDIS_HKEYS,args)).to match_array ["a","b"]
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_hkeys,args)).to match_array ["a","b"]
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_HVALS" do
+      it "redis_hvals" do
         args = ["k"]
         ans = [{"value"=>"a"},{"value"=>"b"}]
         @tester.setFindValue(ans)
-        expect(@tester.send(:REDIS_HVALS,args)).to match_array ["a","b"]
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_hvals,args)).to match_array ["a","b"]
+        expect(@tester.command).to eq "find"
       end
-      it "REDIS_HGETALL" do
+      it "redis_hgetall" do
         args = ["k"]
         ans = [{"value"=>"a"},{"value"=>"b"}]
         @tester.setFindValue(ans)
-        expect(@tester.send(:REDIS_HGETALL,args)).to include ans.to_json
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:redis_hgetall,args)).to include ans.to_json
+        expect(@tester.command).to eq "find"
       end
     end
     context "Private Method (String)" do
-      it "getString" do
+      it "get_string" do
         @tester.setFindValue([])
-        expect(@tester.send(:getString,["a"])).to eq ""
+        expect(@tester.send(:get_string,["a"])).to eq ""
       end
-      it "getStrings" do
+      it "get_strings" do
         @tester.setFindValue([])
-        expect(@tester.send(:getStrings,["a","c"])).to eq []
+        expect(@tester.send(:get_strings,["a","c"])).to eq []
       end
     end
     context "Others Operation & Private Method (Others)" do
-      it "REDIS_FLUSHALL" do
+      it "redis_flushall" do
         args = ["a"]
         @tester.setQueryValue(true)
-        expect(@tester.send(:REDIS_FLUSHALL,args)).to eq true
-        expect(@tester.command).to eq "DROP"
+        expect(@tester.send(:redis_flushall,args)).to eq true
+        expect(@tester.command).to eq "drop"
       end
 
       it "prepare_redis" do
-        ans = {"operand"=>"REDIS_test","args"=>"test"}
+        ans = {"operand"=>"redis_test","args"=>"test"}
         expect(@tester.send(:prepare_redis,"test","test")).to include ans
-        ans = {"operand"=>"REDIS_ZUNIONSTORE","args"=>"extractZ_X_STORE_ARGS"}
-        expect(@tester.send(:prepare_redis,"ZUNIONSTORE","test")).to include ans
-        ans = {"operand"=>"REDIS_MSET","args"=>"args2hash"}
-        expect(@tester.send(:prepare_redis,"MSET","test")).to include ans
-        ans = {"operand"=>"REDIS_HMGET","args"=>"args2key_args"}
-        expect(@tester.send(:prepare_redis,"HMGET","test")).to include ans
-        ans = {"operand"=>"REDIS_HMSET","args"=>"args2key_hash"}
-        expect(@tester.send(:prepare_redis,"HMSET","test")).to include ans
+        ans = {"operand"=>"redis_zunionstore","args"=>"extract_z_x_store_args"}
+        expect(@tester.send(:prepare_redis,"zunionstore","test")).to include ans
+        ans = {"operand"=>"redis_mset","args"=>"args2hash"}
+        expect(@tester.send(:prepare_redis,"mset","test")).to include ans
+        ans = {"operand"=>"redis_hmget","args"=>"args2key_args"}
+        expect(@tester.send(:prepare_redis,"hmget","test")).to include ans
+        ans = {"operand"=>"redis_hmset","args"=>"args2key_hash"}
+        expect(@tester.send(:prepare_redis,"hmset","test")).to include ans
       end
     end
     context "Private Method (SET/sortedSET)" do
-      it "pushSet" do
+      it "push_set" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:pushSet,"k","v")).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:push_set,"k","v")).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "getSet" do
+      it "get_set" do
         @tester.setFindValue("good")
-        expect(@tester.send(:getSet,"k")).to eq "good"
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:get_set,"k")).to eq "good"
+        expect(@tester.command).to eq "find"
       end
-      it "delSet" do
+      it "del_set" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:delSet,"k","v")).to be true
+        expect(@tester.send(:del_set,"k","v")).to be true
       end
-      it "pushSortedSet" do
+      it "push_sorted_set" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:pushSortedSet,"k","v",1)).to be true
-        expect(@tester.command).to eq "INSERT"
+        expect(@tester.send(:push_sorted_set,"k","v",1)).to be true
+        expect(@tester.command).to eq "insert"
       end
-      it "getScoreByVaue" do
+      it "get_score_by_value" do
         @tester.setFindValue([{"score"=>"100"}])
-        expect(@tester.send(:getScoreByValue,"k","v")).to eq "100"
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:get_score_by_value,"k","v")).to eq "100"
+        expect(@tester.command).to eq "find"
         @tester.setFindValue([])
-        expect(@tester.send(:getScoreByValue,"k","v")).to be nil
-        expect(@tester.command).to eq "FIND"
+        expect(@tester.send(:get_score_by_value,"k","v")).to be nil
+        expect(@tester.command).to eq "find"
       end
-      it "createDocsWithAggregate" do
+      it "createDocsWithaggregate" do
         data = {"a"=>[10,20,30]}
-        ans = @tester.send(:createDocsWithAggregate,"dst",data,"sum")
+        ans = @tester.send(:create_docs_with_aggregate,"dst",data,"sum")
         expect(ans[0][1]["score"]).to eq 60
-        ans = @tester.send(:createDocsWithAggregate,"dst",data,"max")
+        ans = @tester.send(:create_docs_with_aggregate,"dst",data,"max")
         expect(ans[0][1]["score"]).to eq 30
-        ans = @tester.send(:createDocsWithAggregate,"dst",data,"min")
+        ans = @tester.send(:create_docs_with_aggregate,"dst",data,"min")
         expect(ans[0][1]["score"]).to eq 10
-        ans = @tester.send(:createDocsWithAggregate,"dst",data,"error")
+        ans = @tester.send(:create_docs_with_aggregate,"dst",data,"error")
         expect(ans).to eq []
       end
     end
     context "Private Method (List)" do
       it "getNewIndex" do
         @tester.setAggregationValue(nil)
-        expect(@tester.send(:getNewIndex,"key","max")).to eq 0
+        expect(@tester.send(:get_new_index,"key","max")).to eq 0
         @tester.setAggregationValue([{"max"=>2,"min"=>1}])
-        expect(@tester.send(:getNewIndex,"key","max")).to eq 3
-        expect(@tester.send(:getNewIndex,"key","min")).to eq 0
+        expect(@tester.send(:get_new_index,"key","max")).to eq 3
+        expect(@tester.send(:get_new_index,"key","min")).to eq 0
       end
-      it "updateIndex" do
+      it "update_index" do
         @tester.setQueryValue(true)
-        expect(@tester.send(:updateIndex,"key","lpush")).to be true
-        expect(@tester.send(:updateIndex,"key","ltrim",{"end"=> 10, "start"=> 1})).to be true
-        expect(@tester.send(:updateIndex,"key","lset","1")).to be true
-        expect(@tester.send(:updateIndex,"key","lrem","1")).to be true
-        expect(@tester.send(:updateIndex,"key","lpop","1")).to be true
-        expect(@tester.send(:updateIndex,"key","error")).to be false
+        expect(@tester.send(:update_index,"key","lpush")).to be true
+        expect(@tester.send(:update_index,"key","ltrim",{"end"=> 10, "start"=> 1})).to be true
+        expect(@tester.send(:update_index,"key","lset","1")).to be true
+        expect(@tester.send(:update_index,"key","lrem","1")).to be true
+        expect(@tester.send(:update_index,"key","lpop","1")).to be true
+        expect(@tester.send(:update_index,"key","error")).to be false
       end
-      it "sortedArrayGetRange" do
+      it "sorted_array_get_range" do
         args = ["a","b","c"]
         ans = ["a","b","c"]
-        expect(@tester.send(:sortedArrayGetRange,0,-1,args)).to match_array ans
-        expect(@tester.send(:sortedArrayGetRange,-1,-1,args)).to match_array ans
+        expect(@tester.send(:sorted_array_get_range,0,-1,args)).to match_array ans
+        expect(@tester.send(:sorted_array_get_range,-1,-1,args)).to match_array ans
         ans = ["a","b"]
-        expect(@tester.send(:sortedArrayGetRange,0,1,ans)).to match_array ans
+        expect(@tester.send(:sorted_array_get_range,0,1,ans)).to match_array ans
       end
-      it "aggregateScore(sum)" do
-        expect(@tester.send(:aggregateScore,"SUM",1,1,10)).to eq 11
+      it "aggregate_score(sum)" do
+        expect(@tester.send(:aggregate_score,"SUM",1,1,10)).to eq 11
       end
-      it "aggregateScore(max)" do
-        expect(@tester.send(:aggregateScore,"MAX",1,1,10)).to eq  10
+      it "aggregate_score(max)" do
+        expect(@tester.send(:aggregate_score,"MAX",1,1,10)).to eq  10
       end
-      it "aggregateScore(min)" do
-        expect(@tester.send(:aggregateScore,"MIN",1,1,10)).to eq 1
+      it "aggregate_score(min)" do
+        expect(@tester.send(:aggregate_score,"MIN",1,1,10)).to eq 1
       end
-      it "aggregateScore(error)" do
-        expect(@tester.send(:aggregateScore,"ERROR",1,1,10)).to eq 0
+      it "aggregate_score(error)" do
+        expect(@tester.send(:aggregate_score,"ERROR",1,1,10)).to eq 0
       end
-      it "aggregateScore(nil operation)" do
-        expect(@tester.send(:aggregateScore,nil,1,1,10)).to eq 11
+      it "aggregate_score(nil operation)" do
+        expect(@tester.send(:aggregate_score,nil,1,1,10)).to eq 11
       end
     end
   end

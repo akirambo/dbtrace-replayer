@@ -44,7 +44,7 @@ class CassandraArgumentParser
     send("prepare_args_#{operand.downcase}_#{@option[:inputFormat].downcase}", args)
   end
 
-  def structureType(_operand, _args)
+  def structure_type(_operand, _args)
     "others"
   end
 
@@ -205,10 +205,7 @@ class CassandraArgumentParser
       "cond_values" => [],
     }
     result["table"] = args[1]
-    ## primary key
-    if @schemas && @schemas[result["table"]]
-      result["primaryKey"] = @schemas[result["table"]].primaryKeys[0]
-    end
+    result["primaryKey"] = get_primarykey(result["table"])
     ## schema fields
     # result["schema_fields"] = result["fields"].size
     result["schema_fields"] = @schemas[result["table"]].fields.size
@@ -217,12 +214,9 @@ class CassandraArgumentParser
       data = data__.split("=")
       result["set"][data[0]] = data[1]
     end
-    args.each_index do |index|
-      if args[index] == "WHERE"
-        result["cond_keys"].push(index + 1)
-        result["cond_values"].push(index + 3)
-      end
-    end
+    conds_ = get_condition_array(args)
+    result["cond_keys"] = conds_[0] ## keys
+    result["cond_values"] = conds_[1] ## values
     result
   end
 
@@ -250,10 +244,7 @@ class CassandraArgumentParser
         result["cond_values"].push(index + 3)
       end
     end
-    ## primary key
-    if @schemas && @schemas[result["table"]]
-      result["primaryKey"] = @schemas[result["table"]].primaryKeys[0]
-    end
+    result["primaryKey"] = get_primarykey(result["table"])
     ## schema fields
     result["schema_fields"] = result["fields"].size
     result
@@ -306,7 +297,7 @@ class CassandraArgumentParser
       "counterColumn" => false,
       "counterKeyValue" => {},
     }
-    # 1. keyName
+    # 1. key_name
     if param.match(/{(.+?):(.+?):(.*)/)
       rowkey = $1
       columnfamily = $2
@@ -366,7 +357,7 @@ class CassandraArgumentParser
         result["keyValue"] = kv
       else
         #### CounterColumn
-        kvs = [] 
+        kvs = []
         ckvs = []
         ckv = {}
         values.each do |cols__|
@@ -375,13 +366,13 @@ class CassandraArgumentParser
           cols.each_index do |index|
             key_value = cols[index].split(":")
             if index.zero?
-              ## Name 
-              keyName = @schemas[result["table"]].getKey(1)
-              kv[keyName] = if @schemas[result["table"]].fieldType(key) == "blob" && cassandra
-                              "0x" + key_value[1].delete(" ")
-                            else
-                              [key_value[1].delete(" ")].pack('H*')
-                            end
+              ## Name
+              key_name = @schemas[result["table"]].getKey(1)
+              kv[key_name] = if @schemas[result["table"]].fieldType(key) == "blob" && cassandra
+                               "0x" + key_value[1].delete(" ")
+                             else
+                               [key_value[1].delete(" ")].pack("H*")
+                             end
             elsif index == 1
               ## Counter
               key = @schemas[result["table"]].counterKey
@@ -417,13 +408,19 @@ class CassandraArgumentParser
       "where" => [],
       "fields" => "*",
     }
-    if data["start_key"]
-      result["where"].push("#{data["primaryKey"]}=#{data["start_key"]}")
-    end
-    if data["end_key"]
-      result["where"].push("#{data["primaryKey"]}=#{data["end_key"]}")
+    %w[start_key end_key].each do |name|
+      if key = prepare_condition_query(data, name)
+        result["where"].push(key)
+      end
     end
     result
+  end
+
+  def prepare_condition_query(data, name)
+    if data[name]
+      return "#{data["primaryKey"]}=" + data[name].to_s
+    end
+    nil
   end
 
   def parseGetRangeSlicesParameter(args, _)
@@ -464,7 +461,7 @@ class CassandraArgumentParser
       "key"   => data["table"],
       "limit" => data["count"],
       "where" => [],
-      "fields" => "*"
+      "fields" => "*",
     }
     result
   end
@@ -506,7 +503,7 @@ class CassandraArgumentParser
   ##------------------------##
   ##-- GET_INDEXED_SLICES --##
   ##------------------------##
-  def prepare_GET_INDEXED_SLICESParameter(args)
+  def prepare_get_indexed_slice_parameter(args)
     result = {
       "table" => nil,
       "cf" => nil,
@@ -635,5 +632,28 @@ class CassandraArgumentParser
         end
       end
     end
+  end
+
+  def get_primarykey(result)
+    ## primary key
+    if @schemas && @schemas[result]
+      return @schemas[result].primaryKeys[0]
+    end
+    nil
+  end
+
+  def get_condition_array(args)
+    array = []
+    keys  = []
+    values = []
+    args.each_index do |index|
+      if args[index] == "WHERE"
+        keys.push(index + 1)
+        values.push(index + 3)
+      end
+    end
+    array.push(keys)
+    array.push(values)
+    array
   end
 end
