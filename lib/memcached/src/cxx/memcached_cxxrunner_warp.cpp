@@ -31,6 +31,7 @@
 
 #include <new>
 #include "ruby.h"
+#include <iostream>
 #include "memcached_cxxrunner.hpp"
 
 static MemcachedCxxRunner* getMemcachedCxxRunner(VALUE self){
@@ -81,8 +82,9 @@ static VALUE wrap_MemcachedCxxRunner_close(VALUE self){
  * keys *
  ********/
 static VALUE wrap_MemcachedCxxRunner_keys(VALUE self){
-    const char* keys = getMemcachedCxxRunner(self)->keys().c_str();
-    return rb_str_new2(keys);    
+    std::string keys = getMemcachedCxxRunner(self)->keys();
+    //std::cout << keys << std::endl;
+    return rb_str_new2(keys.c_str());    
 }
 
 /****************
