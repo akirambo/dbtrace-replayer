@@ -34,8 +34,8 @@ module Cassandra2RedisOperation
   ###############
   ## OPERATION ##
   ###############
-  # @conv {"INSERT" => ["SET","HMSET"]}
-  def CASSANDRA_INSERT(args)
+  # @conv {"insert" => ["set","hmset"]}
+  def cassandra_insert(args)
     primarykey = args["primaryKey"]
     if args["schema_fields"] == 2
       ### String (Key-Value)
@@ -43,17 +43,17 @@ module Cassandra2RedisOperation
       fieldnames = args["args"].keys
       fieldnames.delete(args["primaryKey"])
       value = args["args"][fieldnames[0]]
-      return SET([key, value])
+      return set([key, value])
     else
       ### Hash
       args["key"] = "#{args["table"]}--#{args["args"][primarykey]}"
       args["args"].delete(primarykey)
-      return HMSET(args)
+      return hmset(args)
     end
   end
 
-  # @conv {"SELECT" => ["GET","HMGET"]}
-  def CASSANDRA_SELECT(args)
+  # @conv {"select" => ["get","hmget"]}
+  def cassandra_select(args)
     data = []
     primarykey = args["primaryKey"]
     idx = args["cond_keys"].index(primarykey)
@@ -63,7 +63,7 @@ module Cassandra2RedisOperation
     end
     if args["schema_fields"] == 2
       ### String (Key-Value)
-      data = [GET([key])]
+      data = [get([key])]
     else
       ### Hash
       ## create Key
@@ -71,36 +71,36 @@ module Cassandra2RedisOperation
         "key"  => key,
         "args" => args["fields"],
       }
-      data = HMGET(args__, false)
+      data = hmget(args__, false)
     end
     data
   end
 
-  # @conv {"UPDATE" => ["INSERT","HMSET"]}
-  def CASSANDRA_UPDATE(args)
+  # @conv {"update" => ["insert","hmset"]}
+  def cassandra_update(args)
     ### convert arguments
     primarykey = args["primaryKey"]
     idx = args["cond_keys"].index(primarykey)
     args["args"] = args["set"]
     args["args"][primarykey] = args["cond_values"][idx]
-    CASSANDRA_INSERT(args)
+    cassandra_insert(args)
   end
 
-  # @conv {"DELETE" => ["DEL","HDEL"]}
-  def CASSANDRA_DELETE(args)
+  # @conv {"delete" => ["del","hdel"]}
+  def cassandra_delete(args)
     if args["schema_fields"] == 2 || args["fields"] != "*"
       ## Strings(Key-Value )
-      return DEL([args["table"]])
+      return del([args["table"]])
     end
-    ## Hash
-    HDEL([args["table"], args["fields"]])
+    ## hash
+    hdel([args["table"], args["fields"]])
   end
 
-  # @conv {"DROP" => ["SMEMBER","SREM","SADD"]}
-  def CASSANDRA_DROP(args)
-    targetkeys = KEYS(args["key"], args["type"])
+  # @conv {"drop" => ["smember","srem","sadd"]}
+  def cassandra_drop(args)
+    targetkeys = keys(args["key"], args["type"])
     ## drop Table
-    DEL(targetkeys)
+    del(targetkeys)
   end
 
   #############
@@ -109,8 +109,8 @@ module Cassandra2RedisOperation
   def prepare_cassandra(operand, args)
     ## PREPARE OPERATION & ARGS
     result = {}
-    result["operand"] = "CASSANDRA_#{operand.upcase}"
-    result["args"] = @parser.exec(operand.upcase, args)
+    result["operand"] = "cassandra_#{operand.downcase}"
+    result["args"] = @parser.exec(operand.downcase, args)
     result
   end
 end

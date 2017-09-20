@@ -33,17 +33,7 @@ require_relative "../../common/abstractDBParser"
 
 class MongodbParser < AbstractDBParser
   def initialize(filename, option, logger)
-    @skipTypes      = [
-      "ismaster",
-      "isMaster","getMore","distinct",
-      "buildinfo","getlasterror", "whatsmyuri","drop",
-      "listCollections",
-      "renameCollection",
-      "createIndexes",
-      "create",
-      "buildInfo",
-      "replSetGetStatus"
-    ]
+    @skip_types = %w[ismaster isMaster getMore distinct buildinfo getlasterror whatsmyuri drop listCollections renameCollection createIndexes create buildInfo replSetGetStatus].freeze
     @command2primitive = {
       "insert"        => "INSERT",
       "update"        => "UPDATE",
@@ -57,24 +47,25 @@ class MongodbParser < AbstractDBParser
       "mapreduce"    => "SCAN",
     }
     logs = MongodbLogsSimple.new(@command2primitive, option, logger)
-    super(filename, logs, @command2primitive.keys(), option, logger)
+    super(filename, logs, @command2primitive.keys, option, logger)
   end
+
   ## overwrite
   def parse(line)
-    if(line.include?("D COMMAND"))then
+    if line.include?("D COMMAND")
       line.match(/command (\w+)\.\$cmd { (\w+):(.+)/) do |md|
-        if(@supportedCommand.include?(md[2]))then
-          result = Hash.new
+        if @supported_command.include?(md[2])
+          result = {}
           ## add databasename
-          collectionName = md[3].split(",")[0]
-          databaseName =  md[3].split(",")[0].sub("\"","\"#{md[1]}.")
-          result[md[2]] = md[3].sub(collectionName,databaseName)
+          collection_name = md[3].split(",")[0]
+          database_name = md[3].split(",")[0].sub("\"", "\"#{md[1]}.")
+          result[md[2]] = md[3].sub(collection_name, database_name)
           return result
-        elsif(!@skipTypes.include?(md[2]))then
+        elsif !@skip_types.include?(md[2])
           @logger.warn("Unsupported Type #{md[2]}")
         end
       end
     end
-    return nil
+    nil
   end
 end

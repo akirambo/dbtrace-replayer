@@ -36,7 +36,7 @@ module Mongodb2CassandraOperation
   private
 
   # @conv {"INSERT" => ["INSERT"]}
-  def MONGODB_INSERT(args)
+  def mongodb_insert(args)
     args.each do |arg|
       name = arg[0]
       kv = mongo_insert_check(arg)
@@ -60,28 +60,32 @@ module Mongodb2CassandraOperation
   end
 
   # @conv {"UPDATE" => ["UPDATE"]}
-  def MONGODB_UPDATE(arg)
+  def mongodb_update(arg)
     name = arg["key"]
     command = "UPDATE #{name} SET"
     ## EXTRACT NEW VALUE FOR EACH FIELD
     updates = []
     if arg["update"] && arg["update"]["$set"]
       arg["update"]["$set"].each do |key, value|
-        if @schemas[name].stringType(key)
+        if @schemas[name].string_type(key)
           updates.push(" #{key}='#{value}'")
         end
       end
       command += updates.join(",")
     end
+    mongodb_update_exec(command, arg)
+  end
+
+  def mongodb_update_exec(command, arg)
     ## EXTRACT QUERY
-    query = mongodbParseQuery(arg["query"])
+    query = mongodb_parse_query(arg["query"])
     if arg["query"] || query
       if query != ""
         command += " WHERE " + query
       end
     end
     begin
-      DIRECT_EXECUTER(command + ";")
+      direct_executer(command + ";")
     rescue => e
       @logger.error(e.message)
       @logger.error("Execute Command -- #{command}")
@@ -91,20 +95,20 @@ module Mongodb2CassandraOperation
   end
 
   # @conv {"FIND" => ["SELECT"]}
-  def MONGODB_FIND(arg)
+  def mongodb_find(arg)
     name = arg["key"]
     command = "SELECT * FROM #{name}"
     result = true
     ## EXTRACT NEW VALUE FOR EACH FIELD
     ## EXTRACT FILTER
-    query = mongodbParseQuery(arg["filter"])
+    query = mongodb_parse_query(arg["filter"])
     if arg["filter"] || query
       unless query.empty?
         command += " WHERE " + query + " ALLOW FILTERING"
       end
     end
     begin
-      result = DIRECT_EXECUTER(command + ";")
+      result = direct_executer(command + ";")
     rescue => e
       @logger.error("QUERY :: #{command}")
       @logger.error(e.message)
@@ -114,17 +118,17 @@ module Mongodb2CassandraOperation
   end
 
   # @conv {"COUNT" => ["SELECT"]}
-  def MONGODB_COUNT(arg)
+  def mongodb_count(arg)
     command = "SELECT count(*) FROM #{arg["key"]}"
     ## EXTRACT NEW VALUE FOR EACH FIELD
     ## EXTRACT FILTER
-    query = mongodbParseQuery(arg["filter"])
+    query = mongodb_parse_query(arg["filter"])
     if arg["filter"] && query
       command += " WHERE " + query
     end
     @logger.debug("Execute Command -- #{command}")
     begin
-      result = DIRECT_EXECUTER(command + ";")
+      result = direct_executer(command + ";")
       if result.class == Hash
         return 0
       end
@@ -137,37 +141,42 @@ module Mongodb2CassandraOperation
   end
 
   # @conv {"DELETE" => ["DELETE"]}
-  def MONGODB_DELETE(arg)
-    name = arg["key"]
+  def mongodb_delete(arg)
     if arg["filter"].nil? || arg["filter"].size.zero?
-      command = "TRUNCATE #{name};"
+      command = "TRUNCATE #{arg["key"]};"
       begin
-        DIRECT_EXECUTER(command)
+        direct_executer(command)
       rescue
         return false
       end
+      return true
     else
-      command = "DELETE FROM #{name}"
-      ## EXTRACT QUERY
-      query = mongodbParseQuery(arg["filter"])
-      if arg["filter"] && query
-        where = " WHERE " + query
-      end
-      @logger.debug("Execute Command -- #{command} #{where}")
-      exec = "#{command}#{where};"
-      begin
-        DIRECT_EXECUTER(exec)
-      rescue => e
-        @logger.error(e.message)
-        @logger.error(command)
-        return false
-      end
+      return mongodb_delete_exec(arg)
+    end
+    true
+  end
+
+  def mongodb_delete_exec(arg)
+    command = "DELETE FROM #{arg["key"]}"
+    ## EXTRACT QUERY
+    query = mongodb_parse_query(arg["filter"])
+    if arg["filter"] && query
+      where = " WHERE " + query
+    end
+    @logger.debug("Execute Command -- #{command} #{where}")
+    exec = "#{command}#{where};"
+    begin
+      direct_executer(exec)
+    rescue => e
+      @logger.error(e.message)
+      @logger.error(command)
+      return false
     end
     true
   end
 
   # @conv {"AGGREGATE" => ["SELECT"]}
-  def MONGODB_AGGREGATE(arg)
+  def mongodb_aggregate(arg)
     name = @option[:keyspace] + "." + arg["key"]
     if arg["key"].include?(".")
       name = arg["key"]
@@ -183,7 +192,7 @@ module Mongodb2CassandraOperation
       where = []
       arg["match"].each do |k, v|
         ## primary key ?
-        if @schemas[name].primaryKeys.include?(k)
+        if @schemas[name].primarykeys.include?(k)
           where.push("#{k} = '#{v}'")
         end
       end
@@ -191,8 +200,12 @@ module Mongodb2CassandraOperation
         command += " WHERE #{where.join(" AND ")}"
       end
     end
+    mongodb_aggregate_exec(command, target_keys)
+  end
+
+  def mongodb_aggregate_exec(command, target_keys)
     begin
-      ans = DIRECT_EXECUTER(command + ";")
+      ans = direct_executer(command + ";")
       docs = @query_parser.csv2docs(target_keys, ans)
       params = @query_parser.get_parameter(arg)
       result = {}
@@ -224,24 +237,14 @@ module Mongodb2CassandraOperation
     result
   end
 
-  def mongodbParseQuery(hash)
+  def mongodb_parse_query(hash)
     where = []
     id_where = []
     hash.each do |col, queries|
       if queries.class == Hash
-        queries.each do |operand, value|
-          case operand
-          when "$gt" then
-            where.push("#{col} > #{value}")
-          when "$gte" then
-            where.push("#{col} >= #{value}")
-          when "$lt" then
-            where.push("#{col} < #{value}")
-          when "$lte" then
-            where.push("#{col} <= #{value}")
-          else
-            @logger.warn("Unsupported #{operand}")
-          end
+        result = mongodb_parse_queries(queries, col)
+        unless result.empty?
+          where.concat(result)
         end
       elsif col == "_id"
         id_where.push("mongoid = '#{queries.delete("-")}'")
@@ -249,13 +252,35 @@ module Mongodb2CassandraOperation
         where.push("#{col} = '#{queries}'")
       end
     end
-    query = where.join(" AND ")
-    if !query.size.zero? && !id_where.size.zero?
-      query += " AND (" + id_where.join(" OR ") + ")"
-    elsif query.size.zero? && !id_where.size.zero?
+    mongodb_concat_condition(where, id_where)
+  end
+
+  def mongodb_concat_condition(where, id_where)
+    if where.empty? && !id_where.empty?
       return id_where.join(" OR ")
+    elsif !where.empty? && !id_where.size.zero?
+      return where.join(" AND ") + " AND (" + id_where.join(" OR ") + ")"
     end
     where.join(" AND ")
+  end
+
+  def mongodb_parse_queries(queries, col)
+    where = []
+    queries.each do |operand, value|
+      case operand
+      when "$gt" then
+        where.push("#{col} > #{value}")
+      when "$gte" then
+        where.push("#{col} >= #{value}")
+      when "$lt" then
+        where.push("#{col} < #{value}")
+      when "$lte" then
+        where.push("#{col} <= #{value}")
+      else
+        @logger.warn("Unsupported #{operand}")
+      end
+    end
+    where
   end
 
   def mongo_insert_check(arg)
@@ -276,6 +301,10 @@ module Mongodb2CassandraOperation
     elsif arg[1].class == Array
       kv = parse_json(arg[1][0])
     end
+    check_kv(kv)
+  end
+
+  def check_kv(kv)
     if kv.nil? || kv.keys.empty?
       return false
     end
@@ -284,19 +313,24 @@ module Mongodb2CassandraOperation
 
   def mongo_bulk_schemas(kv, name, arg)
     if @schemas[name].check(kv, arg)
-      filtered_kv = @schemas[name].extractKeyValue(kv)
+      filtered_kv = @schemas[name].extract_keyvalue(kv)
       command = "INSERT INTO #{name} "
       command += "(" + filtered_kv["key"] + ") VALUES "
       command += "(" + filtered_kv["value"] + ");"
-      begin
-        DIRECT_EXECUTER(command)
-      rescue => e
-        @logger.error("Cannot Execute Command #{command}")
-        @logger.error(" - Error Message #{e.message}")
-        return false
-      end
+      return cassandra_exec(command)
     else
       @logger.warn("Not Found Table [#{name}]. Please Create Table @ INSERT .")
+      return false
+    end
+    true
+  end
+
+  def cassandra_exec(command)
+    begin
+      direct_executer(command)
+    rescue => e
+      @logger.error("Cannot Execute Command #{command}")
+      @logger.error(" - Error Message #{e.message}")
       return false
     end
     true

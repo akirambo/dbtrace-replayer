@@ -384,6 +384,7 @@ end
 ####################
 ## TEST YCSB MODE ##
 ####################
+=begin
 desc "Test YCSB MODE [All]"
 task :test_ycsb => [:test_ycsb_redis, :test_ycsb_memcached, :test_ycsb_mongodb, :test_ycsb_cassandra]
 
@@ -406,9 +407,5 @@ desc "Test YCSB for cassandra"
 task :test_ycsb_cassandra => [:setup] do
   system("bundle exec rspec lib/cassandra/spec/cassandra_ycsb_spec.rb")
 end
-
-desc "Test YCSB for hbase10"
-task :test_ycsb_hbase10 => [:setup] do
-  system("bundle exec rspec lib/hbase10/spec/hbase10_ycsb_spec.rb")
-end
+=end
 

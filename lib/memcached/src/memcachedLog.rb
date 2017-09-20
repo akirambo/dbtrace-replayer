@@ -28,12 +28,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-
 require_relative "../../common/abstractDBLog"
 
 class MemcachedLogsSimple < AbstractDBLog
-  def initialize(command2primitive,option,logger)
+  def initialize(command2primitive, option, logger)
     @primitive_operation_for_multidata = {}
-    super(command2primitive, option,logger)
+    super(command2primitive, option, logger)
   end
 end

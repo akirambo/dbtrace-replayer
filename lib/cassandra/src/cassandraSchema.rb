@@ -30,21 +30,21 @@
 #
 
 class CassandraSchema
-  attr_reader :keyspace, :table, :primaryKeys,
-              :createKeyspaceQuery, :createQuery,
-              :dropQuery, :createIndexes
+  attr_reader :keyspace, :table, :primarykeys,
+              :create_keyspace_query, :create_query,
+              :drop_query, :create_indexes
 
   def initialize(keyspace, create_query, logger)
     @keyspace = keyspace
     @table = nil
-    @primaryKeys = nil
+    @primarykeys = nil
     @fields = {} ## key => type
-    @createQuery = nil
-    @createKeyspaceQuery = nil
-    @createIndexes = []
+    @create_query = nil
+    @create_keyspace_query = nil
+    @create_indexes = []
     @logger = logger
     @values = []
-    @dropQuery = nil
+    @drop_query = nil
     parse(create_query)
   end
 
@@ -63,24 +63,29 @@ class CassandraSchema
           return false
         end
       end
-      if @fields[k]
-        unless checkFieldType(v, @fields[k])
-          if @fields[k]
-            @logger.error("Unmatch DataType #{k} is not #{@fields[k]} AT #{name}")
-            @logger.error("                 #{k} is #{v.class}")
-            @logger.error("Under Construction Auto Table Creation")
-            return false
-          end
-        end
-      else
-        ## Skip Field
-        @logger.debug("Skip Field:: #{k}")
+      unless check_after(k, v)
+        return false
       end
     end
     true
   end
 
-  def extractKeyValue(kv)
+  def check_after(k, v)
+    if @fields[k]
+      if check_field_type(v, @fields[k])
+        @logger.error("Unmatch DataType #{k} is not #{@fields[k]} AT #{name}")
+        @logger.error("                 #{k} is #{v.class}")
+        @logger.error("Under Construction Auto Table Creation")
+        return false
+      end
+    else
+      ## Skip Field
+      @logger.debug("Skip Field:: #{k}")
+    end
+    true
+  end
+
+  def extract_keyvalue(kv)
     keys = []
     values = []
     kvs = {
@@ -94,44 +99,13 @@ class CassandraSchema
         keys.push(key)
         case value.class.to_s
         when "Array" then
-          if value.size > 1
-            if value[0].class == Hash
-              hash = []
-              value.each do |hash__|
-                string = hash__.to_json
-                string.delete!("\"")
-                hash.push(string.to_s)
-              end
-              values.push("{\"#{hash.join(",")}\"}")
-            else
-              values.push("{#{value.join(",")}}")
-            end
-          else
-            values.push("{}")
-          end
+          values.push(extract_keyvalue_from_array(value))
         when "Hash" then
-          val_ = []
-          value.each do |k_, v_|
-            if v_.class == Hash || v_.class == Array
-              newval = "'#{k_}':'#{v_.to_json}'"
-              val_.push(newval.gsub('"', "__DOUBLEQ__"))
-            else
-              val_.push("'#{k_}':'#{v_}'")
-            end
-          end
-          values.push("{" + val_.join(",") + "}")
+          values.push(extract_keyvalue_from_hash(value))
         when "Fixnum" then
-          if @fields[key] == "INT"
-            values.push(value.to_i)
-          elsif @fields[key] == "TEXT"
-            values.push("'" + value.to_s + "'")
-          end
+          values.push(extract_keyvalue_from_fixnum(key, value))
         when "String" then
-          if value.include?("(")
-            values.push("'" + value.sub("('", "").sub("')", "") + "'")
-          else
-            values.push("'" + value + "'")
-          end
+          values.push(extract_keyvalue_from_string(value))
         when "Float" then
           values.push(value.to_f)
         else
@@ -146,6 +120,53 @@ class CassandraSchema
     kvs
   end
 
+  def extract_keyvalue_from_array(value)
+    ret = "{}"
+    if value.size > 1
+      if value[0].class == Hash
+        hash = []
+        value.each do |hash__|
+          string = hash__.to_json
+          string.delete!("\"")
+          hash.push(string.to_s)
+        end
+        ret = "{\"#{hash.join(",")}\"}"
+      else
+        ret = "{#{value.join(",")}}"
+      end
+    end
+    ret
+  end
+
+  def extract_keyvalue_from_hash(value)
+    val_ = []
+    value.each do |k_, v_|
+      if v_.class == Hash || v_.class == Array
+        newval = "'#{k_}':'#{v_.to_json}'"
+        val_.push(newval.gsub('"', "__DOUBLEQ__"))
+      else
+        val_.push("'#{k_}':'#{v_}'")
+      end
+    end
+    "{" + val_.join(",") + "}"
+  end
+
+  def extract_keyvalue_from_fixnum(key, value)
+    if @fields[key] == "INT"
+      value.to_i
+    elsif @fields[key] == "TEXT"
+      "'" + value.to_s + "'"
+    end
+  end
+
+  def extract_keyvalue_from_string(value)
+    if value.include?("(")
+      "'" + value.sub("('", "").sub("')", "") + "'"
+    else
+      "'" + value + "'"
+    end
+  end
+
   def fields
     @fields.keys
   end
@@ -155,15 +176,15 @@ class CassandraSchema
     @fields.keys[0..size]
   end
 
-  def getKey(index)
+  def get_key(index)
     @fields.keys[index]
   end
 
-  def fieldType(field)
+  def field_type(field)
     @fields[field]
   end
 
-  def counterKey
+  def counter_key
     @fields.each do |key, value|
       if value == "counter"
         return key
@@ -172,21 +193,48 @@ class CassandraSchema
     nil
   end
 
-  def primaryKeyType
-    @fields[@primaryKeys[0]]
+  def primarykey_type
+    @fields[@primarykeys[0]]
   end
 
-  def stringType(field)
+  def string_type(field)
     (@fields[field].casecmp("varchar").zero? || @fields[field].casecmp("text").zero?)
   end
 
-  def pushCreateIndex(query)
-    @createIndexes.push(query)
+  def push_create_index(query)
+    @create_indexes.push(query)
   end
 
   private
 
   def parse(create_query)
+    parse_prepare(create_query)
+    field = extract_field
+    keep = nil
+    field.each do |kv|
+      if !kv.include?("primary key") && !kv.include?("PRIMARY KEY")
+        extract_keyvalue_from_field(kv, keep)
+      end
+    end
+  end
+
+  def extract_keyvalue_from_field(kv, keep)
+    if kv.include?("<") && !kv.include?(">")
+      keep = kv
+    elsif keep
+      keep += "," + kv
+      if kv.include?(">")
+        ## Finish
+        extract_keyvalue_for_priv(keep)
+        keep = nil
+      end
+    else
+      extract_keyvalue_for_priv(kv)
+    end
+    keep
+  end
+
+  def parser_prepare
     table = ""
     if create_query.include?("CREATE TABLE")
       table = create_query.split("CREATE TABLE ")[1].split(" ")[0]
@@ -194,14 +242,17 @@ class CassandraSchema
       table = create_query.split("create table ")[1].split(" ")[0]
     end
     @keyspace = table.split(".")[0]
-    @createKeyspaceQuery =
+    @create_keyspace_query =
       "create keyspace if not exists #{@keyspace} with replication = {'class':'SimpleStrategy','replication_factor':3}"
     @table = table.split(".")[1]
-    @primaryKeys = create_query.downcase.split("primary key")[1].delete("(").delete(")").delete(" ").delete(";").split(",")
-    @createQuery = create_query.delete("_")
-    @createQuery.sub!(@keyspace.delete("_"), @keyspace)
-    @createQuery.sub!(@table.delete("_"), @table)
-    @dropQuery = "drop table if exists #{@keyspace}.#{@table}"
+    @primarykeys = create_query.downcase.split("primary key")[1].delete("(").delete(")").delete(" ").delete(";").split(",")
+    @create_query = create_query.delete("_")
+    @create_query.sub!(@keyspace.delete("_"), @keyspace)
+    @create_query.sub!(@table.delete("_"), @table)
+    @drop_query = "drop table if exists #{@keyspace}.#{@table}"
+  end
+
+  def extract_field
     field_ = ""
     if @keyspace
       field_ = create_query.split(" #{@keyspace}.#{@table} ")[1]
@@ -212,27 +263,10 @@ class CassandraSchema
       end
     end
     field_ = field_.delete("(").delete(")").delete("\t").delete("\n", "")
-    field = field_.split(",")
-    keep = nil
-    field.each do |kv|
-      if !kv.include?("primary key") && !kv.include?("PRIMARY KEY")
-        if kv.include?("<") && !kv.include?(">")
-          keep = kv
-        elsif keep
-          keep += "," + kv
-          if kv.include?(">")
-            ## Finish
-            extractKeyValueForPriv(keep)
-            keep = nil
-          end
-        else
-          extractKeyValueForPriv(kv)
-        end
-      end
-    end
+    field_.split(",")
   end
 
-  def checkFieldType(value, schema_type_)
+  def check_field_type(value, schema_type_)
     schema_type = schema_type_.downcase
     case value.class.to_s
     when "String" then
@@ -255,7 +289,7 @@ class CassandraSchema
     false
   end
 
-  def extractKeyValueForPriv(string)
+  def extract_keyvalue_for_priv(string)
     kv = string.sub(/^\s*/, "").split(" ")
     if kv.size == 2
       field_name = kv[0].delete(" ", "")

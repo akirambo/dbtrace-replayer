@@ -158,7 +158,7 @@ module Cassandra2MemcachedOperation
     true
   end
 
-  def selectField(hash, args)
+  def select_field(hash, args)
     row = {}
     if args["fields"][0] == "*"
       return hash
@@ -170,11 +170,11 @@ module Cassandra2MemcachedOperation
     row
   end
 
-  def cassandraSerialize(array)
+  def cassandra_serialize(array)
     array.join("__A__")
   end
 
-  def cassandraDeserialize(str)
+  def cassandra_deserialize(str)
     str.split("__A__")
   end
 end

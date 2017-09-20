@@ -31,13 +31,13 @@
 
 module CassandraOperation
   private
-  
+
   #####################
   ## DIRECT EXECUTER ##
   #####################
   def direct_select(query)
     value = {}
-    query = normalizeCassandraQuery(query)
+    query = normalize_cassandra_query(query)
     connect
     if @client.syncExecuter(query)
       value = @client.getReply(0)
@@ -58,7 +58,7 @@ module CassandraOperation
       return true
     else
       value = {}
-      query = normalizeCassandraQuery(query)
+      query = normalize_cassandra_query(query)
       connect
       command = query.split(" ")[0].upcase
       if @option[:async] && command != "DROP" && command != "CREATE"
@@ -95,7 +95,7 @@ module CassandraOperation
     end
     value
   end
-  
+
   #############
   ## PREPARE ##
   #############
@@ -114,7 +114,7 @@ module CassandraOperation
     result
   end
 
-  def normalizeCassandraQuery(query)
+  def normalize_cassandra_query(query)
     query.tr!("\"", "'")
     query.tr!('"', "'")
     query.delete!("-")
@@ -170,7 +170,7 @@ module CassandraOperation
       queries
     end
   end
-  
+
   ##------------------------##
   ##--- GET_RANGE_SLICES ---##
   ##------------------------##

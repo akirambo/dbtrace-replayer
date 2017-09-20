@@ -252,10 +252,10 @@ module CassandraOperationTester
         ans = "SELECT * FROM t1 WHERE pkey IN (A,B);"
         expect(@tester.send(:prepare_multiget_slice,"")).to eq ans
       end
-      it "normalizeCassandraQuery" do
+      it "normalize_cassandra_query" do
         query = "\"a--b__DOUBLEQ__\""
         ans   = "'ab\"';"
-        expect(@tester.send(:normalizeCassandraQuery,query)).to eq ans
+        expect(@tester.send(:normalize_cassandra_query,query)).to eq ans
       end
       it "exec_buffered_queries" do
         @tester.setValue("")

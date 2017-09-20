@@ -6,8 +6,8 @@ require_relative "redisCxxClientMock"
 class ParserMock
   def initialize()
   end
-  def extractZ_X_STORE_ARGS(args)
-    return "extractZ_X_STORE_ARGS"
+  def extract_z_x_store_args(args)
+    return "extract_z_x_store_args"
   end
   def args2hash(args)
     return "args2hash"

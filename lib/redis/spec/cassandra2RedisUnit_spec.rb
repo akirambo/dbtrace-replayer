@@ -22,43 +22,43 @@ module CassandraTest
       @value = nil
       @setValue = ""
     end
-    def SET(args)
+    def set(args)
       @command = "#{__method__}"
       @key   = args[0]
       @value = args[1]
       return "OK"
     end 
-    def HMSET(args)
+    def hmset(args)
       args["key"] 
       @command = "#{__method__}"
       @key = args["key"]
       @value = args["args"]
       return "OK"
     end
-    def GET(args)
+    def get(args)
       @command = "#{__method__}"
       @key = args[0]
       return "data"
     end
-    def HMGET(args,flag)
+    def hmget(args,flag)
       @command = "#{__method__}"
       @key   = args["key"]
       @value = args["fields"]
       return "data"
     end
-    def DEL(args)
+    def del(args)
       @command = "#{__method__}"
       @key = args[0]
       return "OK"
     end
-    def HDEL(args)
+    def hdel(args)
       @command = "#{__method__}"
       @key = args[0]
       @value = args[1]
       return "OK"
     end
-    def KEYS(a,b)
-      return ["TARGET_KEYS"]
+    def keys(a,b)
+      return ["target_keys"]
     end
     def parse_json(doc)
       @utils.parse_json(doc)
@@ -75,93 +75,93 @@ module CassandraTest
       @tester = Mock.new(@logger)
     end
     context 'Operation' do
-      it "CASSANDRA_INSERT (key value)" do
+      it "cassandra_insert (key value)" do
         args = {"table"=>"t",
           "primaryKey"=>"pkey",
           "schema_fields" => 2,
           "args"=>{"pkey"=>"p1","c1"=>"v1"}}
-        expect(@tester.send(:CASSANDRA_INSERT,args)).to eq "OK"
-        expect(@tester.command).to eq "SET"
+        expect(@tester.send(:cassandra_insert,args)).to eq "OK"
+        expect(@tester.command).to eq "set"
         expect(@tester.key).to eq "t--p1"
         expect(@tester.value).to eq "v1"
       end
-      it "CASSANDRA_INSERT (table)" do
+      it "cassandra_insert (table)" do
         args = {"table"=>"t",
           "primaryKey"=>"pkey",
           "schema_fields" => 3,
           "args"=>{"pkey"=>"p1","c1"=>"v1","c2"=>"v2"}}
-        expect(@tester.send(:CASSANDRA_INSERT,args)).to eq "OK"
-        expect(@tester.command).to eq "HMSET"
+        expect(@tester.send(:cassandra_insert,args)).to eq "OK"
+        expect(@tester.command).to eq "hmset"
         expect(@tester.key).to eq "t--p1"
         ans = {"c1"=>"v1","c2"=>"v2"}
         expect(@tester.value).to include ans
       end
-      it "CASSANDRA_SELECT (key value)" do
+      it "cassandra_select (key value)" do
         args = {"table"=>"t",
           "primaryKey"=>"pkey",
           "cond_keys"=>["c1","pkey"],
           "cond_values"=>["v1","p1"],
           "schema_fields" => 2}
-        expect(@tester.send(:CASSANDRA_SELECT,args)).to eq ["data"]
-        expect(@tester.command).to eq "GET"
+        expect(@tester.send(:cassandra_select,args)).to eq ["data"]
+        expect(@tester.command).to eq "get"
         expect(@tester.key).to eq "t--p1"
       end
-      it "CASSANDRA_SELECT (table)" do
+      it "cassandra_select (table)" do
         args = {"table"=>"t",
           "primaryKey"=>"pkey",
           "cond_keys"=>["c1","pkey"],
           "cond_values"=>["v1","p1"],
           "schema_fields" => 3}
-        expect(@tester.send(:CASSANDRA_SELECT,args)).to eq "data"
-        expect(@tester.command).to eq "HMGET"
+        expect(@tester.send(:cassandra_select,args)).to eq "data"
+        expect(@tester.command).to eq "hmget"
         expect(@tester.key).to eq "t--p1"
 
       end
-      it "CASSANDRA_UPDATE (key value)" do
+      it "cassandra_update (key value)" do
         args = {"table"=>"t",
           "primaryKey"=>"pkey",
           "cond_keys"=>["c1","pkey"],
           "cond_values"=>["v1","p1"],
           "schema_fields" => 2,
           "set"=>{"pkey"=>"p1","c1"=>"v1"}}
-        expect(@tester.send(:CASSANDRA_UPDATE,args)).to eq "OK"
-        expect(@tester.command).to eq "SET"
+        expect(@tester.send(:cassandra_update,args)).to eq "OK"
+        expect(@tester.command).to eq "set"
         expect(@tester.key).to eq "t--p1"
       end
-      it "CASSANDRA_UPDATE (table)" do
+      it "cassandra_update (table)" do
         args = {"table"=>"t",
           "primaryKey"=>"pkey",
           "cond_keys"=>["c1","pkey"],
           "cond_values"=>["v1","p1"],
           "schema_fields" => 3,
           "set"=>{"pkey"=>"p1","c1"=>"v1","c2"=>"v2"}}
-        expect(@tester.send(:CASSANDRA_UPDATE,args)).to eq "OK"
-        expect(@tester.command).to eq "HMSET"
+        expect(@tester.send(:cassandra_update,args)).to eq "OK"
+        expect(@tester.command).to eq "hmset"
         expect(@tester.key).to eq "t--p1"
         ans = {"c1"=>"v1","c2"=>"v2"}
         expect(@tester.value).to include ans
       end
-      it "CASSANDRA_DELETE (key value)" do
+      it "cassandra_delete (key value)" do
         args = {"table"=>"t",
           "fields"=>"*",
           "schema_fields" => 2}
-        expect(@tester.send(:CASSANDRA_DELETE,args)).to eq "OK"
-        expect(@tester.command).to eq "DEL"
+        expect(@tester.send(:cassandra_delete,args)).to eq "OK"
+        expect(@tester.command).to eq "del"
         expect(@tester.key).to eq "t"
       end
-      it "CASSANDRA_DELETE (table)" do
+      it "cassandra_delete (table)" do
         args = {"table"=>"t",
           "fields"=>"*",
           "schema_fields" => 3}
-        expect(@tester.send(:CASSANDRA_DELETE,args)).to eq "OK"
-        expect(@tester.command).to eq "HDEL"
+        expect(@tester.send(:cassandra_delete,args)).to eq "OK"
+        expect(@tester.command).to eq "hdel"
         expect(@tester.key).to eq "t"
       end
-      it "CASSANDRA_DROP" do
+      it "cassandra_drop" do
         args = {"key"=>"t","type"=>"a"}
-        expect(@tester.send(:CASSANDRA_DROP,args)).to eq "OK"
-        expect(@tester.command).to eq "DEL"
-        expect(@tester.key).to eq "TARGET_KEYS"
+        expect(@tester.send(:cassandra_drop,args)).to eq "OK"
+        expect(@tester.command).to eq "del"
+        expect(@tester.key).to eq "target_keys"
       end
     end
   end

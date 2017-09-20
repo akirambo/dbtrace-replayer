@@ -40,40 +40,40 @@ class RedisParser < AbstractDBParser
     super(filename, logs, supported_commands(option), option, logger)
   end
 
-  def command2basics(option)
+  def command2basics(_)
     @command2basic = {}
     ## Append Pattern #1 %w[READ UPDATE]
-    %w[GETSET APPEND].each do |name|
-      @command2basic[name] = %w[READ UPDATE].freeze
+    %w[getset append].each do |name|
+      @command2basic[name] = %w[read update].freeze
     end
     ## Append Pattern #2 INSERT
-    %w[SET SETEX SETNX PSETEX LPUSH RPUSH MSET MSETNX SADD ZADD HMSET HSET LSET].each do |name|
-      @command2basic[name] = "INSERT"
+    %w[set setex setnx psetex lpush rpush mset msetnx sadd zadd hmset hset lset].each do |name|
+      @command2basic[name] = "insert"
     end
     ## Append Pattern #3 READ
-    %w[GET LPOP RPOP MGET SPOP STRLEN HGET HMGET HEXISTS SRANDMEMBER SINTER SDIFF SUNION LINDEX].each do |name|
-      @command2basic[name] = "READ"
+    %w[get lpop rpop mget spop strlen hget hmget hexists srandmember sinter sdiff sunion lindex].each do |name|
+      @command2basic[name] = "read"
     end
     ## Append Pattern #4 UPDATE
-    %w[INCR INCRBY DECR DECRBY SREM HINCRBY HDEL ZREM ZINCRBY LTRIM LREM ZREMRANGEBYSCORE ZREMRANGEBYRANK DEL].each do |name|
-      @command2basic[name] = "UPDATE"
+    %w[incr incrby decr decrby srem hincrby hdel rem zincrby ltrim lrem zremrangebyscore zremrangebyrank del].each do |name|
+      @command2basic[name] = "update"
     end
 
     ## Append Pattern #5 SCAN
-    %w[LRANGE HGETALL HKEYS HVALS HLEN SMEMBERS SCARD ZCOUNT ZCARD ZRANK ZREVRANK ZRANGE ZRANGEBYSCORE ZREVRANGE ZSCORE LLEN].each do |name|
-      @command2basic[name] = "SCAN"
+    %w[lrange hgetall hkeys hvals hlen smembers scard zcount zcard zrank zrevrank zrange zrangebyscore zrevrange zscore llen].each do |name|
+      @command2basic[name] = "scan"
     end
     ## Append Pattern #6 SCAN INSERT
-    %w[SMOVE].each do |name|
-      @command2basic[name] = %w[SCAN INSERT].freeze
+    %w[smove].each do |name|
+      @command2basic[name] = %w[scan insert].freeze
     end
     ## Append Pattern #7 READ INSERT
-    %w[SUNIONSTORE SINTERSTORE SDIFFSTORE ZUNIONSTORE ZINTERSTORE].each do |name|
-      @command2basic[name] = %w[READ INSERT].freeze
+    %w[sunionstore sinterstore sdiffstore zunionstore zinterstore].each do |name|
+      @command2basic[name] = %w[read insert].freeze
     end
     ## Append Pattern #8 UPDATE INSERT
-    %w[RPOPLPUSH].each do |name|
-      @command2basic[name] = %w[UPDATE INSERT].freeze
+    %w[rpoplpush].each do |name|
+      @command2basic[name] = %w[update insert].freeze
     end
   end
 
@@ -82,31 +82,31 @@ class RedisParser < AbstractDBParser
     if option[:mode] == "run"
       supported_command = [
         ## STRINGS
-        "SET", "GET", "SETNX", "SETEX", "PSETEX",
-        "MSET", "MGET", "MSETNX",
-        "INCR", "INCRBY", "DECR", "DECRBY",
-        "APPEND", "GETSET", "STRLEN",
-        ## SET
-        "SADD", "SPOP", "SREM", "SMOVE", "SCARD", "SISMEMBER",
-        "SUNION", "SUNIONSTORE",
-        "SINTER", "SINTERSTORE", "SDIFF", "SDIFFSTORE",
-        "SMEMBERS", "SRANDMEMBER",
-        ## LIST
-        "LPUSH", "RPUSH", "LPOP", "RPOP",
-        "LLEN", "LRANGE", "LTRIM", "LINDEX", "LSET",
-        "LREM", "RPOPLPUSH",
-        ## SORTED SET
-        "ZADD", "ZREM", "ZINCRBY", "ZSCORE", "ZCARD",
-        "ZRANK", "ZREVRANK", "ZRANGE", "ZREVRANGE",
-        "ZRANGEBYSCORE", "ZCOUNT",
-        "ZREMRANGEBYRANK", "ZREMRANGEBYSCORE",
-        "ZUNIONSTORE", "ZINTERSTORE",
-        ## HASH
-        "HSET", "HGET", "HMSET", "HMGET",
-        "HINCRBY", "HEXISTS", "HDEL", "HLEN",
-        "HKEYS", "HVALS", "HGETALL",
-        ## OTHERES
-        "FLUSHALL", "DEL"
+        "set", "get", "setnx", "setex", "psetex",
+        "mset", "mget", "msetnx",
+        "incr", "incrby", "decr", "decrby",
+        "append", "getset", "strlen",
+        ## set
+        "sadd", "spop", "srem", "smove", "scard", "sismember",
+        "sunion", "sunionstore",
+        "sinter", "sinterstore", "sdiff", "sdiffstore",
+        "smembers", "srandmember",
+        ## list
+        "lpush", "rpush", "lpop", "rpop",
+        "llen", "lrange", "ltrim", "lindex", "lset",
+        "lrem", "rpoplpush",
+        ## sorted set
+        "zadd", "zrem", "zincrby", "zscore", "zcard",
+        "zrank", "zrevrank", "zrange", "zrevrange",
+        "zrangebyscore", "zcount",
+        "zremrangebyrank", "zremrangebyscore",
+        "zunionstore", "zinterstore",
+        ## hash
+        "hset", "hget", "hmset", "hmget",
+        "hincrby", "hexists", "hdel", "hlen",
+        "hkeys", "hvals", "hgetall",
+        ## otheres
+        "flushall", "del"
       ]
     end
     supported_command
@@ -116,8 +116,8 @@ class RedisParser < AbstractDBParser
     data = line.chop.split("\s\"")
     @type_position.each do |index|
       if data.size > index
-        command = data[index].sub(/\"/, "").upcase
-        if @supportedCommand.include?(command)
+        command = data[index].sub(/\"/, "").downcase
+        if @supported_command.include?(command)
           result = {}
           args = data.delete_if(&:empty?)
           ## Skip [time]

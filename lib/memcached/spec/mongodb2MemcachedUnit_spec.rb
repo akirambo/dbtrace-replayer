@@ -39,35 +39,35 @@ module Mongodb2MemcachedOperationUnitTest
     def setQueryReturnValue(bool)
       @query_processor.returnValue = bool
     end
-    def SET(a)
+    def set(a)
       return execQuery("#{__method__}",a)
     end
-    def GET(a,flag=false)
+    def get(a,flag=false)
       execQuery("#{__method__}",a)
       if(@getValue.class == Hash)then
         return @getValue[a[0]]
       end
       return @getValue
     end
-    def ADD(a)
+    def add(a)
       return execQuery("#{__method__}",a)
     end
-    def INCR(a)
+    def incr(a)
       return execQuery("#{__method__}",a)
     end
-    def DECR(a)
+    def decr(a)
       return execQuery("#{__method__}",a)
     end
-    def APPEND(a)
+    def append(a)
       return execQuery("#{__method__}",a)
     end
-    def REPLACE(a)
+    def replace(a)
       return execQuery("#{__method__}",a)
     end
-    def DELETE(a)
+    def delete(a)
       return execQuery("#{__method__}",a)
     end
-    def FLUSH(a)
+    def flush(a)
       return execQuery("#{__method__}",a)
     end
     def parse_json(d)
@@ -91,29 +91,29 @@ module Mongodb2MemcachedOperationUnitTest
         @tester.queryReturn = true
         @tester.datamodel("KEYVALUE")
         args = [["k0",{"_id"=>"v0","f0"=>"v1"}]]
-        expect(@tester.send(:MONGODB_INSERT, args)).to be true
-        expect(@tester.command).to eq "SET"
+        expect(@tester.send(:mongodb_insert, args)).to be true
+        expect(@tester.command).to eq "set"
       end
       it "MONGODB_INSERT(key value when SET is failed)" do
         @tester.queryReturn = false
         @tester.datamodel("KEYVALUE")
         args = [["k0",{"_id"=>"v0","f0"=>"v1"}]]
-        expect(@tester.send(:MONGODB_INSERT, args)).to be false
-        expect(@tester.command).to eq "SET"
+        expect(@tester.send(:mongodb_insert, args)).to be false
+        expect(@tester.command).to eq "set"
       end
       it "MONGODB_INSERT(key value when SET is passed)" do
         @tester.queryReturn = true
         @tester.datamodel("KEYVALUE")
         args = [["k0",[{"_id"=>"v0","f0"=>"v1"}]]]
-        expect(@tester.send(:MONGODB_INSERT, args)).to be true
-        expect(@tester.command).to eq "SET"
+        expect(@tester.send(:mongodb_insert, args)).to be true
+        expect(@tester.command).to eq "set"
       end
       it "MONGODB_INSERT(key value when SET is failed)" do
         @tester.queryReturn = false
         @tester.datamodel("KEYVALUE")
         args = [["k0",[{"_id"=>"v0","f0"=>"v1"}]]]
-        expect(@tester.send(:MONGODB_INSERT, args)).to be false
-        expect(@tester.command).to eq "SET"
+        expect(@tester.send(:mongodb_insert, args)).to be false
+        expect(@tester.command).to eq "set"
       end
       it "MONGODB_INSERT(document)" do
         @tester.datamodel("DOCUMENT")
@@ -123,20 +123,20 @@ module Mongodb2MemcachedOperationUnitTest
         ## true case
         @tester.queryReturn = true
         args = [["key",{"_id"=>"ObjectId('000')"}]]
-        expect(@tester.send(:MONGODB_INSERT, args)).to be true
-        expect(@tester.command).to eq "SET"
+        expect(@tester.send(:mongodb_insert, args)).to be true
+        expect(@tester.command).to eq "set"
         ans =  ["[{\"_id\":\"000\"},{\"_id\":\"001\"}]", "key"]
         expect(@tester.args).to match_array ans
         
         ## false case
         @tester.queryReturn = false
-        expect(@tester.send(:MONGODB_INSERT, args)).to be false
+        expect(@tester.send(:mongodb_insert, args)).to be false
       end
       it "MONGODB_INSERT(error datamodel)" do
         @tester.queryReturn = false
         @tester.datamodel("datamodel")
         args = []
-        expect(@tester.send(:MONGODB_INSERT, args)).to be false
+        expect(@tester.send(:mongodb_insert, args)).to be false
       end
     end
     context "Update Operation" do
@@ -148,8 +148,8 @@ module Mongodb2MemcachedOperationUnitTest
           "query"  => {"_id"  => "id00"},
           "update" => {"$set" => {"v0"=>"v","v1"=>"v"}}
         }
-        expect(@tester.send(:MONGODB_UPDATE, args)).to be true
-        expect(@tester.command).to eq "REPLACE"
+        expect(@tester.send(:mongodb_update, args)).to be true
+        expect(@tester.command).to eq "replace"
       end
       it "MONGODB_UPDATE (document [multi:true])" do
         @tester.datamodel("DOCUMENT")
@@ -161,8 +161,8 @@ module Mongodb2MemcachedOperationUnitTest
           "update" => {"$set" => {"v0"=>"v","v1"=>"v"}},
           "multi"  => true
         }
-        expect(@tester.send(:MONGODB_UPDATE, args)).to be true
-        expect(@tester.command).to eq "REPLACE"
+        expect(@tester.send(:mongodb_update, args)).to be true
+        expect(@tester.command).to eq "replace"
       end
       it "MONGODB_UPDATE (document [multi:false])" do
         @tester.datamodel("DOCUMENT")
@@ -174,8 +174,8 @@ module Mongodb2MemcachedOperationUnitTest
           "update" => {"$set" => {"v0"=>"v","v1"=>"v"}},
           "multi"  => false
         }
-        expect(@tester.send(:MONGODB_UPDATE, args)).to be true
-        expect(@tester.command).to eq "REPLACE"
+        expect(@tester.send(:mongodb_update, args)).to be true
+        expect(@tester.command).to eq "replace"
       end
       it "MONGODB_UPDATE (document [multi:false])" do
         @tester.datamodel("DOCUMENT")
@@ -187,13 +187,13 @@ module Mongodb2MemcachedOperationUnitTest
           "update" => {},
           "multi"  => false
         }
-        expect(@tester.send(:MONGODB_UPDATE, args)).to be false
+        expect(@tester.send(:mongodb_update, args)).to be false
       end
       it "MONGODB_UPDATE (error datamodel)" do
         @tester.queryReturn = false
         @tester.datamodel("datamodel")
         @tester.getValue = "[{\"_id\":\"001\"}]"
-        expect(@tester.send(:MONGODB_UPDATE, {})).to be false
+        expect(@tester.send(:mongodb_update, {})).to be false
       end
     end
     context "Find Operation" do
@@ -202,17 +202,17 @@ module Mongodb2MemcachedOperationUnitTest
         args = {"key" => "k00", "filter" => {"_id" => "001"}}
         @tester.getValue = "[{\"_id\":\"001\",\"v\":2}]"
         ans = {:_id => "001",:v => 2}
-        expect(@tester.send(:MONGODB_FIND, args)).to include ans
-        expect(@tester.command).to eq "GET"
+        expect(@tester.send(:mongodb_find, args)).to include ans
+        expect(@tester.command).to eq "get"
       end
       it "MONGODB_FIND (document with filter)" do
         @tester.datamodel("DOCUMENT")
         @tester.getValue = "[{\"_id\":\"001\",\"v\":2}]"
         @tester.setDocs([{:_id => "001", :v => 2}])
         args = {"key" => "k00", "filter" => {"_id" => "001"}}
-        ans  = {:_id => "001",:v => 2}
-        expect(@tester.send(:MONGODB_FIND, args)).to include ans
-        expect(@tester.command).to eq "GET"
+        ans  = [{:_id => "001",:v => 2}]
+        expect(@tester.send(:mongodb_find, args)).to include ans
+        expect(@tester.command).to eq "get"
       end
       it "MONGODB_FIND (document with filter)" do
         @tester.datamodel("DOCUMENT")
@@ -220,21 +220,21 @@ module Mongodb2MemcachedOperationUnitTest
         @tester.setDocs([{:_id => "001", :v => 2}])
         args = {"key" => "k00", "filter" => {"_id" => "001"}}
         ans  = [{:_id => "001",:v => 2}]
-        expect(@tester.send(:MONGODB_FIND, args)).to include ans
-        expect(@tester.command).to eq "GET"
+        expect(@tester.send(:mongodb_find, args)).to include ans
+        expect(@tester.command).to eq "get"
       end
       it "MONGODB_FIND (document w/o filter)" do
         @tester.datamodel("DOCUMENT")
         @tester.getValue = "[{\"_id\":\"001\",\"v\":2}]"
         @tester.setDocs([{:_id => "001", :v => 2}])
         args = {"key" => "k00", "filter" => {}}
-        ans  = {:_id => "001",:v => 2}
-        expect(@tester.send(:MONGODB_FIND, args)).to include ans
-        expect(@tester.command).to eq "GET"
+        ans  = [{:_id => "001",:v => 2}]
+        expect(@tester.send(:mongodb_find, args)).to include ans
+        expect(@tester.command).to eq "get"
       end
       it "MONGODB_FIND (error datamodel))" do
         @tester.datamodel("error")
-        expect(@tester.send(:MONGODB_FIND,{})).to eq []
+        expect(@tester.send(:mongodb_find,{})).to eq []
       end
     end
     context "Delete Operation" do
@@ -242,15 +242,15 @@ module Mongodb2MemcachedOperationUnitTest
         @tester.datamodel("KEYVALUE")
         @tester.queryReturn = true
         args = {"key"=>"k","filter"=>{"_id"=>"001"}}
-        expect(@tester.send(:MONGODB_DELETE,args)).to be true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:mongodb_delete,args)).to be true
+        expect(@tester.command).to eq "delete"
       end
       it "MONGODB_DELETE (document w/o filter) " do
         @tester.datamodel("DOCUMENT")
         @tester.queryReturn = true
         args = {"filter" => []}
-        expect(@tester.send(:MONGODB_DELETE,args)).to be true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:mongodb_delete,args)).to be true
+        expect(@tester.command).to eq "delete"
       end
       it "MONGODB_DELETE (document w/ filter) " do
         @tester.datamodel("DOCUMENT")
@@ -258,8 +258,8 @@ module Mongodb2MemcachedOperationUnitTest
         @tester.getValue = "[{\"_id\":\"001\",\"v\":2}]"
         @tester.setDocs([{:_id => "001", :v => 2}])
         args = {"key" => "k", "filter" => {"_id"=>"001"}}
-        expect(@tester.send(:MONGODB_DELETE,args)).to be true
-        expect(@tester.command).to eq "DELETE"
+        expect(@tester.send(:mongodb_delete,args)).to be true
+        expect(@tester.command).to eq "delete"
       end
       it "MONGODB_DELETE (document w/ filter) " do
         @tester.datamodel("DOCUMENT")
@@ -267,12 +267,12 @@ module Mongodb2MemcachedOperationUnitTest
         @tester.getValue = "[{\"_id\":\"001\",\"v\":2}]"
         @tester.setDocs([{:_id => "001", :v => 2}])
         args = {"key" => "k", "filter" => {"_id"=>"002"}}
-        expect(@tester.send(:MONGODB_DELETE,args)).to be true
-        expect(@tester.command).to eq "REPLACE"
+        expect(@tester.send(:mongodb_delete,args)).to be true
+        expect(@tester.command).to eq "replace"
       end
       it "MONGODB_DELETE (error datamodel)" do
         @tester.datamodel("error")
-        expect(@tester.send(:MONGODB_DELETE,{})).to be false
+        expect(@tester.send(:mongodb_delete,{})).to be false
       end
     end
     context "Count Operation" do
@@ -280,19 +280,19 @@ module Mongodb2MemcachedOperationUnitTest
         @tester.datamodel("KEYVALUE")
         @tester.getValue = "a"
         args = {"key" => "k", "query" => {"_id"=>"002"}}
-        expect(@tester.send(:MONGODB_COUNT,args)).to eq 1
-        expect(@tester.command).to eq "GET"
+        expect(@tester.send(:mongodb_count,args)).to eq 1
+        expect(@tester.command).to eq "get"
       end
       it "MONGODB_COUNT (document)" do
         @tester.datamodel("DOCUMENT")
         @tester.getValue = "[{\"_id\":\"001\",\"v\":2},{\"_id\":\"002\",\"v\":1}]"
         args = {"key" => "k", "query" => {"v"=>2}}
-        expect(@tester.send(:MONGODB_COUNT,args)).to eq 1
-        expect(@tester.command).to eq "GET"
+        expect(@tester.send(:mongodb_count,args)).to eq 1
+        expect(@tester.command).to eq "get"
       end
       it "MONGODB_COUNT (error)" do
         @tester.datamodel("error")
-        expect(@tester.send(:MONGODB_COUNT,{})).to eq 0
+        expect(@tester.send(:mongodb_count,{})).to eq 0
       end
     end
     context "Aggregate Operation" do 
@@ -302,51 +302,51 @@ module Mongodb2MemcachedOperationUnitTest
         @tester.setDocs([{:_id =>"001",:v =>2 ,:x => 3},{:_id => "002", :v => 1, :x => 4}])
         @tester.setCond({"cond"=>{"v" => "sum"}})
         ans = {"groupKey"=>{"v"=>10}}
-        expect(@tester.send(:MONGODB_AGGREGATE,args)).to include ans 
+        expect(@tester.send(:mongodb_aggregate,args)).to include ans 
       end
     end
     context "Replace Operation" do
       it "MONGODB_REPLACE #1 " do
         args = {"update" => {"$set" => {"v" =>"aa"}}}
         ans  = "{\"_id\":\"001\",\"v\":\"00\"}"
-        expect(@tester.send(:MONGODB_REPLACE,"dummy",args)).to include ans 
+        expect(@tester.send(:mongodb_replace,"dummy",args)).to include ans 
       end
       it "MONGODB_REPLACE #2 " do
         args = {"update" => {"v" => "aa"}}
         ans  = "{\"_id\":\"001\",\"v\":\"00\"}"
-        expect(@tester.send(:MONGODB_REPLACE,"dummy",args)).to include ans 
+        expect(@tester.send(:mongodb_replace,"dummy",args)).to include ans 
       end
     end
     context "Private Method" do
       it "prepare_mongodb" do
-        ans = {"operand" => "MONGODB_TEST", "args" => "OK"}
+        ans = {"operand" => "mongodb_test", "args" => "OK"}
         expect(@tester.send(:prepare_mongodb,"TEST","dummy")).to include ans
       end
       it "mongodbQuery (return TRUE)" do
         doc = {:_id => "001" , :value => "test"}
         query = {"value"=>"test"}
-        expect(@tester.send(:mongodbQuery,doc,query,"test")).to be true
+        expect(@tester.send(:mongodb_query,doc,query,"test")).to be true
       end
-      it "mongodbQuery (return FALSE #1)" do
+      it "mongodb_query (return FALSE #1)" do
         doc = {:_id => "001" , :value => "test1"}
         query = {"value"=>"test"}
-        expect(@tester.send(:mongodbQuery,doc,query,"test")).to be false
+        expect(@tester.send(:mongodb_query,doc,query,"test")).to be false
       end
-      it "mongodbQuery (return FALSE #2)" do
+      it "mongodb_query (return FALSE #2)" do
         doc = {:_id => "001" , :value => "test"}
         query = {"value"=>{"test"=>"b"}}
         @tester.setQueryReturnValue(false)
-        expect(@tester.send(:mongodbQuery,doc,query,"test")).to be false
+        expect(@tester.send(:mongodb_query,doc,query,"test")).to be false
       end
-      it "mongodbQuery (return FALSE #3)" do
+      it "mongodb_query (return FALSE #3)" do
         doc = {:_id => "001" , :value => "test"}
         query = {"test"=>"test"}
-        expect(@tester.send(:mongodbQuery,doc,query,"test")).to be false
+        expect(@tester.send(:mongodb_query,doc,query,"test")).to be false
       end
       it "documentSymbolize" do
         docs = [{"_id" => "001", "value" => "test"},{"_id" => "002" , "value" => "test"}]
         ans = [{:_id => "001", :value => "test"},{:_id => "002", :value => "test"}]
-        expect([@tester.send(:documentSymbolize,docs)]).to include ans
+        expect([@tester.send(:document_symbolize,docs)]).to include ans
         end
     end
   end
