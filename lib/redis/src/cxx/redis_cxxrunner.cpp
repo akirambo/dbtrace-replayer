@@ -52,17 +52,17 @@ const char* RedisCxxRunner::getReply(){
 }
 
 const char* RedisCxxRunner::getAsyncReply(){
-    std::string buf ;
+    this->_reply = "";
     bool firstFlag = true;
     for(auto itr = tmpReplies.begin(); itr != tmpReplies.end(); itr++){
-	if(!firstFlag){
-	    buf += "\n" + *itr;
-	}else{
-	    buf = *itr;
-	    firstFlag = false;
-	}
+      if(!firstFlag){
+	this->_reply += "\n" + *itr;
+      }else{
+	this->_reply = *itr;
+	firstFlag = false;
+      }
     }
-    return buf.c_str();
+    return this->_reply.c_str();
 }
 
 /******************

@@ -56,7 +56,11 @@ begin
 
   ## Initialize
   client = RedisCxxRunner.new()
-  client.syncConnect("127.0.0.1",6379)
+  ip = ENV["REDIS_IPADDRESS"]
+  unless ip
+    ip = "127.0.0.1"
+  end
+  client.syncConnect(ip,6379)
   client.syncExecuter("flushall")  
   api = "sync"
   
@@ -103,7 +107,7 @@ begin
   ################
   ## Initialize
   api = "async"
-  
+  client.asyncConnect(ip,6379)  
   ## Check Set/Get
   client.commitQuery("set testXX A")
   client.commitQuery("get testXX")
