@@ -30,6 +30,7 @@
 
 
 #include <string.h>
+#include <stdlib.h>
 #include "../cassandra_cxxrunner.hpp"
 
 using namespace std;
@@ -39,7 +40,11 @@ int main(){
      ************/
     CassandraCxxRunner* client ;
     client = new CassandraCxxRunner();
-    client->connect("127.0.0.1");
+    const char *env_ip = getenv("CASSANDRA_IPADDRESS");
+    if(env_ip == NULL){
+      env_ip = "127.0.0.1";
+    }
+    client->connect(env_ip);
 
     if(client->syncExecuter("drop keyspace if exists testdb")){
 	cout << "TEST [DROP Keyspace] : PASSED" << endl; 
@@ -156,10 +161,6 @@ int main(){
     //client->syncExecuter("select * from testdb.test");
     //std::cout << client->getReply(0) << std::endl;
     client->syncExecuter("drop keyspace if exists testdb");
-<<<<<<< HEAD
-
-=======
->>>>>>> 098663becb66002e2f403959e3a6593559a636ff
 
     /************
      * Epiologue *
