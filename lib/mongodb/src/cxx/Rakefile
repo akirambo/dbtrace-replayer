@@ -60,7 +60,7 @@ end
 desc "Simple Test"
 task :test => [:build] do
   sh "cd test; make ; ./testrun"
-  sh "ruby test/syncTest.rb"
+  sh "ruby test/test.rb"
 end
 
 task :clean do

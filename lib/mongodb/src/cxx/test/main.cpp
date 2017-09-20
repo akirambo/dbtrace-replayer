@@ -31,6 +31,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <stdlib.h>
 #include "../mongodb_cxxrunner.hpp"
 
 bool checker(const char* reply_, const char* check){
@@ -55,8 +56,8 @@ void showDetail(const char* reply){
  ******************/
 
 // [TEST] Get Database List
-void testGetDatabaseList(){
-    mongocxx::client tclient{mongocxx::uri{"mongodb://127.0.0.1:27017"}};
+void testGetDatabaseList(std::string server){
+    mongocxx::client tclient{mongocxx::uri{server.c_str()}};
     mongocxx::cursor dbs = tclient.list_databases();
     for(auto itr = dbs.begin(); itr != dbs.end(); itr++){
 	//std::cout << "TEST :: " << std::endl;
@@ -315,12 +316,17 @@ void testAggregation(MongodbCxxRunner* client){
 int main(){
     MongodbCxxRunner* client;
     client = new MongodbCxxRunner();
-    client->connect("mongodb://127.0.0.1:27017");
+    const char *env_ip = getenv("MONGODB_IPADDRESS");
+    if(env_ip == NULL){
+      env_ip = "127.0.0.1";
+    }
+    std::string server = "mongodb://" + std::string(env_ip) + ":27017";
+    client->connect(server.c_str());
     client->setDatabaseName("testdb");
     client->setCollectionName("testcollection");
 
     // [TEST] Get Database List
-    testGetDatabaseList();
+    testGetDatabaseList(server);
     // [TEST] Insert One & Find
     testInsertOneAndFind(client);
     // [TEST] Delete Test
