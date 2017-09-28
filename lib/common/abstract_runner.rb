@@ -32,13 +32,13 @@
 require_relative "./utils"
 require_relative "./metrics"
 
-require_relative "../../mongodb/src/mongodbArgumentParser"
-require_relative "../../redis/src/redisArgumentParser"
-require_relative "../../memcached/src/memcachedArgumentParser"
-require_relative "../../cassandra/src/cassandraArgumentParser"
+require_relative "../mongodb/src/mongodbArgumentParser"
+require_relative "../redis/src/redisArgumentParser"
+require_relative "../memcached/src/memcachedArgumentParser"
+require_relative "../cassandra/src/cassandraArgumentParser"
 
-require_relative "../../mongodb/src/mongodbQueryParser"
-require_relative "../../mongodb/src/mongodbQueryProcessor"
+require_relative "../mongodb/src/mongodbQueryParser"
+require_relative "../mongodb/src/mongodbQueryProcessor"
 
 class AbstractRunner
   def initialize(dbname, logger, option)

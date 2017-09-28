@@ -156,10 +156,6 @@ int main(){
     //client->syncExecuter("select * from testdb.test");
     //std::cout << client->getReply(0) << std::endl;
     client->syncExecuter("drop keyspace if exists testdb");
-<<<<<<< HEAD
-
-=======
->>>>>>> 098663becb66002e2f403959e3a6593559a636ff
 
     /************
      * Epiologue *
