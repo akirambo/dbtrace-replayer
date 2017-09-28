@@ -34,7 +34,7 @@ require_relative "../../common/abstractDBParser"
 class RedisParser < AbstractDBParser
   def initialize(filename, option, logger)
     @type_position = [1]
-    @skip_types = %w[PING INFO PUBLISH FLUSHALL COMMAND].freeze
+    @skip_types = %w[ping info publish flushall command].freeze
     command2basics(option)
     logs = RedisLogsSimple.new(@command2basic, option, logger)
     super(filename, logs, supported_commands(option), option, logger)

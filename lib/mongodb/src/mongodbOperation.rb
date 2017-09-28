@@ -98,7 +98,6 @@ module MongodbOperation
         end
       end
     end
-    close
     results
   end
 

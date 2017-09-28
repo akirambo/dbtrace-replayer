@@ -52,12 +52,8 @@ class CassandraArgumentParser
   # PREPARE for INSERT #
   #--------------------#
   def prepare_args_insert_cql(args)
-    result = {
-      "table" => nil,
-      "primaryKey" => nil,
-      "schema_fields" => 0,
-      "args" => {},
-    }
+    result = { "table" => nil, "primaryKey" => nil,
+               "schema_fields" => 0, "args" => {} }
     ## table name
     result["table"] = args[2]
     ## primary key
@@ -85,10 +81,7 @@ class CassandraArgumentParser
   end
 
   def prepare_args_insert_basic(args)
-    result = {
-      "key" => nil,
-      "args" => {},
-    }
+    result = { "key" => nil, "args" => {} }
     ## table name
     result["key"] = args[2]
     ## field name
@@ -97,11 +90,9 @@ class CassandraArgumentParser
     values = ""
     args.each_index do |index|
       if index > 4
-        ## after values
         values += args[index]
       end
     end
-    # values = values.sub(/\A\(/,"").sub(/\)\Z/,"").split("','")
     values = values.sub(/\A\(/, "").sub(/\)\Z/, "").split(",")
     values.each_index do |index|
       result["args"][field_names[index].to_s] = if !index.zero?
@@ -127,20 +118,18 @@ class CassandraArgumentParser
   end
 
   def get_primarykey_from_schemas(name)
-    if @schemas && @schemas[name]
-      @schemas[name].primarykeys[0]
+    if !@schemas || !@schemas[name]
+      return nil
     end
-    nil
+    @schemas[name].primarykeys[0]
   end
 
   def cassandra_prepare_select_parse(args)
     result = {
       "table" => nil, "primaryKey" => nil,
       "schema_fields" => 0, "fields" => [],
-      "cond_keys" => [],
-      "cond_values" => [],
-      "limit" => nil
-    }
+      "cond_keys" => [], "cond_values" => [],
+      "limit" => nil }
     select_target_flag = false
     args.each_index do |index|
       case args[index].downcase
@@ -410,12 +399,8 @@ class CassandraArgumentParser
   #------------------------------#
   def prepare_args_get_range_slices_java(args)
     data = parse_get_range_slices_parameter(args, false)
-    result = {
-      "key"   => data["table"],
-      "limit" => data["count"],
-      "where" => [],
-      "fields" => "*",
-    }
+    result = { "key" => data["table"], "limit" => data["count"],
+               "where" => [], "fields" => "*" }
     %w[start_key end_key].each do |name|
       key = prepare_condition_query(data, name)
       if key
@@ -433,14 +418,9 @@ class CassandraArgumentParser
   end
 
   def parse_get_range_slices_parameter(args, _)
-    result = {
-      "table" => nil,
-      "cf"    => nil,
-      "primaryKey" => nil,
-      "start_key" => nil,
-      "end_key" => nil,
-      "count" => nil,
-    }
+    result = { "table" => nil, "cf" => nil,
+               "primaryKey" => nil, "start_key" => nil,
+               "end_key" => nil, "count" => nil }
     ## Get Column Family
     result["cf"] = get_column_family(args)
     ## Find Keyspace & Primary Key
@@ -466,23 +446,14 @@ class CassandraArgumentParser
   #-----------#
   def prepare_args_get_slice_jave(args)
     data = parse_get_slice_parameter(args, false)
-    result = {
-      "key"   => data["table"],
-      "limit" => data["count"],
-      "where" => [],
-      "fields" => "*",
-    }
-    result
+    { "key" => data["table"], "limit" => data["count"],
+      "where" => [], "fields" => "*" }
   end
 
   def parse_get_slice_parameter(args, cassandra = true)
-    result = {
-      "table" => nil,
-      "cf"    => nil,
-      "primaryKey" => nil,
-      "targetKey" => nil,
-      "count"     => nil,
-    }
+    result = { "table" => nil, "cf" => nil,
+               "primaryKey" => nil, "targetKey" => nil,
+               "count" => nil }
     ## Get Column Family
     if args.match(/.+column_family:(\w+?)\).*/)
       result["cf"] = $1
@@ -512,13 +483,9 @@ class CassandraArgumentParser
   ##-- GET_INDEXED_SLICES --##
   ##------------------------##
   def prepare_get_indexed_slice_parameter(args)
-    result = {
-      "table" => nil,
-      "cf" => nil,
-      "primaryKey" => nil,
-      "targetKey" => nil,
-      "count" => nil,
-    }
+    result = { "table" => nil, "cf" => nil,
+               "primaryKey" => nil, "targetKey" => nil,
+               "count" => nil }
     ## Get Column Family
     if args.match(/.+column_family:(\w+?)\).*/)
       result["cf"] = $1
@@ -548,12 +515,8 @@ class CassandraArgumentParser
   ## --------------------##
   def prepare_args_multiget_slice_java(args)
     data = prepare_multiget_slice_parameter(args, false)
-    result = {
-      "key"   => data["table"],
-      "limit" => data["count"],
-      "where" => [],
-      "fields" => "*",
-    }
+    result = { "key" => data["table"], "limit" => data["count"],
+               "where" => [], "fields" => "*" }
     data["keys"].each do |key|
       result["where"].push("#{data["primaryKey"]}=#{key}")
     end
@@ -561,12 +524,8 @@ class CassandraArgumentParser
   end
 
   def prepare_multiget_slice_parameter(args, __cassandra)
-    result = {
-      "table" => nil,
-      "primaryKey" => "key",
-      "cf" => nil,
-      "keys" => [],
-    }
+    result = { "table" => nil, "primaryKey" => "key",
+               "cf" => nil, "keys" => [] }
     ## Get ColumnFamily
     result["cf"] = get_column_family(args)
     ## Find Keyspace & Primary Key

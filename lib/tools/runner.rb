@@ -20,7 +20,9 @@ module Runner
 
     ## runType
     options.push("-t #{runType}")
-    
+    if runType == "mongodb"
+      options.push("-c")
+    end
     ## logName
     if(args[:async] == "true")then
       options.push("--log-file #{traceType}2#{runType}_async.log")
