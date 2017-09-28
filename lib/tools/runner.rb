@@ -34,8 +34,12 @@ module Runner
     options.push(args[:trace])
     
     ## output Query
-    if(args[:query] == "true")then
-      options.push("-q")
+    if(args[:datamodel])then
+      options.push("-d #{args[:datamodel]}")
+    end
+    
+    if args[:key_of_keyvalue]
+      options.push("--key-of-keyvalue #{args[:key_of_keyvalue]}")
     end
     
     ## debug mode

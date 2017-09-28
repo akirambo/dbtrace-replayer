@@ -114,7 +114,7 @@ module MongodbTest
     before do
       @logger = Logger.new(STDOUT)
       @logger.level = Logger::FATAL
-      @tester = Mock.new(@logger,{:datamodel=>"DOCUMENT"})
+      @tester = Mock.new(@logger,{:datamodel=>"DOCUMENT", :key_of_keyvalue => "_id"})
     end
     context 'Operation' do
       it "mongodb_insert" do
@@ -126,7 +126,7 @@ module MongodbTest
       it "mongodb_insert(error)" do
         args = [[["key"],[{"a"=>1,"b"=>"v"}]]]
         @tester.datamodel("KEYVALUE") ## unsupported.
-        expect(@tester.send(:mongodb_insert,args)).to eq "NG"
+        expect(@tester.send(:mongodb_insert,args)).to eq "OK"
       end
       it "mongodb_update(simple docs)" do
         ## setup
@@ -161,10 +161,10 @@ module MongodbTest
         expect(@tester.setValue).to eq ans
         @tester.resetGetValue
       end
-      it "mongodb_update(data model Error)" do
-      args = {}
-        @tester.datamodel("KEYVALUE") ## unsupported
-        expect(@tester.send(:mongodb_update,args)).to eq "NG"
+      it "mongodb_update(keyvalue)" do
+      args = [[nil,[{"_id" => "a", "v" => "b"}]]]
+        @tester.datamodel("KEYVALUE")
+        expect(@tester.send(:mongodb_update,args)).to eq "OK"
       end
       it "mongodb_update(query Error)" do
         args = {
@@ -193,10 +193,11 @@ module MongodbTest
         @tester.resetGetValue
         expect(ans[0]).to include exp[0]
       end
-      it "mongodb_find(data model Error)" do
-        @tester.datamodel("KEYVALUE") ## unsupported.
-        args = {}
-        expect(@tester.send(:mongodb_find,args)).to eq "NG"
+      it "mongodb_find(keyvalue)" do
+        @tester.datamodel("KEYVALUE")
+        @tester.resetGetValue
+        args = {"filter" => {"_id" => "a"} }
+        expect(@tester.send(:mongodb_find,args)).to eq "reply"
       end
       it "mongodb_delete" do
         @tester.datamodel("DOCUMENT")
@@ -351,7 +352,7 @@ module MongodbTest
         expect(@tester.send(:mongodb_query,doc,query)).to be false
       end
       it "prepare_mongodb" do
-        ans = {"operand" => "MONGODB_test", "args" => "PARSED"}
+        ans = {"operand" => "mongodb_test", "args" => "PARSED"}
         expect(@tester.send(:prepare_mongodb,"test",{})).to include ans
       end
     end

@@ -232,7 +232,7 @@ module Mongodb2CassandraOperation
   ## PREPARE ##
   #############
   def prepare_mongodb(operand, args)
-    result = { "operand" => "MONGODB_#{operand}", "args" => nil }
+    result = { "operand" => "mongodb_#{operand}", "args" => nil }
     result["args"] = @parser.exec(operand, args)
     result
   end

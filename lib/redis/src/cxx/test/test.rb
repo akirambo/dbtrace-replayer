@@ -98,6 +98,13 @@ begin
   checker(client,api,"zrank","1")
   client.syncExecuter("zrank zranks e1")
   checker(client,api,"zrank","0")
+
+  ## Check SET2[sadd, smember]
+  client.syncExecuter("sadd set1  {\"a\":\"A\"}")
+  client.syncExecuter("smembers set1")
+  checker(client,api,"sadd/smembers","{\"a\":\"A\"}")
+
+
   # Epilogue
   client.syncExecuter("flushall")
   client.syncClose()
@@ -146,6 +153,16 @@ begin
   client.asyncExecuter()
   ans = "CC,BB,AA"
   checker(client,api,"sadd/smembers",ans)
+
+  ## Check SET2[sadd, smember]
+  client.commitQuery("sadd set1  {\"a\":\"A\"}")
+  client.commitQuery("sadd set1  {\"a\":\"B\"}")
+  client.commitQuery("sadd set1  {\"a\":\"C\"}")
+  client.commitQuery("smembers set1")
+  client.asyncExecuter()
+  ans = "{\"a\":\"A\"},{\"a\":\"B\"},{\"a\":\"C\"}"
+  checker(client,api,"sadd/smembers",ans)
+
   
   # Epilogue
   client.asyncClose()

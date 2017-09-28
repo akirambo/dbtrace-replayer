@@ -39,17 +39,21 @@ class AbstractDBParser
   def exec()
     log_commands = []
     if(!@option[:parseMultiLines])then
-      File.open(@filename, "r"){|f|
-        while line = f.gets
-          if(parsed = parse(line))then
-            command = parsed.keys()[0]
-            if(!log_commands.include?(command))then
-              log_commands.push(command)
+      begin
+        File.open(@filename, "r"){|f|
+          while line = f.gets
+            if(parsed = parse(line))then
+              command = parsed.keys()[0]
+              if(!log_commands.include?(command))then
+                log_commands.push(command)
+              end
+              @logs.push(parsed)
             end
-            @logs.push(parsed)
           end
-        end
-      }
+        }
+      rescue => e
+        @logger.error(e)
+      end
     else
       logs_command = parse_multilines(@filename)
       ## @logs is updated in parse_multilines

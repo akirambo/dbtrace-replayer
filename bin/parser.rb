@@ -97,7 +97,8 @@ option = {
   :collection => "collection",
   :times => 1,
   :logFileClean => false,
-  :datamodel => "KEYVALUE",
+  :datamodel => "DOCUMENT",
+  :key_of_keyvalue => "_id", # represent for key of keyvalue datamodel
   :api => "cxx",
   :async => false,
   :keepalive => true,
@@ -150,6 +151,9 @@ end
 opt.on("-k", "--[no-]keep-connect",
        "KEEP CONNECT") do |v|
   option[:keepalive] = v
+end
+opt.on("--key-of-keyvalue KEYNAME", "SET KEY for KEYVALUE for [datamodel = keyvalue]") do |v|
+  option[:key_of_keyvalue] = v
 end
 opt.on("-l LOG_LEVEL",
        "--log-level LOG_LEVEL",
@@ -211,10 +215,11 @@ opt.banner += "Supported Databases:[#{@supported_databases.join(',')}]"
 
 option[:sourceDB] = ARGV[0]
 opt.parse!(ARGV)
+
 ## Argument Checker
 if ARGV.size != ARGV_CONFIG.size &&
    option[:mode] != "clear"
-  puts opt.banne
+  puts opt.banner
   abort
 end
 ## Check parsemultiline
@@ -241,7 +246,6 @@ def log_level(level)
   else
     abort("[ERROR]:: Unsupported Log Level #{level}")
   end
-  nil
 end
 
 begin
@@ -278,8 +282,6 @@ begin
   parser = Object.const_get(parser_name).new(target_file, option, logger)
   parser.exec
 
-  ## DATAMODEL
-  option[:datamodel] = "DOCUMENT" if option[:sourceDB] == "mongodb"
   ## CONVERT/RUN
   if option[:mode] == "ycsb"
     converter = YCSBWorkload.new(parser.log)

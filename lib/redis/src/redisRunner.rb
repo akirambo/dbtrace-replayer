@@ -31,7 +31,7 @@
 require "json"
 
 require_relative "../../common/abstract_runner"
-require_relative "./cxx/redis_cxxrunner"
+require_relative "./cxx/redisCxxRunner"
 
 require_relative "./redisOperation"
 require_relative "./memcached2RedisOperation"

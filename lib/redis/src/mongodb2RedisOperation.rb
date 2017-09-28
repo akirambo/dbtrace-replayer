@@ -39,16 +39,18 @@ module MongoDB2RedisOperation
   def mongodb_insert(args)
     v = "NG"
     if @option[:datamodel] == "DOCUMENT"
-      ## Documents [SADD]
       if args[0] && args[0][0] && args[0][1][0]
+        ## Documents [SADD]
         doc = {
           "key"  => args[0][0],
           "args" => args[0][1][0].to_json,
         }
         doc["args"].delete!("'")
         doc["args"].delete!(" ")
+        v = sadd(doc)
       end
-      v = sadd(doc)
+    elsif @option[:datamodel] == "KEYVALUE"
+      v = set(mongodb_create_doc_for_keyvalue(args))
     else
       @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
     end
@@ -57,21 +59,39 @@ module MongoDB2RedisOperation
 
   # @conv {"update" => ["smembers","query@client","del","sadd"]}
   def mongodb_update(args)
-    if @option[:datamodel] != "DOCUMENT"
+    case @option[:datamodel]
+    when "DOCUMENT"
+      if args["update"].nil? || args["update"]["$set"].nil?
+        @logger.error("Not Set update $set query @ mongodb2redis")
+        return "NG"
+      end
+      ## Documents
+      data = get([args["key"]])
+      docs = eval("[" + data + "]")
+      results = mongodb_create_result(docs, args)
+      set([args["key"], results])
+    when "KEYVALUE"
+      v = set(mongodb_create_doc_for_keyvalue(args))
+    else
       @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
       return "NG"
     end
-    if args["update"].nil? || args["update"]["$set"].nil?
-      @logger.error("Not Set update $set query @ mongodb2redis")
-      return "NG"
-    end
-    ## Documents
-    data = get([args["key"]])
-    docs = eval("[" + data + "]")
-    results = mongodb_create_result(docs, args)
-    set([args["key"], results])
+    "OK"
   end
 
+  def mongodb_create_doc_for_keyvalue(args)
+    id = ""
+    arg = ""
+    args[0][1][0].each_key do |k|
+      if k == @option[:key_of_keyvalue]
+        id = args[0][1][0][k]
+      else
+        arg = args[0][1][0][k]
+      end
+    end
+    doc = [id, arg]
+  end
+  
   def mongodb_create_result(docs, args)
     results = []
     replace_flag = true
@@ -115,8 +135,11 @@ module MongoDB2RedisOperation
           end
         end
       end
+    when "KEYVALUE"
+      ## documents
+      key = args["filter"][@option[:key_of_keyvalue]]
+      results = get([key])
     else
-      @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
       return "NG"
     end
     results
@@ -288,7 +311,7 @@ module MongoDB2RedisOperation
   ## PREPARE ##
   #############
   def prepare_mongodb(operand, args)
-    result = { "operand" => "MONGODB_#{operand}", "args" => nil }
+    result = { "operand" => "mongodb_#{operand}", "args" => nil }
     result["args"] = @parser.exec(operand, args)
     result
   end

@@ -51,8 +51,8 @@ end
 #--------------------------------#
 # Replay Trace On Which Database #
 #--------------------------------#
-desc "Replay Trace On Database (traceType,runType,trace,time,async,query,schema,keyspace(only for Cassandra))"
-task :run, [:traceType, :runType, :trace, :times, :async, :query, :schema, :keyspace]  do |env, args|
+desc "Replay Trace On Database (traceType,runType,trace,time,async,datamodel,schema,keyspace(only for Cassandra))"
+task :run, [:traceType, :runType, :trace, :times, :async, :datamodel, :schema, :keyspace,:key_of_keyvalue]  do |env, args|
   include Runner
   exec(args, false)
 end

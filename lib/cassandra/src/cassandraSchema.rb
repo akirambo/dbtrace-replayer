@@ -234,7 +234,7 @@ class CassandraSchema
     keep
   end
 
-  def parser_prepare
+  def parse_prepare(create_query)
     table = ""
     if create_query.include?("CREATE TABLE")
       table = create_query.split("CREATE TABLE ")[1].split(" ")[0]

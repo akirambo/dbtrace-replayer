@@ -287,7 +287,6 @@ begin
   # [TEST] Aggregate
   testAggregate(client)
 
-
   client.drop();
 
   client.close()

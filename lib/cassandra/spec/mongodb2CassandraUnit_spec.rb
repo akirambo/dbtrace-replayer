@@ -330,7 +330,7 @@ module Mongodb2CassandraOperationTester
     end
     context "Private Method" do
       it "prepare_mongodb" do
-        ans = {"operand" => "MONGODB_test", "args" => "OK"}
+        ans = {"operand" => "mongodb_test", "args" => "OK"}
         expect(@tester.send(:prepare_mongodb,"test","test")).to eq ans
       end
       it "mongodbParserQuery($gt)" do
