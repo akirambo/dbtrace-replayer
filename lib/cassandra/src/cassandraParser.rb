@@ -34,7 +34,7 @@ require_relative "../../common/abstractDBParser"
 class CassandraParser < AbstractDBParser
   def initialize(filename, option, logger)
     @type_position = [0]
-    @skipTypes = %w[CREATE EXECUTE_CQL3_QUERY USE].freeze
+    @skip_types = %w[CREATE EXECUTE_CQL3_QUERY USE].freeze
     @command2primitive = {
       "insert" => "INSERT",
       "select" => "READ",
@@ -54,6 +54,7 @@ class CassandraParser < AbstractDBParser
     logs = CassandraLogsSimple.new(@command2primitive, option, logger)
     super(filename, logs, @command2primitive.keys, option, logger)
   end
+
   def parse(line)
     case @option[:inputFormat]
     when "cql3"
@@ -72,47 +73,54 @@ class CassandraParser < AbstractDBParser
   ## % select parameters,request,started_at from system_traces.sessions;
   #########################################################################
   def parse_cql3(line)
-    if line.include?("'query':") &&
-       line.include?("Execute CQL3 query") &&
-       !line.include?("system") &&
-       line != "\n"
+    if has_query?(line)
       ## Extract Query
-      data = ""
-      elements = line.chop.split("|")
-      elements.each_index do |idx|
-        if elements[idx].include?("'query': ")
-          data = elements[idx].sub(";", "").gsub("''", '"').gsub(/\\n/, "")
-        end
-      end
-      query = data.split("'query': ")[1]
-      if data && query
-        if query.include?("', 'serial_consistency_level':")
-          query = query.split("', 'serial_consistency_level':")[0]
-        end
-        if query
-          query.sub!("\'}", "")
-          query.sub!(/\A\'/, "")
-          command = query.split("\s")[0].downcase
-          if @supportedCommand.include?(command)
-            result = {}
-            result[command] = query.split("\s")
-            begin
-              result = send("parse_#{command}_cql3", result)
-            rescue => e
-              @logger.error e.message
-              @logger.error "Unimplemented #{command}"
-              return nil
-            end
-            return result
-          else
-            unless @skipTypes.include?(command)
-              @logger.warn("Unsupported Command #{command}")
-            end
+      query = extract_query(line)
+      if query
+        query.sub!("\'}", "")
+        query.sub!(/\A\'/, "")
+        command = query.split("\s")[0].downcase
+        if @supported_command.include?(command)
+          result = {}
+          result[command] = query.split("\s")
+          begin
+            result = send("parse_#{command}_cql3", result)
+          rescue => e
+            @logger.error e.message
+            @logger.error "Unimplemented #{command}"
+            return nil
+          end
+          return result
+        else
+          unless @skip_types.include?(command)
+            @logger.warn("Unsupported Command #{command}")
           end
         end
       end
     end
     nil
+  end
+
+  def has_query?(line)
+    line.include?("'query':") &&
+      line.include?("Execute CQL3 query") &&
+      !line.include?("system") &&
+      line != "\n"
+  end
+
+  def extract_query(line)
+    data = ""
+    elements = line.chop.split("|")
+    elements.each_index do |idx|
+      if elements[idx].include?("'query': ")
+        data = elements[idx].sub(";", "").gsub("''", '"').gsub(/\\n/, "")
+      end
+    end
+    query = data.split("'query': ")[1]
+    if query && query.include?("', 'serial_consistency_level':")
+      query = query.split("', 'serial_consistency_level':")[0]
+    end
+    query
   end
 
   def parse_insert_cql3(result)

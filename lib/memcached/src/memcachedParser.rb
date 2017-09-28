@@ -69,7 +69,7 @@ class MemcachedParser < AbstractDBParser
     ].freeze
     @get_key_command_from_found = %w[append prepend delete].freeze
     ## For yscb-mode
-    ## For create supportedCommand
+    ## For create supported_command
     @command2primitive = {
       "get" => "READ",
       "set" => "INSERT",
@@ -93,7 +93,7 @@ class MemcachedParser < AbstractDBParser
     @type_position.each do |index|
       if data.size > index
         command = data[index].downcase
-        if @supportedCommand.include?(command)
+        if @supported_command.include?(command)
           result = {}
           args = data
           result[command] = args
@@ -140,7 +140,7 @@ class MemcachedParser < AbstractDBParser
           ##########################
           # Add Command
           command = BIN2COMMAND[data[2]]
-          if @supportedCommand.include?(command)
+          if @supported_command.include?(command)
             args = extract_args(f, data)
             args.unshift(command)
           elsif !@skip_types.include?(command) &&
@@ -148,12 +148,12 @@ class MemcachedParser < AbstractDBParser
             @logger.warn("Unsupported Command #{command}")
             @logger.debug(data)
           end
-        elsif data.size > 2 && @supportedCommand.include?(data[1].downcase)
+        elsif data.size > 2 && @supported_command.include?(data[1].downcase)
           # Add Real KeyName
           ## CASE1 : command = data[1], key = data[2]
           args.push(data[2])
           command = data[1].downcase
-        elsif data.size > 2 && @supportedCommand.include?(data[0].downcase)
+        elsif data.size > 2 && @supported_command.include?(data[0].downcase)
           ## CASE2 : command = data[0], key = data[1]
           args.push(data[1])
           ## Add Real Value

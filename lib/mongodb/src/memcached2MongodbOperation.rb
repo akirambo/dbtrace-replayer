@@ -32,13 +32,13 @@ module Memcached2MongodbOperation
   private
 
   # @conv {"SET" => ["INSERT"]}
-  def MEMCACHED_SET(args)
+  def memcached_set(args)
     r = false
     value = change_numeric_when_numeric(args[1])
     if args.size == 3
-      r = INSERT([["testdb.col", { "_id" => args[0], "value" => value, "expire" => args[2] }]])
+      r = insert([["testdb.col", { "_id" => args[0], "value" => value, "expire" => args[2] }]])
     elsif args.size == 2
-      r = INSERT([["testdb.col", { "_id" => args[0], "value" => value }]])
+      r = insert([["testdb.col", { "_id" => args[0], "value" => value }]])
     else
       @logger.fatal("Unsupprted Arguments [#{args}] @ #{__method__} ")
     end
@@ -46,12 +46,12 @@ module Memcached2MongodbOperation
   end
 
   # @conv {"GET" => ["FIND"]}
-  def MEMCACHED_GET(args)
+  def memcached_get(args)
     cond = {
       "key" => "testdb.col",
       "filter" => { "_id" => args[0] },
     }
-    v = FIND(cond)
+    v = find(cond)
     ret = []
     v.each do |doc|
       ret.push(doc["value"])
@@ -60,65 +60,65 @@ module Memcached2MongodbOperation
   end
 
   # @conv {"ADD" => ["SET"]}
-  def MEMCACHED_ADD(args)
-    MEMCACHED_SET(args)
+  def memcached_add(args)
+    memcached_set(args)
   end
 
   # @conv {"REPLACE" => ["UPDATE"]}
-  def MEMCACHED_REPLACE(args)
+  def memcached_replace(args)
     value = change_numeric_when_numeric(args[1])
     cond = {
       "key" => "testdb.col",
       "query" => { "_id" => args[0] },
       "update" => { "$set" => { "value" => value } },
     }
-    UPDATE(cond)
+    update(cond)
   end
 
-  # @conv {"GETS" => ["GET"]}
-  def MEMCACHED_GETS(args)
-    MEMCACHED_GET(args)
+  # @conv {"gets" => ["get"]}
+  def memcached_gets(args)
+    memcached_get(args)
   end
 
   # @conv {"APPEND" => ["FIND","UPDATE"]}
-  def MEMCACHED_APPEND(args)
+  def memcached_append(args)
     cond = {
       "key" => "testdb.col",
       "filter" => { "_id" => args[0] },
       "query" => { "_id" => args[0] },
     }
-    str = FIND(cond)[0]["value"].to_s
+    str = find(cond)[0]["value"].to_s
     str += args.last.to_s
     cond["update"] = { "$set" => { "value" => str } }
-    UPDATE(cond)
+    update(cond)
   end
 
   # @conv {"PREPEND" => ["FIND","UPDATE"]}
-  def MEMCACHED_PREPEND(args)
+  def memcached_prepend(args)
     cond = {
       "key" => "testdb.col",
       "filter" => { "_id" => args[0] },
       "query" => { "_id" => args[0] },
     }
-    str = FIND(cond)[0]["value"].to_s
+    str = find(cond)[0]["value"].to_s
     str = args.last.to_s + str
     cond["update"] = { "$set" => { "value" => str } }
-    UPDATE(cond)
+    update(cond)
   end
 
   # @conv {"CAS" => ["SET"]}
-  def MEMCACHED_CAS(args)
+  def memcached_cas(args)
     args.pop
-    MEMCACHED_SET(args)
+    memcached_set(args)
   end
 
   # @conv {"INCR" => ["UPDATE"]}
-  def MEMCACHED_INCR(args)
+  def memcached_incr(args)
     memcached_incr_decr(args, "incr")
   end
 
   # @conv {"DECR" => ["UPDATE"]}
-  def MEMCACHED_DECR(args)
+  def memcached_decr(args)
     memcached_incr_decr(args, "decr")
   end
 
@@ -134,21 +134,21 @@ module Memcached2MongodbOperation
       "update" => { "$inc" => { "value" => value } },
       "multi"  => true,
     }
-    UPDATE(cond)
+    update(cond)
   end
 
   # @conv {"DELETE" => ["DELETE"]}
-  def MEMCACHED_DELETE(args)
+  def memcached_delete(args)
     cond = {
       "key" => "testdb.col",
       "filter" => { "_id" => args[0] },
     }
-    DELETE(cond)
+    delete(cond)
   end
 
   # @conv {"FLUSH" => ["DROP"]}
-  def MEMCACHED_FLUSH(_)
-    DROP(["testdb.col"])
+  def memcached_flush(_)
+    drop(["testdb.col"])
   end
 
   #############
@@ -157,14 +157,13 @@ module Memcached2MongodbOperation
   def prepare_memcached(operand, args)
     result = {}
     ## PREPARE SPECIAL OPERATION
-    operand.upcase!
-    if ["FLUSHALL"].include?(operand)
+    if %w[flushall].include?(operand)
       result["operand"] = operand
       return result
     end
     ## PREPARE OPERATION & ARGS
-    result["operand"] = "MEMCACHED_#{operand.upcase}"
-    result["args"] = @parser.exec(operand.upcase, args)
+    result["operand"] = "memcached_#{operand}"
+    result["args"] = @parser.exec(operand, args)
     result
   end
 end

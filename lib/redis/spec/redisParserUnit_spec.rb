@@ -12,8 +12,8 @@ RSpec.describe 'Redis Parser Unit Test' do
   end
   context 'Parse Method' do
     it 'Case #1' do
-      ans = {"SET" => ["A","B","C"]}
-      expect(@tester.parse("A \"SET\" \"A\" \"B\" \"C\"")).to eq ans
+      ans = {"set" => ["A","B","C"]}
+      expect(@tester.parse("A \"set\" \"A\" \"B\" \"C\"")).to eq ans
     end
     it 'Case #2 (error)' do
       expect(@tester.parse("A \"ER ")).to eq nil

@@ -83,11 +83,11 @@ class CassandraRunner < AbstractRunner
     ## Refresh By Schema File
     @schemas.each do |_, schema|
       ## Create Keyspace
-      cassandra_setup_query(schema.createKeyspaceQuery,
+      cassandra_setup_query(schema.create_keyspace_query,
                             "Cannot Create Keyspace")
-      cassandra_setup_query(schema.createQuery,
+      cassandra_setup_query(schema.create_query,
                             "Cannot Create Table")
-      schema.createIndexes.each do |query|
+      schema.create_indexes.each do |query|
         cassandra_setup_query(query,
                               "Cannot Create Index")
       end

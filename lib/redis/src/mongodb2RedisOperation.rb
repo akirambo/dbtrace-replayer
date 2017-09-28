@@ -28,17 +28,15 @@
 # WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-
-
 module MongoDB2RedisOperation
   MONGODB_NUMERIC_QUERY = ["$gt", "$gte", "$lt", "$lte"].freeze
   MONGODB_STRING_QUERY  = ["$eq", "$ne", "$in", "$nin"].freeze
 
   private
 
-  # @conv {"INSERT" => ["SET"]}
+  # @conv {"insert" => ["set"]}
   ## args[0] --> skip, args[1] = {_id => xx, value => xx, ...}
-  def MONGODB_INSERT(args)
+  def mongodb_insert(args)
     v = "NG"
     if @option[:datamodel] == "DOCUMENT"
       ## Documents [SADD]
@@ -50,16 +48,15 @@ module MongoDB2RedisOperation
         doc["args"].delete!("'")
         doc["args"].delete!(" ")
       end
-      v = SADD(doc)
+      v = sadd(doc)
     else
       @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
     end
     v
   end
 
-  # @conv {"UPDATE" => ["SMEMBERS","QUERY@client","DEL","SADD"]}
-  def MONGODB_UPDATE(args)
-    results = []
+  # @conv {"update" => ["smembers","query@client","del","sadd"]}
+  def mongodb_update(args)
     if @option[:datamodel] != "DOCUMENT"
       @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
       return "NG"
@@ -69,15 +66,20 @@ module MongoDB2RedisOperation
       return "NG"
     end
     ## Documents
-    new_vals = args["update"]["$set"]
-    data = GET([args["key"]])
+    data = get([args["key"]])
     docs = eval("[" + data + "]")
+    results = mongodb_create_result(docs, args)
+    set([args["key"], results])
+  end
+
+  def mongodb_create_result(docs, args)
+    results = []
     replace_flag = true
     docs.each_index do |index|
       if replace_flag
         doc = parse_json(docs[index])
-        if args["query"].nil? || args["query"] == {} || mongodbQuery(doc, args["query"])
-          new_vals.each do |k, v|
+        if args["query"].nil? || args["query"] == {} || mongodb_query(doc, args["query"])
+          args["update"]["$set"].each do |k, v|
             doc[k.to_sym] = v.delete(" ")
           end
         end
@@ -89,16 +91,16 @@ module MongoDB2RedisOperation
         results.push(docs[index])
       end
     end
-    SET([args["key"], results.to_json])
+    results.to_json
   end
 
-  # @conv {"FIND" => ["GET,"QUERY@client"]}
-  def MONGODB_FIND(args)
+  # @conv {"find" => ["get,"query@client"]}
+  def mongodb_find(args)
     results = []
     case @option[:datamodel]
     when "DOCUMENT" then
-      ## Documents
-      data = SMEMBERS([args["key"]], true)
+      ## documents
+      data = smembers([args["key"]], true)
       docs = []
       unless data.nil?
         docs = eval("[" + data + "]")
@@ -108,7 +110,7 @@ module MongoDB2RedisOperation
         results = docs
       else
         docs.each do |doc|
-          if mongodbQuery(doc, args["filter"])
+          if mongodb_query(doc, args["filter"])
             results.push(doc)
           end
         end
@@ -120,28 +122,28 @@ module MongoDB2RedisOperation
     results
   end
 
-  # @conv {"DELETE" => ["SMEMBERS","QUERY@client","SREM"]}
-  def MONGODB_DELETE(args)
+  # @conv {"delete" => ["smembers","query@client","srem"]}
+  def mongodb_delete(args)
     v = "NG"
     case @option[:datamodel]
     when "DOCUMENT"
       if args["filter"].size.zero?
-        v = DEL([args["key"]])
+        v = del([args["key"]])
       else
-        data = GET([args["key"]])
+        data = get([args["key"]])
         new_docs = []
         docs = eval("[" + data + "]")
         docs.each_index do |index|
           doc = parse_json(docs[index])
-          unless mongodbQuery(doc, args["filter"])
+          unless mongodb_query(doc, args["filter"])
             new_docs.push(convert_json(doc))
           end
         end
         if new_docs.size.zero?
-          v = DEL(args["key"])
+          v = del(args["key"])
         else
           value = new_docs.to_json
-          v = SET([args["key"], value])
+          v = set([args["key"], value])
         end
       end
     else
@@ -150,18 +152,18 @@ module MongoDB2RedisOperation
     v
   end
 
-  # @conv {"FINDANDMODIFY" => ["undefined"]}
-  def MONGODB_FINDANDMODIFY(args)
-    @logger.debug("MONGODB_FINDANDMODIFY is not implemented [#{args}]")
+  # @conv {"findandmodify" => ["undefined"]}
+  def mongodb_findandmodify(args)
+    @logger.debug("mongodb_findandmodify is not implemented [#{args}]")
     "NG"
   end
 
-  # @conv {"COUNT" => ["SMEMBERS","QUERY@client","COUNT@client"]}
-  def MONGODB_COUNT(args)
+  # @conv {"count" => ["smembers","query@client","count@client"]}
+  def mongodb_count(args)
     count = 0
     case @option[:datamodel]
     when "DOCUMENT" then
-      docs = SMEMBERS([args["key"]], true)
+      docs = smembers([args["key"]], true)
       monitor("client", "count")
       args["query"].each_key do |k|
         query = generate_query(k, args["query"][k])
@@ -180,10 +182,10 @@ module MongoDB2RedisOperation
     count
   end
 
-  # @conv {"AGGREGATE" => ["SMEMBERS","ACCUMULATION@client"]}
-  def MONGODB_AGGREGATE(args)
-    @logger.debug("MONGODB_AGGREGATE")
-    docs = SMEMBERS([args["key"]], true)
+  # @conv {"aggregate" => ["smembers","accumulation@client"]}
+  def mongodb_aggregate(args)
+    @logger.debug("mongodb_aggregate")
+    docs = smembers([args["key"]], true)
     result = {}
     params = @query_parser.get_parameter(args)
     docs = eval("[" + docs + "]")
@@ -191,7 +193,7 @@ module MongoDB2RedisOperation
     key2realkey = nil
     docs.each do |doc|
       monitor("client", "match")
-      flag = mongodbQuery(doc, args["match"])
+      flag = mongodb_query(doc, args["match"])
       monitor("client", "match")
       if flag
         if firstflag
@@ -213,8 +215,9 @@ module MongoDB2RedisOperation
     end
     result
   end
-  # @conv {"MAPREDUCE" => ["undefined"]}
-  def MONGODB_MAPREDUCE(args)
+
+  # @conv {"mapreduce" => ["undefined"]}
+  def mongodb_mapreduce(args)
     @logger.warn("Unsupported MapReduce :#{args}")
     "NG"
   end
@@ -222,7 +225,7 @@ module MongoDB2RedisOperation
   ###################
   ## QUERY PROCESS ##
   ###################
-  def mongodbQuery(doc, query)
+  def mongodb_query(doc, query)
     if query && query.class == Hash && !query.keys.empty?
       query.each do |key__, cond|
         key = key__.to_sym
@@ -241,23 +244,25 @@ module MongoDB2RedisOperation
   end
 
   def mongo_query_fieldmatching(value, cond)
-    if cond.kind_of?(Hash) && !@query_processor.query(cond, value)
+    if mongo_query_field_nonmatch(value, cond)
       return false
-    end
-    case value.class.to_s
-    when "String"
-      ## Field Matching
-      if value.delete("\"").delete(" ") != cond.delete(" ")
-        return false
-      end
-    when "Float"
+    elsif value.class.to_s == "Float"
       return value == cond.to_f
-    else
-      if %w[Integer Fixnum].include?(value.class.to_s)
-        return value == cond.to_i
-      end
+    elsif %w[Integer Fixnum].include?(value.class.to_s)
+      return value == cond.to_i
     end
     true
+  end
+
+  def mongo_query_field_nonmatch(value, cond)
+    if cond.is_a?(Hash) && !@query_processor.query(cond, value)
+      return true
+    elsif value.class.to_s == "String" &&
+          value.delete("\"").delete(" ") != cond.delete(" ")
+      ## Field Matching
+      return true
+    end
+    false
   end
 
   def generate_query(k, val)

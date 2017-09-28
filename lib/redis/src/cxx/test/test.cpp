@@ -30,9 +30,8 @@
 
 #include <iostream>
 #include <string.h>
-#include <stdlib.h>
+#include <unistd.h>
 #include "../redis_cxxrunner.hpp"
-
 
 bool checker(const char* reply_, const char* check){
     std::string reply = reply_;
@@ -53,7 +52,11 @@ void showDetail(const char* reply){
 
 void syncTest(RedisCxxRunner *client, char *ip){
     // SET
-    client->syncConnect(ip,6379);
+    const char *env_ip = getenv("REDIS_IPADDRESS");
+    if(env_ip == NULL){
+      env_ip = "127.0.0.1";
+    }
+    client->syncConnect(env_ip,6379);
     if(client->syncExecuter("set aaa BBBB")){
 	std::cout << "TEST(cxx) [set data] :: PASSED" << std::endl;
     }else{
@@ -156,11 +159,15 @@ void syncTest(RedisCxxRunner *client, char *ip){
 void asyncTest(RedisCxxRunner* client, char *ip){
     /** Async Test(1st) **/
     client->resetDuration();
-    client->asyncConnect(ip,6379);
+    const char *env_ip = getenv("REDIS_IPADDRESS");
+    if(env_ip == NULL){
+      env_ip = "127.0.0.1";
+    }
+    client->asyncConnect(env_ip,6379);
     client->commitQuery("set test11 GOOD");
     client->commitQuery("get test11");
     client->asyncExecuter();
-    if(!strcmp(client->getAsyncReply(),"GOOD")){
+    if(strcmp(client->getAsyncReply(),"GOOD") == 0){
 	std::cout << "TEST(cxx) [async single-set/get data] :: PASSED" << std::endl;
     }else{
 	std::cout << "TEST(cxx) [async single-set/get data] :: FAILED" << std::endl;
@@ -169,7 +176,8 @@ void asyncTest(RedisCxxRunner* client, char *ip){
 
     /** Async Test(2nd) **/
     client->resetDuration();
-    client->asyncConnect(ip,6379);
+    client->asyncConnect(env_ip,6379);
+
     client->commitQuery("set test00 AAAA");
     client->commitQuery("set test01 BBBB");
     client->commitQuery("set test02 CCCC");
@@ -181,15 +189,21 @@ void asyncTest(RedisCxxRunner* client, char *ip){
     client->commitQuery("get test01");
     client->commitQuery("get test00");
     client->asyncExecuter();
-    if(strcmp(client->getAsyncReply(),"EEEE\nDDDD\nCCCC\nBBBB\nAAAA") == 0){
-	std::cout << "TEST(cxx) [async multi-set/get data] :: PASSED" << std::endl;
+    std::string ans = std::string(client->getAsyncReply());
+    if(ans.find("AAAA") != std::string::npos &&
+       ans.find("BBBB") != std::string::npos &&
+       ans.find("CCCC") != std::string::npos &&
+       ans.find("DDDD") != std::string::npos &&
+       ans.find("EEEE") != std::string::npos){
+      std::cout << "TEST(cxx) [async multi-set/get data] :: PASSED" << std::endl;
     }else{
-	std::cout << "TEST(cxx) [async multi-set/get data] :: FAILED" << std::endl;
+      std::cout << "TEST(cxx) [async multi-set/get data] :: FAILED" << std::endl;
     }
     client->asyncClose();
 
     /** Async Test(3rd) **/
-    client->asyncConnect(ip,6379);
+    client->asyncConnect(env_ip,6379);
+
     client->commitQuery("hmset key00 f0 A f1 B");
     client->commitQuery("hmset key00 f2 C f3 D");
     client->commitQuery("hmget key00 f0 f1");
@@ -208,7 +222,8 @@ void asyncTest(RedisCxxRunner* client, char *ip){
 
     /** Async Test **/
     // SADD
-    client->asyncConnect(ip,6379);
+    client->asyncConnect(env_ip,6379);
+
     client->commitQuery("sadd set00 AAA");
     client->commitQuery("sadd set00 BBB");
     client->commitQuery("sadd set00 CCC");
@@ -243,8 +258,11 @@ int main(){
      ****************/
     asyncTest(client, env_ip);
 
-
     // Specific Test 
+    const char *env_ip = getenv("REDIS_IPADDRESS");
+    if(env_ip == NULL){
+      env_ip = "127.0.0.1";
+    }
     client->syncConnect(env_ip,6379);
     client->syncExecuter("FLUSHALL");
     client->syncExecuter("SADD test001 '{\"name\":\"p001\"}'");

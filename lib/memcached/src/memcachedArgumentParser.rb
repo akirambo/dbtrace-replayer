@@ -30,97 +30,110 @@
 
 require_relative "../../common/utils"
 
-
 class MemcachedArgumentParser
   def initialize(logger, option)
     @logger = logger
     @option = option
-    @utils   = Utils.new
+    @utils = Utils.new
   end
-  def exec(operand,args)
-    return send("prepareArgs_#{operand}", args)
+
+  def exec(operand, args)
+    send("prepare_args_#{operand}", args)
   end
-  def structureType(operand,args)
-    return "keyValue"
+
+  def structure_type(_operand, _args)
+    "keyValue"
   end
+
   #################
   ## prepareArgs ##
   #################
   ## 1.SETTYPE :: SET, ADD, REPLACE, APEEND, PREPEND
-  def prepareArgs_SETTYPE(args)
-    case @option[:inputFormat] 
+  def prepare_args_settype(args)
+    case @option[:inputFormat]
     when "basic" then
       ## CHECK ARGUMENTS
       ### 1.create
       value = @utils.create_numbervalue(args[5])
       ### 2. setup arguments considering EXPIRE_TIME
-      if(args[4] == "0")then
+      if args[4] == "0"
         ## EXPIRE_TIME == 0
-        return [args[2],value]
+        return [args[2], value]
       else
-        return [args[2],args[4],value]
+        return [args[2], args[4], value]
       end
     when "binary" then
-      return args
+      args
     end
   end
+
   ## 2.GETTYPE :: GET, GETS, DELETE
-  def prepareArgs_GETTYPE(args)
+  def prepare_args_gettype(args)
     case @option[:inputFormat]
     when "basic" then
-      return [args[2]]
+      [args[2]]
     when "binary" then
-      return [args[0]]
+      [args[0]]
     end
   end
+
   ## 3.CALCTYPE :: INCR, DECR
-  def prepareArgs_CALCTYPE(args)
+  def prepare_args_calctype(args)
     case @option[:inputFormat]
     when "basic" then
-      return [args[2],args[3]]
+      [args[2], args[3]]
     when "binary" then
-      return args
+      args
     end
   end
-  def prepareArgs_SET(args)
-    return prepareArgs_SETTYPE(args)
-  end
-  def prepareArgs_ADD(args)
-    prepareArgs_SETTYPE(args)
-  end
-  def prepareArgs_REPLACE(args)
-    prepareArgs_SETTYPE(args)
-  end
-  def prepareArgs_APPEND(args)
-    prepareArgs_SETTYPE(args)
-  end
-  def prepareArgs_PREPEND(args)
-    prepareArgs_SETTYPE(args)
+
+  def prepare_args_set(args)
+    prepare_args_settype(args)
   end
 
-  def prepareArgs_GET(args)
-    prepareArgs_GETTYPE(args)
-  end
-  def prepareArgs_GETS(args)
-    prepareArgs_GETTYPE(args)
-  end
-  def prepareArgs_DELETE(args)
-    prepareArgs_GETTYPE(args)
+  def prepare_args_add(args)
+    prepare_args_settype(args)
   end
 
-  def prepareArgs_CAS(args)
+  def prepare_args_replace(args)
+    prepare_args_settype(args)
+  end
+
+  def prepare_args_append(args)
+    prepare_args_settype(args)
+  end
+
+  def prepare_args_prepend(args)
+    prepare_args_settype(args)
+  end
+
+  def prepare_args_get(args)
+    prepare_args_gettype(args)
+  end
+
+  def prepare_args_gets(args)
+    prepare_args_gettype(args)
+  end
+
+  def prepare_args_delete(args)
+    prepare_args_gettype(args)
+  end
+
+  def prepare_args_cas(_args)
     @logger.warn("Unsupported CAS Operation.")
-    return nil
-  end
-  def prepareArgs_INCR(args)
-    prepareArgs_CALCTYPE(args)
-  end
-  def prepareArgs_DECR(args)
-    prepareArgs_CALCTYPE(args)
-  end
-  def prepareArgs_FLUSH(args)
-    ## do nothing
-    return []
+    nil
   end
 
+  def prepare_args_incr(args)
+    prepare_args_calctype(args)
+  end
+
+  def prepare_args_decr(args)
+    prepare_args_calctype(args)
+  end
+
+  def prepare_args_flush(_args)
+    ## do nothing
+    []
+  end
 end

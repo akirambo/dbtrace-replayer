@@ -8,269 +8,282 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
   end
   ## STRINGS
   context 'STRING Operation' do
-    it "SET" do
+    it "set" do
       @tester.sync
-      expect(@tester.send("SET",(["test","correct"]))).to eq "OK"
-      expect(@tester.getCommand).to eq ["SET test correct"]
+      expect(@tester.send("set",(["test","correct"]))).to eq "OK"
+      expect(@tester.getCommand).to eq ["set test correct"]
     end
 
-    it "GET" do
+    it "get" do
       @tester.sync
-      expect(@tester.send("GET",["test"])).to eq "syncReply"
-      expect(@tester.getCommand[0]).to eq "GET test"
-    end
-    it "DEL" do
-      @tester.sync
-      expect(@tester.send("DEL",["test"])).to eq "OK"
-      expect(@tester.getCommand[0]).to eq "DEL test"
+      expect(@tester.send("get",["test"])).to eq "syncReply"
+      expect(@tester.getCommand[0]).to eq "get test"
     end
 
-    it "SETNX" do
+    it "del" do
       @tester.sync
-      expect(@tester.send("SETNX",["test","value"])).to eq "OK"
-      expect(@tester.getCommand[0]).to eq "SETNX test value"
+      expect(@tester.send("del",["test"])).to eq "OK"
+      expect(@tester.getCommand[0]).to eq "del test"
     end
 
-    it "SETEX" do
+    it "setnx" do
       @tester.sync
-      expect(@tester.send("SETEX",["test",1,"value"])).to eq "OK"
-      expect(@tester.getCommand[0]).to eq "SETEX test 1 value"
+      expect(@tester.send("setnx",["test","value"])).to eq "OK"
+      expect(@tester.getCommand[0]).to eq "setnx test value"
     end
-    it "PSETEX" do
+
+    it "setex" do
       @tester.sync
-      expect(@tester.send("PSETEX",["test",100,"value"])).to eq "OK"
-      expect(@tester.getCommand[0]).to eq "PSETEX test 100 value"
+      expect(@tester.send("setex",["test",1,"value"])).to eq "OK"
+      expect(@tester.getCommand[0]).to eq "setex test 1 value"
     end
-    it "MSET" do
+
+    it "psetex" do
       @tester.sync
-      expect(@tester.send("MSET",["test0","correct","test1","correct"])).to eq "OK"
-      expect(@tester.getCommand).to eq ["MSET test0 correct test1 correct"]
+      expect(@tester.send("psetex",["test",100,"value"])).to eq "OK"
+      expect(@tester.getCommand[0]).to eq "psetex test 100 value"
     end
-    it "MGET" do
+
+    it "mset" do
       @tester.sync
-      expect(@tester.send("MGET",["test0"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["MGET test0"]
+      expect(@tester.send("mset",["test0","correct","test1","correct"])).to eq "OK"
+      expect(@tester.getCommand).to eq ["mset test0 correct test1 correct"]
     end
-    it "MSETNX" do
+    
+    it "mget" do
       @tester.sync
-      expect(@tester.send("MSETNX",["test2","correct"])).to eq "OK"
-      expect(@tester.getCommand).to eq ["MSETNX test2 correct"]
+      expect(@tester.send("mget",["test0"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["mget test0"]
     end
-    it "INCR" do
+
+    it "msetnx" do
       @tester.sync
-      expect(@tester.send("INCR",(["test"]))).to eq "OK"
-      expect(@tester.getCommand).to eq ["INCR test"]
+      expect(@tester.send("msetnx",["test2","correct"])).to eq "OK"
+      expect(@tester.getCommand).to eq ["msetnx test2 correct"]
     end
-    it "INCRBY" do
+
+    it "incr" do
       @tester.sync
-      expect(@tester.send("INCRBY",(["test",3]))).to eq "OK"
-      expect(@tester.getCommand).to eq ["INCRBY test 3"]
+      expect(@tester.send("incr",(["test"]))).to eq "OK"
+      expect(@tester.getCommand).to eq ["incr test"]
     end
-    it "DECR" do
+
+    it "incrby" do
       @tester.sync
-      expect(@tester.send("DECR",(["test"]))).to eq "OK"
-      expect(@tester.getCommand).to eq ["DECR test"]
+      expect(@tester.send("incrby",(["test",3]))).to eq "OK"
+      expect(@tester.getCommand).to eq ["incrby test 3"]
     end
-    it "DECRBY" do
+    
+    it "decr" do
       @tester.sync
-      expect(@tester.send("DECRBY",(["test",3]))).to eq "OK"
-      expect(@tester.getCommand).to eq ["DECRBY test 3"]
+      expect(@tester.send("decr",(["test"]))).to eq "OK"
+      expect(@tester.getCommand).to eq ["decr test"]
     end
-    it "APPEND" do
+    
+    it "decrby" do
       @tester.sync
-      expect(@tester.send("APPEND",(["test","t"]))).to eq "OK"
-      expect(@tester.getCommand).to eq ["APPEND test t"]
+      expect(@tester.send("decrby",(["test",3]))).to eq "OK"
+      expect(@tester.getCommand).to eq ["decrby test 3"]
     end
-    it "GETSET" do
+
+    it "append" do
       @tester.sync
-      expect(@tester.send("GETSET",(["test","after"]))).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["GETSET test after"]
+      expect(@tester.send("append",(["test","t"]))).to eq "OK"
+      expect(@tester.getCommand).to eq ["append test t"]
     end
-    it "STRLEN" do
+    
+    it "getset" do
       @tester.sync
-      expect(@tester.send("STRLEN",(["test"]))).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["STRLEN test"]
+      expect(@tester.send("getset",(["test","after"]))).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["getset test after"]
+    end
+
+    it "strlen" do
+      @tester.sync
+      expect(@tester.send("strlen",(["test"]))).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["strlen test"]
     end
   end
 
   ## SETS
   context 'SETS Operation' do
-    it "SADD" do
+    it "sadd" do
       @tester.sync
       args = {"key"=>"test","args"=>"elem1"}
-      expect(@tester.send("SADD",args)).to eq "OK"
-      expect(@tester.getCommand).to eq ["SADD test elem1"]
+      expect(@tester.send("sadd",args)).to eq "OK"
+      expect(@tester.getCommand).to eq ["sadd test elem1"]
     end
-    it "SMEMBERS" do
+    it "smembers" do
       @tester.sync
-      expect(@tester.send("SMEMBERS",["test"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["SMEMBERS test"]
+      expect(@tester.send("smembers",["test"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["smembers test"]
     end
-    it "SISMEMBER" do
+    
+    it "sismember" do
       @tester.sync
-      expect(@tester.send("SISMEMBER",["test","elem1"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["SISMEMBER test elem1"]
+      expect(@tester.send("sismember",["test","elem1"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["sismember test elem1"]
     end
-    it "SREM" do
+    it "srem" do
       @tester.sync
-      expect(@tester.send("SREM",["test","elem1"])).to eq "OK"
-      expect(@tester.getCommand).to eq ["SREM test elem1"]
+      expect(@tester.send("srem",["test","elem1"])).to eq "OK"
+      expect(@tester.getCommand).to eq ["srem test elem1"]
     end
-    it "SPOP" do
+    it "spop" do
       @tester.sync
-      expect(@tester.send("SPOP",["test"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["SPOP test"]
+      expect(@tester.send("spop",["test"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["spop test"]
     end
-    it "SMOVE" do
+    it "smove" do
       @tester.sync
-      expect(@tester.send("SMOVE",["test","dst","elem2"])).to eq "OK"
-      expect(@tester.getCommand).to eq ["SMOVE test dst elem2"]
+      expect(@tester.send("smove",["test","dst","elem2"])).to eq "OK"
+      expect(@tester.getCommand).to eq ["smove test dst elem2"]
     end
-    it "SCARD" do
+    it "scard" do
       @tester.sync
-      expect(@tester.send("SCARD",["test"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["SCARD test"]
+      expect(@tester.send("scard",["test"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["scard test"]
     end
-    it "SINTER" do
+    it "sinter" do
       @tester.sync
-      expect(@tester.send("SINTER",["test0","test1"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["SINTER test0 test1"]
+      expect(@tester.send("sinter",["test0","test1"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["sinter test0 test1"]
     end
-    it "SINTERSTORE" do
+    it "sinterstore" do
       @tester.sync
       args = {"key" => "dst","args" => ["test0","test1"]}
-      expect(@tester.send("SINTERSTORE",args)).to eq "OK"
-      expect(@tester.getCommand).to eq ["SINTERSTORE dst test0 test1"]
+      expect(@tester.send("sinterstore",args)).to eq "OK"
+      expect(@tester.getCommand).to eq ["sinterstore dst test0 test1"]
     end
-    it "SDIFF" do
+    it "sdiff" do
       @tester.sync
-      expect(@tester.send("SDIFF",["test0","test1"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["SDIFF test0 test1"]
+      expect(@tester.send("sdiff",["test0","test1"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["sdiff test0 test1"]
     end
-    it "SDIFFSTORE" do
+    it "sdiffstore" do
       @tester.sync
       args = {"key" => "dst", "args" => ["test0","test1"]}
-      expect(@tester.send("SDIFFSTORE",args)).to eq "OK"
-      expect(@tester.getCommand).to eq ["SDIFFSTORE dst test0 test1"]
+      expect(@tester.send("sdiffstore",args)).to eq "OK"
+      expect(@tester.getCommand).to eq ["sdiffstore dst test0 test1"]
     end
-    it "SUNION" do
+    it "sunion" do
       @tester.sync
-      expect(@tester.send("SUNION",["test0","test1"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["SUNION test0 test1"]
+      expect(@tester.send("sunion",["test0","test1"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["sunion test0 test1"]
     end
-    it "SUNIONSTORE" do
+    it "sunionstore" do
       @tester.sync
       args = {"key" => "dst","args" => ["test0","test1"]}
-      expect(@tester.send("SUNIONSTORE",args)).to eq "OK"
-      expect(@tester.getCommand).to eq ["SUNIONSTORE dst test0 test1"]
+      expect(@tester.send("sunionstore",args)).to eq "OK"
+      expect(@tester.getCommand).to eq ["sunionstore dst test0 test1"]
     end
-    it "SRANDMEMBER" do
+    it "srandmember" do
       @tester.sync
-      expect(@tester.send("SRANDMEMBER",["test"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["SRANDMEMBER test"]
+      expect(@tester.send("srandmember",["test"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["srandmember test"]
     end
   end
   ## SORTED SET
-  context 'SORTED SET Operation' do
-    it "ZADD" do
+  context 'sorted set Operation' do
+    it "zadd" do
       @tester.sync
-      expect(@tester.send("ZADD",["zset",300,"e3"])).to eq "OK"
-      expect(@tester.getCommand).to eq ["ZADD zset 300 e3"]
+      expect(@tester.send("zadd",["zset",300,"e3"])).to eq "OK"
+      expect(@tester.getCommand).to eq ["zadd zset 300 e3"]
     end
-    it "ZRANGE" do
+    it "zrange" do
       @tester.sync
-      expect(@tester.send("ZRANGE",["zset",0,2])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZRANGE zset 0 2"]
+      expect(@tester.send("zrange",["zset",0,2])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zrange zset 0 2"]
     end
-    it "ZREM" do
+    it "zrem" do
       @tester.sync
-      expect(@tester.send("ZREM",["zset","e1"])).to eq "OK"
-      expect(@tester.getCommand).to eq ["ZREM zset e1"]
+      expect(@tester.send("zrem",["zset","e1"])).to eq "OK"
+      expect(@tester.getCommand).to eq ["zrem zset e1"]
     end
-    it "ZINCRBY" do
+    it "zincrby" do
       @tester.sync
-      expect(@tester.send("ZINCRBY",["zset",1000,1])).to eq "OK"
-      expect(@tester.getCommand).to eq ["ZINCRBY zset 1000 1"]
+      expect(@tester.send("zincrby",["zset",1000,1])).to eq "OK"
+      expect(@tester.getCommand).to eq ["zincrby zset 1000 1"]
     end
-    it "ZRANK" do
+    it "zrank" do
       @tester.sync
-      expect(@tester.send("ZRANK",["zset",1])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZRANK zset 1"]
+      expect(@tester.send("zrank",["zset",1])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zrank zset 1"]
     end
-    it "ZREVRANK" do
+    it "zrevrank" do
       @tester.sync
-      expect(@tester.send("ZREVRANK",["zset",1])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZREVRANK zset 1"]
+      expect(@tester.send("zrevrank",["zset",1])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zrevrank zset 1"]
     end
-    it "ZRANGE" do
+    it "zrange" do
       @tester.sync
-      expect(@tester.send("ZRANGE",["zset",1,2])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZRANGE zset 1 2"]
+      expect(@tester.send("zrange",["zset",1,2])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zrange zset 1 2"]
     end
-    it "ZREVRANGE" do
+    it "zrevrange" do
       @tester.sync
-      expect(@tester.send("ZREVRANGE",["zset",1,2])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZREVRANGE zset 1 2"]
+      expect(@tester.send("zrevrange",["zset",1,2])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zrevrange zset 1 2"]
     end
-    it "ZRANGEBYSCORE" do
+    it "zrangebyscore" do
       @tester.sync
-      expect(@tester.send("ZRANGEBYSCORE",["zset",200,300])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZRANGEBYSCORE zset 200 300"]
+      expect(@tester.send("zrangebyscore",["zset",200,300])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zrangebyscore zset 200 300"]
     end
-    it "ZCOUNT" do
+    it "zcount" do
       @tester.sync
-      expect(@tester.send("ZCOUNT",["zset",200,300])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZCOUNT zset 200 300"]
+      expect(@tester.send("zcount",["zset",200,300])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zcount zset 200 300"]
     end
-    it "ZCARD" do
+    it "zcard" do
       @tester.sync
-      expect(@tester.send("ZCARD",["zset"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZCARD zset"]
+      expect(@tester.send("zcard",["zset"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zcard zset"]
     end
-    it "ZSCORE" do
+    it "zscore" do
       @tester.sync
-      expect(@tester.send("ZSCORE",["zset","e2"])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZSCORE zset e2"]
+      expect(@tester.send("zscore",["zset","e2"])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zscore zset e2"]
     end
-    it "ZREMRANGEBYRANK" do
+    it "zremrangebyrank" do
       @tester.sync
-      expect(@tester.send("ZREMRANGEBYRANK",["zset",1,2])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZREMRANGEBYRANK zset 1 2"]
+      expect(@tester.send("zremrangebyrank",["zset",1,2])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zremrangebyrank zset 1 2"]
     end
-    it "ZREMRANGEBYSCORE" do
+    it "zremrangebyscore" do
       @tester.sync
-      expect(@tester.send("ZREMRANGEBYSCORE",["zset",200,300])).to eq "syncReply"
-      expect(@tester.getCommand).to eq ["ZREMRANGEBYSCORE zset 200 300"]
+      expect(@tester.send("zremrangebyscore",["zset",200,300])).to eq "syncReply"
+      expect(@tester.getCommand).to eq ["zremrangebyscore zset 200 300"]
     end
-    it "ZUNIONSTORE" do
+    it "zunionstore" do
       ## BASIC 
       @tester.sync
       args = {"key" => "zsetC","args" => ["zsetA","zsetB"],"option" => {}}
-      expect(@tester.send("ZUNIONSTORE", args)).to eq "OK"
-      expect(@tester.getCommand).to eq ["ZUNIONSTORE zsetC 2 zsetA zsetB"]
+      expect(@tester.send("zunionstore", args)).to eq "OK"
+      expect(@tester.getCommand).to eq ["zunionstore zsetC 2 zsetA zsetB"]
       
       ## AGGREGATE [SUM]x2
       @tester.sync
       args = {"key" => "zsetC", "args" => ["zsetA","zsetB"],
         "option" => {:weights => ["2.0","1.0"],:aggregate => "sum"}}
-      expect(@tester.send("ZUNIONSTORE",args)).to eq "OK"
-      ans =  ["ZUNIONSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate sum"]
+      expect(@tester.send("zunionstore",args)).to eq "OK"
+      ans = ["zunionstore zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate sum"]
       expect(@tester.getCommand).to eq ans
       
       ## AGGREGATE [SUM]x3
       @tester.sync
       args = {"key" => "zsetC","args" => ["zsetA","zsetB","zsetD"],
         "option" => {:weights => ["2.0","1.0","1.5"],:aggregate => "sum"}}
-      expect(@tester.send("ZUNIONSTORE",args)).to eq "OK"
-      ans =  ["ZUNIONSTORE zsetC 3 zsetA zsetB zsetD weights 2.0 1.0 1.5 aggregate sum"]
+      expect(@tester.send("zunionstore",args)).to eq "OK"
+      ans = ["zunionstore zsetC 3 zsetA zsetB zsetD weights 2.0 1.0 1.5 aggregate sum"]
       expect(@tester.getCommand).to eq ans
 
       ## AGGREGATE [MIN]
       @tester.sync
       args = {"key" => "zsetC", "args" => ["zsetA","zsetB"],
         "option" => {:weights => ["2.0","1.0"],:aggregate => "min"}}
-      expect(@tester.send("ZUNIONSTORE",args)).to eq "OK"
-      ans =  ["ZUNIONSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate min"]
+      expect(@tester.send("zunionstore",args)).to eq "OK"
+      ans = ["zunionstore zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate min"]
       expect(@tester.getCommand).to eq ans
 
       ## AGGREGATE [MAX]
@@ -278,17 +291,17 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       args = {
         "key" => "zsetC","args" => ["zsetA","zsetB"],
         "option" => {:weights => ["2.0","1.0"],:aggregate => "max"}}
-      expect(@tester.send("ZUNIONSTORE",args)).to eq "OK"
-      ans =  ["ZUNIONSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate max"]
+      expect(@tester.send("zunionstore",args)).to eq "OK"
+      ans = ["zunionstore zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate max"]
       expect(@tester.getCommand).to eq ans
     end
     
-    it "ZINTERSTORE" do
+    it "zinterstore" do
       @tester.sync
       ## BASIC 
       args = {"key" => "zsetC","args" => ["zsetA","zsetB"],"option" => {}}
-      expect(@tester.send("ZINTERSTORE",args)).to eq "OK"
-      ans =  ["ZINTERSTORE zsetC 2 zsetA zsetB"]
+      expect(@tester.send("zinterstore",args)).to eq "OK"
+      ans =  ["zinterstore zsetC 2 zsetA zsetB"]
       expect(@tester.getCommand).to eq ans
 
       ## AGGREGATE [SUM]
@@ -296,16 +309,16 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       args = {"key" => "zsetC","args" => ["zsetA","zsetB"],
         "option" => {:weights => ["2.0","1.0"], :aggregate => "sum"}}
       
-      expect(@tester.send("ZINTERSTORE",args)).to eq "OK"
-      ans =  ["ZINTERSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate sum"]
+      expect(@tester.send("zinterstore",args)).to eq "OK"
+      ans = ["zinterstore zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate sum"]
       expect(@tester.getCommand).to eq ans
 
       ## AGGREGATE [MIN]
       @tester.sync
       args = {"key" => "zsetC","args" => ["zsetA","zsetB"],
         "option" => {:weights => ["2.0","1.0"], :aggregate => "min"}}      
-      expect(@tester.send("ZINTERSTORE", args)).to eq "OK"
-      ans =  ["ZINTERSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate min"]
+      expect(@tester.send("zinterstore", args)).to eq "OK"
+      ans = ["zinterstore zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate min"]
       expect(@tester.getCommand).to eq ans
 
       ## AGGREGATE [MAX]
@@ -313,222 +326,222 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       args = {"key" => "zsetC","args" => ["zsetA","zsetB"],
         "option" => {:weights => ["2.0","1.0"], :aggregate => "max"}
       }
-      expect(@tester.send("ZINTERSTORE", args)).to eq "OK"
-      ans =  ["ZINTERSTORE zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate max"]
+      expect(@tester.send("zinterstore", args)).to eq "OK"
+      ans = ["zinterstore zsetC 2 zsetA zsetB weights 2.0 1.0 aggregate max"]
       expect(@tester.getCommand).to eq ans
     end
   end
   ## LIST
   context 'LIST Operation' do
-    it "LPUSH" do
+    it "lpush" do
       @tester.sync
-      expect(@tester.send("LPUSH", ["test_lpush","e1"])).to eq "OK"
-      ans =  ["LPUSH test_lpush e1"]
+      expect(@tester.send("lpush", ["test_lpush","e1"])).to eq "OK"
+      ans = ["lpush test_lpush e1"]
       expect(@tester.getCommand).to eq ans
     end
-    it "LRANGE" do
+    it "lrange" do
       @tester.sync
-      expect(@tester.send("LRANGE", ["test_lpush",0,-1])).to eq "syncReply"
-      ans =  ["LRANGE test_lpush 0 -1"]
+      expect(@tester.send("lrange", ["test_lpush",0,-1])).to eq "syncReply"
+      ans = ["lrange test_lpush 0 -1"]
       expect(@tester.getCommand).to eq ans
     end
-    it "RPUSH" do
+    it "rpush" do
       @tester.sync
-      expect(@tester.send("RPUSH", ["test_rpush","e1"])).to eq "OK"
-      ans =  ["RPUSH test_rpush e1"]
+      expect(@tester.send("rpush", ["test_rpush","e1"])).to eq "OK"
+      ans = ["rpush test_rpush e1"]
       expect(@tester.getCommand).to eq ans
     end
-    it "LPOP" do
+    it "lpop" do
       @tester.sync
-      expect(@tester.send("LPOP", ["test_lpop"])).to eq "OK"
-      ans =  ["LPOP test_lpop"]
+      expect(@tester.send("lpop", ["test_lpop"])).to eq "OK"
+      ans = ["lpop test_lpop"]
       expect(@tester.getCommand).to eq ans
     end
-    it "RPOP" do
+    it "rpop" do
       @tester.sync
-      expect(@tester.send("RPOP", ["test_rpop"])).to eq "OK"
-      ans =  ["RPOP test_rpop"]
+      expect(@tester.send("rpop", ["test_rpop"])).to eq "OK"
+      ans = ["rpop test_rpop"]
       expect(@tester.getCommand).to eq ans
     end
-    it "LREM" do 
+    it "lrem" do 
       @tester.sync
-      expect(@tester.send("LREM", ["test_lrem",-2,"e1"])).to eq "OK"
-      ans =  ["LREM test_lrem -2 e1"]
+      expect(@tester.send("lrem", ["test_lrem",-2,"e1"])).to eq "OK"
+      ans = ["lrem test_lrem -2 e1"]
       expect(@tester.getCommand).to eq ans
     end
-    it "LINDEX" do
+    it "lindex" do
       @tester.sync
-      expect(@tester.send("LINDEX", ["test_lindex",0])).to eq "syncReply"
-      ans =  ["LINDEX test_lindex 0"]
+      expect(@tester.send("lindex", ["test_lindex",0])).to eq "syncReply"
+      ans = ["lindex test_lindex 0"]
       expect(@tester.getCommand).to eq ans
     end
-    it "RPOPLPUSH" do
+    it "rpoplpush" do
       @tester.sync
-      expect(@tester.send("RPOPLPUSH", ["test_rplp","e2"])).to eq "syncReply"
-      ans =  ["RPOPLPUSH test_rplp e2"]
+      expect(@tester.send("rpoplpush", ["test_rplp","e2"])).to eq "syncReply"
+      ans = ["rpoplpush test_rplp e2"]
       expect(@tester.getCommand).to eq ans
     end
-    it "LSET" do
+    it "lset" do
       @tester.sync
-      expect(@tester.send("LSET", ["test_lset",-1,"f2"])).to eq "OK"
-      ans =  ["LSET test_lset -1 f2"]
+      expect(@tester.send("lset", ["test_lset",-1,"f2"])).to eq "OK"
+      ans = ["lset test_lset -1 f2"]
       expect(@tester.getCommand).to eq ans
     end
-    it "LTRIM" do
+    it "ltrim" do
       @tester.sync
-      expect(@tester.send("LTRIM", ["test_ltrim",1,-1])).to eq "OK"
-      ans =  ["LTRIM test_ltrim 1 -1"]
+      expect(@tester.send("ltrim", ["test_ltrim",1,-1])).to eq "OK"
+      ans = ["ltrim test_ltrim 1 -1"]
       expect(@tester.getCommand).to eq ans
     end
-    it "LLEN" do
+    it "llen" do
       @tester.sync
-      expect(@tester.send("LLEN", ["test_llen"])).to eq "syncReply"
-      ans =  ["LLEN test_llen"]
+      expect(@tester.send("llen", ["test_llen"])).to eq "syncReply"
+      ans = ["llen test_llen"]
       expect(@tester.getCommand).to eq ans
     end
   end
   ## HASH
   context 'HASH Operation' do
-    it "HSET" do
+    it "hset" do
       @tester.sync
-      expect(@tester.send("HSET", ["key","field","value"])).to eq "OK"
-      ans =  ["HSET key field value"]
+      expect(@tester.send("hset", ["key","field","value"])).to eq "OK"
+      ans =  ["hset key field value"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HGET" do
+    it "hget" do
       @tester.sync
-      expect(@tester.send("HGET", ["key","field"])).to eq "syncReply"
-      ans =  ["HGET key field"]
+      expect(@tester.send("hget", ["key","field"])).to eq "syncReply"
+      ans =  ["hget key field"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HMSET" do
+    it "hmset" do
       @tester.sync
       args = {"key" => "key", "args" => ["field0","value0","field1","value1"]} 
-      expect(@tester.send("HMSET", args)).to eq "OK"
-      ans =  ["HMSET key field0 value0 field1 value1"]
+      expect(@tester.send("hmset", args)).to eq "OK"
+      ans =  ["hmset key field0 value0 field1 value1"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HMGET" do
+    it "hmget" do
       @tester.sync
       args = {"key" => "key","args" => ["field0","field1"]}
-      expect(@tester.send("HMGET", args,false)).to eq "syncReply"
-      ans =  ["HMGET key field0 field1"]
+      expect(@tester.send("hmget", args,false)).to eq "syncReply"
+      ans =  ["hmget key field0 field1"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HINCRBY" do
+    it "hincrby" do
       @tester.sync
-      expect(@tester.send("HINCRBY",["key","field",10])).to eq "OK"
-      ans =  ["HINCRBY key field 10"]
+      expect(@tester.send("hincrby",["key","field",10])).to eq "OK"
+      ans =  ["hincrby key field 10"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HEXISTS" do
+    it "hexists" do
       @tester.sync
-      expect(@tester.send("HEXISTS", ["key","field"])).to eq "syncReply"
-      ans =  ["HEXISTS key field"]
+      expect(@tester.send("hexists", ["key","field"])).to eq "syncReply"
+      ans =  ["hexists key field"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HDEL" do
+    it "hdel" do
       @tester.sync
-      expect(@tester.send("HDEL", ["key","field"])).to eq "OK"
-      ans =  ["HDEL key field"]
+      expect(@tester.send("hdel", ["key","field"])).to eq "OK"
+      ans =  ["hdel key field"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HLEN" do
+    it "hlen" do
       @tester.sync
-      expect(@tester.send("HLEN", ["key"])).to eq "syncReply"
-      ans =  ["HLEN key"]
+      expect(@tester.send("hlen", ["key"])).to eq "syncReply"
+      ans =  ["hlen key"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HKEYS" do
+    it "hkeys" do
       @tester.sync
-      expect(@tester.send("HKEYS", ["key"])).to eq "syncReply"
-      ans =  ["HKEYS key"]
+      expect(@tester.send("hkeys", ["key"])).to eq "syncReply"
+      ans =  ["hkeys key"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HVALS" do
+    it "hvals" do
       @tester.sync
-      expect(@tester.send("HVALS", ["key"])).to eq "syncReply"
-      ans =  ["HVALS key"]
+      expect(@tester.send("hvals", ["key"])).to eq "syncReply"
+      ans =  ["hvals key"]
       expect(@tester.getCommand).to eq ans
     end
-    it "HGETALL" do
+    it "hgetall" do
       @tester.sync
-      expect(@tester.send("HGETALL",["key"])).to eq "syncReply"
-      ans =  ["HGETALL key"]
+      expect(@tester.send("hgetall",["key"])).to eq "syncReply"
+      ans =  ["hgetall key"]
       expect(@tester.getCommand).to eq ans
     end
   end
-  context "FLUSHALL" do
+  context "flushall" do
     it "Sync with args and initFlag=false" do
       ## Pattern 1
       @tester.sync
-      expect(@tester.send("FLUSHALL",["key","field"],false)).to eq "OK"
-      ans = ["FLUSHALL key field"]
+      expect(@tester.send("flushall",["key","field"],false)).to eq "OK"
+      ans = ["flushall key field"]
       expect(@tester.getCommand).to eq ans
     end
     it "Sync with args and initFlag=true" do
       ## Pattern 2
       @tester.sync
-      expect(@tester.send("FLUSHALL",["key","field"],true)).to eq "OK"
-      ans = ["FLUSHALL key field"]
+      expect(@tester.send("flushall",["key","field"],true)).to eq "OK"
+      ans = ["flushall key field"]
       expect(@tester.getCommand).to eq ans
     end
     it "Sync with initFlag=false" do
       ## Pattern 3
       @tester.sync
-      expect(@tester.send("FLUSHALL",[],false)).to eq "OK"
-      ans = ["FLUSHALL"]
+      expect(@tester.send("flushall",[],false)).to eq "OK"
+      ans = ["flushall"]
       expect(@tester.getCommand).to eq ans
     end
     it "Sync with initFlag=true" do
       ## Pattern 4
       @tester.sync
-      expect(@tester.send("FLUSHALL",[],true)).to eq "OK"
-      ans = ["FLUSHALL"]
+      expect(@tester.send("flushall",[],true)).to eq "OK"
+      ans = ["flushall"]
       expect(@tester.getCommand).to eq ans
     end
     it "Async with args and initFlag=false" do
       ## Pattern 5
       @tester.async
-      expect(@tester.send("FLUSHALL",["key","field"],false)).to eq "OK"
-      ans = ["FLUSHALL key field"]
+      expect(@tester.send("flushall",["key","field"],false)).to eq "OK"
+      ans = ["flushall key field"]
       expect(@tester.getCommand).to eq ans
     end
     it "Async with args and initFlag=true" do
       ## Pattern 6
       @tester.async
-      expect(@tester.send("FLUSHALL",["key","field"],true)).to eq "OK"
-      ans = ["FLUSHALL key field"]
+      expect(@tester.send("flushall",["key","field"],true)).to eq "OK"
+      ans = ["flushall key field"]
       expect(@tester.getCommand).to eq ans
     end
     it "Async with initFlag=false" do
       ## Pattern 7
       @tester.async
-      expect(@tester.send("FLUSHALL",[],false)).to eq "OK"
-      ans = ["FLUSHALL"]
+      expect(@tester.send("flushall",[],false)).to eq "OK"
+      ans = ["flushall"]
       expect(@tester.getCommand).to eq ans
     end
     it "Async with initFlag=true" do
       ## Pattern 8
       @tester.async
-      expect(@tester.send("FLUSHALL",[],true)).to eq "OK"
-      ans = ["FLUSHALL"]
+      expect(@tester.send("flushall",[],true)).to eq "OK"
+      ans = ["flushall"]
       expect(@tester.getCommand).to eq ans
     end
   end
-  context "Common Method Test" do
-    it "KEYS type='keyspace'" do
+  context "Common MethLod test" do
+    it "keys type='keyspace'" do
       @tester.sync
-      expect(@tester.send("KEYS","k1","keyspace")).to match_array ["k1.t1","k1.t2"]
+      expect(@tester.send("keys","k1","keyspace")).to match_array ["k1.t1","k1.t2"]
     end
-    it "KEYS type='table'" do
+    it "keys type='table'" do
       @tester.sync
-      expect(@tester.send("KEYS","t1","table")).to match_array ["k1.t1","k2.t1"]
+      expect(@tester.send("keys","t1","table")).to match_array ["k1.t1","k2.t1"]
     end
     it "prepare_redis" do
-      expect(@tester.send("prepare_redis","ZUNIONSTORE",[])["args"]).to eq "extractZ_X_STORE_ARGS"
-      expect(@tester.send("prepare_redis","MSET",[])["args"]).to eq "args2hash"
-      expect(@tester.send("prepare_redis","HMGET",[])["args"]).to eq "args2key_args"
+      expect(@tester.send("prepare_redis","zunionstore",[])["args"]).to eq "extract_z_x_store_args"
+      expect(@tester.send("prepare_redis","mset",[])["args"]).to eq "args2hash"
+      expect(@tester.send("prepare_redis","hmget",[])["args"]).to eq "args2key_args"
     end
   end
   context "CXX Executer" do

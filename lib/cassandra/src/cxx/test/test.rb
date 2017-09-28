@@ -32,7 +32,11 @@ require "./cassandraCxxRunner"
 
 begin
   client = CassandraCxxRunner.new()
-  client.connect("127.0.0.1")
+  ip = ENV["CASSANDRA_IPADDRESS"]
+  unless ip
+    ip = "127.0.0.01"
+  end
+  client.connect(ip)
 
   ## Drop
   if(client.syncExecuter("drop keyspace if exists testdb"))then

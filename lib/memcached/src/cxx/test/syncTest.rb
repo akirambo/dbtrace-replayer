@@ -32,7 +32,11 @@ require "./memcachedCxxRunner"
 
 begin
   client = MemcachedCxxRunner.new()
-  client.connect("127.0.0.1:11211",true)
+  env_ip = ENV["MEMCACHED_IPADDRESS"]
+  unless env_ip 
+    env_ip = "127.0.0.1"
+  end
+  client.connect("#{env_ip}:11211",true)
 
   ## SET / GET
   client.syncExecuter("set","aaa","AAA",0)
@@ -87,6 +91,7 @@ begin
   client.syncExecuter("set","test01","AAA",0)
   client.syncExecuter("set","test02","AAA",0)
   client.syncExecuter("set","test03","AAA",0)
+  sleep 1
   storedKeys = client.keys().split(",")
   if(storedKeys.include?("test00") and
       storedKeys.include?("test01") and

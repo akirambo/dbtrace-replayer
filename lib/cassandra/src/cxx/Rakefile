@@ -25,9 +25,8 @@ end
 
 desc "Simple Test"
 task :test => [:build] do
-  #sh "cd test; make test dtest"
-  #sh "ruby test/test.rb"
-  sh "ruby test/test02.rb"
+  sh "cd test; make test"
+  sh "ruby test/test.rb"
 end
 
 task :clean do

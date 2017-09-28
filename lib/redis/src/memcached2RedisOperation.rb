@@ -31,106 +31,106 @@
 module Memcached2RedisOperation
   private
 
-  # @conv {"SET(args x3)" => ["SETEX"]}
-  # @conv {"SET(args x2)" => ["SET"]}
-  def MEMCACHED_SET(args)
+  # @conv {"set(args x3)" => ["setex"]}
+  # @conv {"set(args x2)" => ["set"]}
+  def memcached_set(args)
     v = "NG"
     if args.size == 3
-      v = SETEX(args)
+      v = setex(args)
     elsif args.size == 2
-      v = SET(args)
+      v = set(args)
     else
       @logger.error("Unsupported Arguments #{args} @#{__method__}")
     end
     v
   end
 
-  # @conv {"GET" => ["GET"]}
-  def MEMCACHED_GET(args)
-    GET(args)
+  # @conv {"get" => ["get"]}
+  def memcached_get(args)
+    get(args)
   end
 
-  # @conv {"ADD(args x3)" => ["GET","SETEX"]}
-  # @conv {"ADD(args x2)" => ["GET","SET"]}
-  def MEMCACHED_ADD(args)
+  # @conv {"add(args x3)" => ["get","setex"]}
+  # @conv {"add(args x2)" => ["get","set"]}
+  def memcached_add(args)
     v = "NG"
-    if GET([args[0]]).nil?
-      v = MEMCACHED_SET(args)
+    if get([args[0]]).nil?
+      v = memcached_set(args)
     end
     v
   end
 
-  # @conv {"REPLACE" => ["GET","SET"]}
-  def MEMCACHED_REPLACE(args)
+  # @conv {"replace" => ["get","set"]}
+  def memcached_replace(args)
     v = "NG"
-    unless GET([args[0]]).nil?
-      v = MEMCACHED_SET(args)
+    unless get([args[0]]).nil?
+      v = memcached_set(args)
     end
     v
   end
 
-  # @conv {"GETS" => ["GET"]}
-  def MEMCACHED_GETS(args)
-    GET(args)
+  # @conv {"gets" => ["get"]}
+  def memcached_gets(args)
+    get(args)
   end
 
-  # @conv {"APPEND(args x3)" => ["GET","SETEX"]}
-  # @conv {"APPEND(args x2)" => ["GET","SET"]}
-  def MEMCACHED_APPEND(args)
-    str = GET(args) + args.last.to_s
+  # @conv {"append(args x3)" => ["get","setex"]}
+  # @conv {"append(args x2)" => ["get","set"]}
+  def memcached_append(args)
+    str = get(args) + args.last.to_s
     args[args.length - 1] = str
-    MEMCACHED_SET(args)
+    memcached_set(args)
   end
 
-  # @conv {"PREPEND(args x3)" => ["GET","SETEX"]}
-  # @conv {"PREPEND(args x2)" => ["GET","SET"]}
-  def MEMCACHED_PREPEND(args)
-    str = GET(args)
+  # @conv {"prepend(args x3)" => ["get","setex"]}
+  # @conv {"prepend(args x2)" => ["get","set"]}
+  def memcached_prepend(args)
+    str = get(args)
     pos = args.length - 1
     args[pos] = args[pos].to_s + str
-    MEMCACHED_SET(args)
+    memcached_set(args)
   end
 
-  # @conv {"CAS(args x4)" => ["SETEX"]}
-  # @conv {"CAS(args x3)" => ["SET"]}
-  def MEMCACHED_CAS(args)
+  # @conv {"cas(args x4)" => ["setex"]}
+  # @conv {"cas(args x3)" => ["set"]}
+  def memcached_cas(args)
     args.pop
-    MEMCACHED_SET(args)
+    memcached_set(args)
   end
 
-  # @conv {"INCR" => ["INCRBY"]}
-  def MEMCACHED_INCR(args)
-    INCRBY(args)
+  # @conv {"incr" => ["incrby"]}
+  def memcached_incr(args)
+    incrby(args)
   end
 
-  # @conv {"DECR" => ["DECRBY"]}
-  def MEMCACHED_DECR(args)
-    DECRBY(args)
+  # @conv {"decr" => ["decrby"]}
+  def memcached_decr(args)
+    decrby(args)
   end
 
-  # @conv {"DELETE" => ["DEL"]}
-  def MEMCACHED_DELETE(args)
-    DEL(args)
+  # @conv {"delete" => ["del"]}
+  def memcached_delete(args)
+    del(args)
   end
 
-  # @conv {"FLUSH" => ["FLUSHALL"]}
-  def MEMCACHED_FLUSH(args)
-    FLUSHALL(args)
+  # @conv {"flush" => ["flushall"]}
+  def memcached_flush(args)
+    flushall(args)
   end
 
   #############
-  ## PREPARE ##
+  ## prepare ##
   #############
   def prepare_memcached(operand, args)
     result = {}
     ## PREPARE SPECIAL OPERATION
-    if ["FLUSHALL"].include?(operand)
+    if ["flushall"].include?(operand)
       result["operand"] = operand
       return result
     end
     ## PREPARE OPERATION & ARGS
-    result["operand"] = "MEMCACHED_#{operand.upcase}"
-    result["args"] = @parser.exec(operand.upcase, args)
+    result["operand"] = "memcached_#{operand.downcase}"
+    result["args"] = @parser.exec(operand.downcase, args)
     result
   end
 end

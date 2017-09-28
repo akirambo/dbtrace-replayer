@@ -259,7 +259,11 @@ end
 
 begin
   client = MongodbCxxRunner.new()
-  client.connect("mongodb://127.0.0.1:27017")
+  env_ip = ENV["MONGODB_IPADDRESS"]
+  unless env_ip
+    env_ip = "127.0.0.1"
+  end
+  client.connect("mongodb://#{env_ip}:27017")
   client.setDatabaseName("testdb")
   client.setCollectionName("testcollection")
 

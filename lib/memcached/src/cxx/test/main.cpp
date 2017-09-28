@@ -31,13 +31,19 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include <stdlib.h>
+#include <unistd.h>
 #include "../memcached_cxxrunner.hpp"
-
 
 int main(){
     MemcachedCxxRunner* client;
     client = new MemcachedCxxRunner();
-    client->connect("127.0.0.1:11211",true);
+    const char *env_ip = getenv("MEMCACHED_IPADDRESS");
+    if(env_ip == NULL){
+      env_ip = "127.0.0.1";
+    }
+    std::string server = std::string(env_ip) + ":11211";
+    client->connect(server.c_str(),true);
     if(client->syncExecuter("flush",NULL,NULL,0)){		
 	std::cout << "TEST(cxx) [flush data] :: PASSED" << std::endl;
     }else{
@@ -81,6 +87,7 @@ int main(){
     client->syncExecuter("set","test01","BBBB",0);
     client->syncExecuter("set","test02","CCCC",0);
     client->syncExecuter("set","test03","DDDD",0);
+    sleep(1);
     std::string keys = client->keys();
     if(keys.length() > 0){
 	if(keys.find("test00") != std::string::npos and
@@ -98,21 +105,17 @@ int main(){
 
     // Async Mget
     /// setup 
-    client->syncExecuter("set","test00","AAAA",0);
-    client->syncExecuter("set","test01","BBBB",0);
-    client->syncExecuter("set","test02","CCCC",0);
-    client->syncExecuter("set","test03","DDDD",0);
-    //std::cout << client->getReply() << std::endl;
     client->commitGetKey("test00");
     client->commitGetKey("test01");
     client->commitGetKey("test02");
     client->commitGetKey("test03");
     client->mget();
-    if(!strcmp(client->mgetReply("test00"),"AAAA") or
-       !strcmp(client->mgetReply("test01"),"BBBB") or 
-       !strcmp(client->mgetReply("test02"),"CCCC") or 
-       !strcmp(client->mgetReply("test03"),"DDDD") or 
-       strcmp(client->mgetReply("testXX"),"")){
+    
+    if( strcmp(client->mgetReply("test00"),"AAAA") != 0 or
+	strcmp(client->mgetReply("test01"),"BBBB") != 0 or 
+	strcmp(client->mgetReply("test02"),"CCCC") != 0 or
+	strcmp(client->mgetReply("test03"),"DDDD") != 0 or
+	strcmp(client->mgetReply("testXX"),"") != 0){
 	std::cout << "TEST(cxx) [mget data] :: FAILED" << std::endl;
     }else{
     	std::cout << "TEST(cxx) [mget data] :: PASSED" << std::endl;

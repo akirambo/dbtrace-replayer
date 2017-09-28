@@ -268,7 +268,7 @@ std::string  MemcachedCxxRunner::keys(){
     storedKeys = "";
     memcached_dump_fn callbacks[1];
     callbacks[0] = &dumper;
-    memcached_dump(this->_memc,callbacks,NULL,1);
+    memcached_return_t a = memcached_dump(this->_memc, callbacks, NULL, 1);
     return storedKeys;
 }
 
@@ -293,9 +293,10 @@ bool MemcachedCxxRunner::resetGetKeys(){
 const char* MemcachedCxxRunner::mgetReply(const char* key){
     std::string keyString = key;
     if(keyString != ""){
-	if(this->_values[key]){
-	    return this->_values[key];
-	}
+      //std::cout << key << " :: " << this->_values[key] << std::endl;
+      if(this->_values[key] != NULL){
+	return this->_values[key];
+      }
     }else{
 	std::string buf;
 	bool firstFlag = true;
@@ -344,7 +345,7 @@ bool MemcachedCxxRunner::mget()
 	while((return_value = memcached_fetch(this->_memc, return_key, &return_key_length,
 					      &return_value_length, &flags, &rc)) != NULL){
 	    if(rc == MEMCACHED_SUCCESS){
-		//std::cout << "(" << return_key << "," << return_value << ")"<< std::endl;
+	      //std::cout << "(" << return_key << "," << return_value << ")"<< std::endl;
 		this->_values[return_key] = return_value;
 	    }
 	}
