@@ -186,7 +186,11 @@ opt.on("-s MODE", "--sync-mode MODE",
   unless SUPPORTED_SYNC_MODES.include?(v.downcase)
     abort("Please Set sync mode  #{SUPPORTED_SYNC_MODES.join(' or ')}")
   end
-  option[:async] = true if v.casecmp("async")
+  option[:async] = if v == "async"
+                     true
+                   else
+                     false
+                   end  
 end
 opt.on("-t TARGET_DATABASE",
        "SELECT TARGET_DATABASE (only for TARGET DATABASE mode)") do |v|

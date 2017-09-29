@@ -79,10 +79,10 @@ class CassandraRunner < AbstractRunner
   def setup_cxx
     @client = CassandraCxxRunner.new
     @client.connect(@host)
-    @client.syncExecuter("create keyspace if not exists  #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3}")
+    #@client.syncExecuter("create keyspace if not exists  #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3}")
     ## Refresh By Schema File
     @schemas.each do |_, schema|
-      ## Create Keyspace
+      ### Create Keyspace
       cassandra_setup_query(schema.create_keyspace_query,
                             "Cannot Create Keyspace")
       cassandra_setup_query(schema.create_query,

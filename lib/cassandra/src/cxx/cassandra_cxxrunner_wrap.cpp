@@ -112,7 +112,7 @@ static VALUE wrap_CassandraCxxRunner_resetDatabase(VALUE self){
  * connect *
  ***********/
 static VALUE wrap_CassandraCxxRunner_connect(VALUE self, VALUE _ip) {
-    const char* ip   = StringValuePtr(_ip);
+    const char* ip = StringValuePtr(_ip);
     getCassandraCxxRunner(self)->connect(ip);
     return true;
 }

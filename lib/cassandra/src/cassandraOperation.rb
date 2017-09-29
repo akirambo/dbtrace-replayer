@@ -48,7 +48,7 @@ module CassandraOperation
   end
 
   def direct_executer(query, onTime = true)
-    if query.class == Array
+    if query.class.to_s == "Array"
       query.each do |q|
         r = direct_executer(q)
         unless r
@@ -72,7 +72,7 @@ module CassandraOperation
           ####################
           ## COMMIT QUERIES ##
           ####################
-          value = @client.commitQuery(query)
+          value = @client.commitQuery(query).to_s
         elsif !onTime && !commit_condition
           value = exec_buffered_queries
           @client.commitQuery(query)
@@ -92,8 +92,8 @@ module CassandraOperation
         end
       end
       close
+      return value
     end
-    value
   end
 
   #############
@@ -117,7 +117,7 @@ module CassandraOperation
   def normalize_cassandra_query(query)
     query.tr!("\"", "'")
     query.tr!('"', "'")
-    query.delete!("-")
+    query.gsub!("-", "")
     query.gsub!("__DOUBLEQ__", '"')
     unless query.include?(";")
       query += ";"

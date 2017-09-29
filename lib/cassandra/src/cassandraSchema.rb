@@ -72,7 +72,7 @@ class CassandraSchema
 
   def check_after(k, v)
     if @fields[k]
-      if check_field_type(v, @fields[k])
+      unless check_field_type(v, @fields[k])
         @logger.error("Unmatch DataType #{k} is not #{@fields[k]} AT #{name}")
         @logger.error("                 #{k} is #{v.class}")
         @logger.error("Under Construction Auto Table Creation")
@@ -249,6 +249,11 @@ class CassandraSchema
     @create_query = create_query.delete("_")
     @create_query.sub!(@keyspace.delete("_"), @keyspace)
     @create_query.sub!(@table.delete("_"), @table)
+    if !@create_query.include?("if not exists") &&
+       !@create_query.include?("IF NOT EXISTS")
+      @create_query.gsub!("create table", "create table if not exists")
+      @create_query.gsub!("CREATE TABLE", "CREATE TABLE IF NOT EXISTS")
+    end
     @drop_query = "drop table if exists #{@keyspace}.#{@table}"
   end
 

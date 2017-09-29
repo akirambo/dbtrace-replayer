@@ -96,8 +96,8 @@ void CassandraCxxRunner::resetResults(){
 /* Executer */
 bool CassandraCxxRunner::syncExecuter(const char* command)
 {
-    //std::cout << "***********************************" << std::endl;
-    //std::cout << "Sync Executer :: " <<  command << std::endl;
+  //std::cout << "***********************************" << std::endl;
+  //std::cout << "Sync Executer :: " <<  command << std::endl;
     resetResults();
     double nsec = 0.0;
     if(this->_session != NULL){
@@ -109,6 +109,7 @@ bool CassandraCxxRunner::syncExecuter(const char* command)
 	auto duration = end - start;
 	nsec = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count() ;
 	this->_duration = nsec / (1000.0*1000.0*1000.0);
+	//std::cout << " Duration :: " << this->_duration << std::endl;
 	if(cass_future_error_code(future) != CASS_OK) {
 	    std::cout << "[ERROR on CQL]:: " << command << std::endl;
 	    return false;
