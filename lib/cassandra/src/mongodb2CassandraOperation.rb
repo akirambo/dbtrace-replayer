@@ -122,7 +122,11 @@ module Mongodb2CassandraOperation
     command = "SELECT count(*) FROM #{arg["key"]}"
     ## EXTRACT NEW VALUE FOR EACH FIELD
     ## EXTRACT FILTER
-    query = mongodb_parse_query(arg["filter"])
+    query = if arg["filter"]
+              mongodb_parse_query(arg["filter"])
+            else
+              nil
+            end
     if arg["filter"] && query
       command += " WHERE " + query
     end
