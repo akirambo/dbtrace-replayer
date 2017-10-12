@@ -48,14 +48,9 @@ module CassandraOperation
   end
 
   def direct_executer(query, onTime = true)
+    value = false
     if query.class.to_s == "Array"
-      query.each do |q|
-        r = direct_executer(q)
-        unless r
-          return false
-        end
-      end
-      return true
+      value = direct_executer_array(query)
     else
       value = {}
       query = normalize_cassandra_query(query)
@@ -92,8 +87,18 @@ module CassandraOperation
         end
       end
       close
-      return value
     end
+    value
+  end
+
+  def direct_executer_array(query)
+    query.each do |q|
+      r = direct_executer(q)
+      unless r
+        return false
+      end
+    end
+    true
   end
 
   #############
@@ -117,7 +122,7 @@ module CassandraOperation
   def normalize_cassandra_query(query)
     query.tr!("\"", "'")
     query.tr!('"', "'")
-    query.gsub!("-", "")
+    query.delete!("-")
     query.gsub!("__DOUBLEQ__", '"')
     unless query.include?(";")
       query += ";"

@@ -352,33 +352,42 @@ module RedisOperation
   ## OTHRES ##
   ############
 
-  def flushall(args, initFlag = false)
+  def flushall(args, init_flag = false)
     @logger.debug("GENERATED QUERY: #{__method__}")
     connect
-    if @option[:async]
-      if args && args.size == 2
-        unless initFlag
-          add_count(__method__)
+    v = if @option[:async]
+          flushall_async(args, init_flag)
+        else
+          flushall_sync(args, init_flag)
         end
-        query = "#{__method__} #{args[0]} #{args[1]}"
-      else
-        unless initFlag
-          add_count(__method__)
-        end
-        query = __method__.to_s
+    close
+    v
+  end
+
+  def flushall_async(args, init_flag)
+    query = "flushall"
+    if args && args.size == 2
+      unless init_flag
+        add_count("flushall")
       end
-      v = redis_async_executer(query)
+      query += " #{args[0]} #{args[1]}"
     else
-      query = __method__.to_s
-      if args && args.size == 2
-        query += " #{args[0]} #{args[1]}"
-      end
-      v = @client.syncExecuter(query)
-      if @metrics && !initFlag
-        add_duration(@client.getDuration, "database", __method__)
+      unless init_flag
+        add_count("flushall")
       end
     end
-    close
+    redis_async_executer(query)
+  end
+
+  def flushall_sync(args, init_flag)
+    query = "flushall"
+    if args && args.size == 2
+      query += " #{args[0]} #{args[1]}"
+    end
+    v = @client.syncExecuter(query)
+    if @metrics && !init_flag
+      add_duration(@client.getDuration, "database", "flushall")
+    end
     v
   end
 

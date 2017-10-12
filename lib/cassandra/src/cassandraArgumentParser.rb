@@ -129,7 +129,8 @@ class CassandraArgumentParser
       "table" => nil, "primaryKey" => nil,
       "schema_fields" => 0, "fields" => [],
       "cond_keys" => [], "cond_values" => [],
-      "limit" => nil }
+      "limit" => nil
+    }
     select_target_flag = false
     args.each_index do |index|
       case args[index].downcase
@@ -290,31 +291,24 @@ class CassandraArgumentParser
   # Parser #
   def parse_batch_mutate_parameter(param, cassandra = true)
     result = {
-      "table" => nil,
-      "rowKey" => "key",
-      "rowValue" => nil,
-      "cf" => nil,
-      "keyValue" => {},
-      "counterColumn" => false,
-      "counterKeyValue" => {},
+      "table" => nil, "rowKey" => "key", "rowValue" => nil,
+      "cf" => nil, "keyValue" => {}, "counterColumn" => false,
+      "counterKeyValue" => {}
     }
     # 1. key_name
     if param.match(/{(.+?):(.+?):(.*)/)
       rowkey = $1
+      rowkey.delete!("'")
       columnfamily = $2
       others = $3
       result["cf"] = columnfamily.delete!(" ").sub!(/\'/, "")
       ## Find Keyspace
-      @schemas.keys.each do |ks_tb|
-        if ks_tb.include?(".#{result["cf"]}")
-          result["table"] = ks_tb
-        end
-      end
+      result["table"] = extract_keyspace_for_batch_mutate_parameter(result)
       ## Primary Key's Field Type
       result["rowValue"] = if @schemas[result["table"]].primarykey_type != "blob"
-                             rowkey.delete!("'")
+                             rowkey
                            else
-                             "0x" + rowkey.delete!("'")
+                             "0x" + rowkey
                            end
       kv = {}
       values = []
@@ -344,13 +338,7 @@ class CassandraArgumentParser
                 key = @schemas[result["table"]].get_key(key.sub("C", "").to_i + 1)
               elsif index == 1
                 ## value
-                kv[key] = if @schemas[result["table"]].field_type(key) == "blob" && cassandra
-                            "0x" + key_value[1].delete(" ")
-                          elsif @schemas[result["table"]].field_type(key) == "counter" && cassandra
-                            key_value[1].delete(" ").to_i
-                          else
-                            [key_Value[1].delete(" ")].pack("H*")
-                          end
+                kv[key] = extract_values_for_batch_mutate_parameter(result, key, cassandra, key_value)
               end
             end
           end
@@ -369,11 +357,7 @@ class CassandraArgumentParser
             if index.zero?
               ## Name
               key_name = @schemas[result["table"]].get_key(1)
-              kv[key_name] = if @schemas[result["table"]].field_type(key) == "blob" && cassandra
-                               "0x" + key_value[1].delete(" ")
-                             else
-                               [key_value[1].delete(" ")].pack("H*")
-                             end
+              kv[key_name] = extract_values_for_batch_mutate_parameter(result, key, cassandra. key_value)
             elsif index == 1
               ## Counter
               key = @schemas[result["table"]].counter_key
@@ -392,6 +376,24 @@ class CassandraArgumentParser
       end
     end
     result
+  end
+
+  def extract_keyspace_for_batch_mutate_parameter(result)
+    @schemas.keys.each do |ks_tb|
+      if ks_tb.include?(".#{result["cf"]}")
+        return ks_tb
+      end
+    end
+  end
+
+  def extract_values_for_batch_mutate_parameter(result, key, cassandra, key_value)
+    if @schemas[result["table"]].field_type(key) == "blob" && cassandra
+      "0x" + key_value[1].delete(" ")
+    elsif @schemas[result["table"]].field_type(key) == "counter" && cassandra
+      key_value[1].delete(" ").to_i
+    else
+      [key_Value[1].delete(" ")].pack("H*")
+    end
   end
 
   #------------------------------#

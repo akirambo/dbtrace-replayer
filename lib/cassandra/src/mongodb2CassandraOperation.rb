@@ -124,8 +124,6 @@ module Mongodb2CassandraOperation
     ## EXTRACT FILTER
     query = if arg["filter"]
               mongodb_parse_query(arg["filter"])
-            else
-              nil
             end
     if arg["filter"] && query
       command += " WHERE " + query

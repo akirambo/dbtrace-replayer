@@ -31,49 +31,45 @@
 class YCSBWorkload
   def initialize(log)
     @config = nil
-    @log    = log
-    initConfig()
-    updates(@log.ycsb_format())
+    @log = log
+    init_config
+    updates(@log.ycsb_format)
   end
+
   def updates(hash)
-    if(check)then
-      hash.each{|key,value|
+    if check
+      hash.each do |key, value|
         @config[key] = value
-      }
+      end
     end
   end
+
   def exec
-    @primitive_configs.each{|config|
+    @primitive_configs.each do |config|
       puts "#{config}=#{@config[config]}"
-    }
+    end
   end
-private
-  def initConfig
+
+  private
+
+  def init_config
     ## Keys
-    @primitive_configs = [
-                          "workload","recordcount",
-                          "operationcount","readallfields",
-                          "readproportion","updateproportion",
-                          "scanproportion","insertproportion",
-                          "requestdistribution"
-                         ]
-    
-    
+    @primitive_configs = %w[workload recordcount operationcount readallfields readproportion updateproportion scanproportion insertproportion requestdistribution].freeze
     ## Unsupported HTrace
     @config = {
-      "workload"       => "com.yahoo.ycsb.workloads.CoreWorkload",
-      "recordcount"    => 1000,
-      "operationcount" => 3000000,
-      "insertcount"    => nil,
-      "insertstart"    => 0,
-      "fieldcount"     => 10,
-      "fieldlength"    => 100,
-      "readallfields"  => true,
+      "workload" => "com.yahoo.ycsb.workloads.CoreWorkload",
+      "recordcount" => 1000,
+      "operationcount" => 3_000_000,
+      "insertcount" => nil,
+      "insertstart" => 0,
+      "fieldcount" => 10,
+      "fieldlength" => 100,
+      "readallfields" => true,
       "writeallfields" => false,
-      ##uniform,zipfian
+      ## uniform,zipfian
       "fieldlengthdistribution" => "constant",
       "readproportion" => 0.95,
-      "updateproportion" =>0.05,
+      "updateproportion" => 0.05,
       "insertproportion" => 0.0,
       "readmorifywriteproportion" => 0.0,
       "scanproportion" => 0.0,
@@ -82,31 +78,32 @@ private
       "scanlengthdistribution" => "uniform",
       ## ordered
       "insertorder" => "hashed",
-      #requestdistribution=uniform or latest
+      # requestdistribution=uniform or latest
       "requestdistribution" => "zipfian",
       "hotspotdatafraction" => 0.2,
-      "hotspotopnfraction"  => 0.8,
-      "maxexecutiontime"    => nil ,
-      "table"               => "usertable",
-      "columnfamily"        => nil,
-      #measurementtype=timeseries or raw    
-      "measurementtype"     => "histogram",
+      "hotspotopnfraction" => 0.8,
+      "maxexecutiontime" => nil,
+      "table" => "usertable",
+      "columnfamily" => nil,
+      # measurementtype=timeseries or raw
+      "measurementtype" => "histogram",
       "measurement.raw.output_file" => nil,
       "measurement.trackjvm" => false,
-      "histogram.buckets" =>1000,
+      "histogram.buckets" => 1000,
       "timeseries.granularity" => 1000,
       "reportlatencyforeacherror" => false,
       "latencytrackederrors" => [],
       "core_workload_insertion_retry_limit" => 0,
       ## integer
-      "core_workload_insertion_retry_interval" => nil
+      "core_workload_insertion_retry_interval" => nil,
     }
   end
-  def check    
-    if(@log.proportion("all") != 1.0)then
+
+  def check
+    if @log.proportion("all") != 1.0
       p "[ERROR]:: Total Propartion is not 1.0 :: #{@log.proportion("all")}"
       return false
     end
-    return true
+    true
   end
 end

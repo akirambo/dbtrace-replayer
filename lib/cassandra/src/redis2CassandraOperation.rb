@@ -738,7 +738,7 @@ module Redis2CassandraOperation
     end
     keys = all.keys
     keys.each_index do |index|
-      if min <= index && max >= index
+      if index >= min && index <= max
         all.delete(keys[index].to_sym)
       end
     end

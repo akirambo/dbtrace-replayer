@@ -88,29 +88,13 @@ class CassandraSchema
   def extract_keyvalue(kv)
     keys = []
     values = []
-    kvs = {
-      "key"   => [],
-      "value" => [],
-    }
+    kvs = { "key" => [], "value" => [] }
     kv.each do |key_, value|
       key = key_.delete("_")
       @logger.debug("KEY    :: #{key} IN Fields :: #{@fields.keys}")
       if @fields.keys.include?(key)
         keys.push(key)
-        case value.class.to_s
-        when "Array" then
-          values.push(extract_keyvalue_from_array(value))
-        when "Hash" then
-          values.push(extract_keyvalue_from_hash(value))
-        when "Fixnum" then
-          values.push(extract_keyvalue_from_fixnum(key, value))
-        when "String" then
-          values.push(extract_keyvalue_from_string(value))
-        when "Float" then
-          values.push(value.to_f)
-        else
-          values.push("'" + value.to_s + "'")
-        end
+        values.push(extract_keyvalue_normalize(value))
       else
         @logger.error("ERROR KEY : #{key} => #{value} (#{value.class})")
       end
@@ -118,6 +102,24 @@ class CassandraSchema
     kvs["key"] = keys.join(",")
     kvs["value"] = values.join(",")
     kvs
+  end
+
+  def extract_keyvalue_normalize(value)
+    v = case value.class.to_s
+        when "Array" then
+          extract_keyvalue_from_array(value)
+        when "Hash" then
+          extract_keyvalue_from_hash(value)
+        when "Fixnum" then
+          extract_keyvalue_from_fixnum(key, value)
+        when "String" then
+          extract_keyvalue_from_string(value)
+        when "Float" then
+          value.to_f
+        else
+          "'" + value.to_s + "'"
+        end
+    v
   end
 
   def extract_keyvalue_from_array(value)

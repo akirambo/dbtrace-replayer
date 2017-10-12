@@ -142,7 +142,7 @@ module CassandraOperationTester
         @tester.setAsync
         @tester.setPoolRequestMaxSize(-1)
         @tester.setFlag(true)
-        expect(@tester.send(:direct_executer,query,false)).to be true
+        expect(@tester.send(:direct_executer,query,false)).to eq "true"
       end
       it "DIRECT_EXECUTER (MULTI QUERIES) [SELECT]" do
         query = ["SELECT * FROM test;","SELECT * FROM test;"]

@@ -71,7 +71,7 @@ module MongoDB2RedisOperation
       results = mongodb_create_result(docs, args)
       set([args["key"], results])
     when "KEYVALUE"
-      v = set(mongodb_create_doc_for_keyvalue(args))
+      set(mongodb_create_doc_for_keyvalue(args))
     else
       @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
       return "NG"
@@ -89,9 +89,9 @@ module MongoDB2RedisOperation
         arg = args[0][1][0][k]
       end
     end
-    doc = [id, arg]
+    [id, arg]
   end
-  
+
   def mongodb_create_result(docs, args)
     results = []
     replace_flag = true
