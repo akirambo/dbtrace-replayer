@@ -104,6 +104,9 @@ begin
   client.syncExecuter("smembers set1")
   checker(client,api,"sadd/smembers","{\"a\":\"A\"}")
 
+  ## 
+  client.syncExecuter("keys *")
+  checker(client,api,"keys","set1,zranks,key00,aaa")
 
   # Epilogue
   client.syncExecuter("flushall")

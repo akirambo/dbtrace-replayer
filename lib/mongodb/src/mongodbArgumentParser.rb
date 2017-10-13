@@ -98,6 +98,10 @@ class MongodbArgumentParser
     result
   end
 
+  def upsert(args, no_string)
+    insert(args, no_string)
+  end
+
   def update(args, _)
     result = {
       "key"    => nil,

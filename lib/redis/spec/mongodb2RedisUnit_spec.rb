@@ -226,6 +226,12 @@ module MongodbTest
       it "mongodb_findandmodify (Not Implemented)" do
         expect(@tester.send(:mongodb_findandmodify,{})).to eq "NG"
       end
+      it "mongodb_upsert (Not Implemented)" do
+        expect(@tester.send(:mongodb_upsert,{})).to eq "OK"
+      end
+      it "mongodb_group (Not Implemented)" do
+        expect(@tester.send(:mongodb_group,{})).to eq "NG"
+      end
       it "mongodb_mapreduce (Not Implemented)" do
         expect(@tester.send(:mongodb_mapreduce,{})).to eq "NG"
       end

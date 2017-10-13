@@ -46,8 +46,17 @@ module Cassandra2RedisOperation
       return set([key, value])
     else
       ### Hash
-      args["key"] = "#{args["table"]}--#{args["args"][primarykey]}"
-      args["args"].delete(primarykey)
+      args["key"] = args["table"]
+      if args["args"].class == Hash then
+        tmp = []
+        args["args"].each do |k, v|
+          if k != primarykey
+            tmp.push(k)
+            tmp.push(v)
+          end
+        end
+        args["args"] = tmp
+      end
       return hmset(args)
     end
   end
@@ -57,10 +66,11 @@ module Cassandra2RedisOperation
     data = []
     primarykey = args["primaryKey"]
     idx = args["cond_keys"].index(primarykey)
-    key = "#{args["table"]}--#{args["cond_values"][0].delete("\"")}"
-    if idx && args["cond_values"][idx]
-      key = "#{args["table"]}--#{args["cond_values"][idx].delete("\"")}"
-    end
+    key = if idx && args["cond_values"][idx]
+            "#{args["table"]}--#{args["cond_values"][idx].delete("\"")}"
+          else
+            "#{args["table"]}"
+          end
     if args["schema_fields"] == 2
       ### String (Key-Value)
       data = [get([key])]
@@ -69,7 +79,7 @@ module Cassandra2RedisOperation
       ## create Key
       args__ = {
         "key"  => key,
-        "args" => args["fields"],
+        "args" => args["fields"][0].split(","),
       }
       data = hmget(args__, false)
     end

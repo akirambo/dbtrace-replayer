@@ -41,12 +41,13 @@ module MongoDB2RedisOperation
     if @option[:datamodel] == "DOCUMENT"
       if args[0] && args[0][0] && args[0][1][0]
         ## Documents [SADD]
+        doc_args = args[0][1][0].to_json
+        doc_args.delete!("'")
+        doc_args.delete!(" ")
         doc = {
           "key"  => args[0][0],
-          "args" => args[0][1][0].to_json,
-        }
-        doc["args"].delete!("'")
-        doc["args"].delete!(" ")
+          "args" => [doc_args]
+          }
         v = sadd(doc)
       end
     elsif @option[:datamodel] == "KEYVALUE"
@@ -61,7 +62,7 @@ module MongoDB2RedisOperation
   def mongodb_update(args)
     case @option[:datamodel]
     when "DOCUMENT"
-      if args["update"].nil? || args["update"]["$set"].nil?
+      if args["update"].nil? || args["update"]["$set"].nil? && args["group"]
         @logger.error("Not Set update $set query @ mongodb2redis")
         return "NG"
       end
@@ -155,7 +156,11 @@ module MongoDB2RedisOperation
       else
         data = get([args["key"]])
         new_docs = []
-        docs = eval("[" + data + "]")
+        docs = if data != "[]"
+                 eval("[" + data + "]")
+               else
+                 []
+               end
         docs.each_index do |index|
           doc = parse_json(docs[index])
           unless mongodb_query(doc, args["filter"])
@@ -239,6 +244,18 @@ module MongoDB2RedisOperation
     result
   end
 
+  # @conv {"upsert" => ["undefined"]}
+  def mongodb_upsert(args)
+    @logger.warn("Unsupported Upsert :#{args} & Covert Insert ")
+    mongodb_insert(args)
+  end
+
+  # @conv {"group" => ["undefined"]}
+  def mongodb_group(args)
+    @logger.warn("Unsupported Group :#{args}")
+    "NG"
+  end
+
   # @conv {"mapreduce" => ["undefined"]}
   def mongodb_mapreduce(args)
     @logger.warn("Unsupported MapReduce :#{args}")
@@ -311,6 +328,9 @@ module MongoDB2RedisOperation
   ## PREPARE ##
   #############
   def prepare_mongodb(operand, args)
+    if args.include?("upsert: true")
+      operand = "upsert"
+    end
     result = { "operand" => "mongodb_#{operand}", "args" => nil }
     result["args"] = @parser.exec(operand, args)
     result

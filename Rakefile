@@ -57,13 +57,6 @@ task :run, [:traceType, :runType, :trace, :times, :async, :datamodel, :schema, :
   exec(args, false)
 end
 
-desc "DEBUG-MODE Replay Trace On Database (traceType,runType,trace,time,async,query,schema)"
-task :debug, [:traceType, :runType, :trace, :times, :async, :query, :schema, :keyspace] => [:setup]  do |env, args|
-  include Runner
-  exec(args, true)
-end
-
-
 ####################
 ## ANALYZING TOOL ##
 ####################
@@ -115,8 +108,6 @@ end
 namespace :unitTest do
   desc "Run All Unit Tests" 
   task :all do
-    ## Nothing additional works 
-    #sh "bundle exec rspec lib/redis/spec/*Unit_spec.rb lib/mongodb/spec/*Unit_spec.rb lib/memcached/spec/*Unit_spec.rb lib/cassandra/spec/*Unit_spec.rb lib/common/spec/"
     sh "bundle exec rspec lib/**/spec/*Unit_spec.rb lib/common/spec/"
   end
   desc "lib/common [utils,metircs]" 
@@ -156,11 +147,11 @@ namespace :test do
   end
   desc "Redis Test With Database"
   task :redis do
-    #sh "bundle exec rspec lib/redis/spec/redisOperation_spec.rb"
+    sh "bundle exec rspec lib/redis/spec/redisOperation_spec.rb"
     sh "bundle exec rspec lib/redis/spec/redisOperationCxx_spec.rb"
-    #sh "bundle exec rspec lib/redis/spec/memcached2Redis_spec.rb"
-    #sh "bundle exec rspec lib/redis/spec/mongodb2Redis_spec.rb"
-    #sh "bundle exec rspec lib/redis/spec/cassandra2Redis_spec.rb"
+    sh "bundle exec rspec lib/redis/spec/memcached2Redis_spec.rb"
+    sh "bundle exec rspec lib/redis/spec/mongodb2Redis_spec.rb"
+    sh "bundle exec rspec lib/redis/spec/cassandra2Redis_spec.rb"
   end
 
   desc "Memcached Test With Database"
@@ -280,7 +271,7 @@ task :int_mongodb => [:setup] do
 end
 
 desc "INTEGRATION TEST for redis"
-task :int_redis => [:setup] do
+task :int_redis do
   ## Redis TO Redis
   sh "bundle exec ruby ./bin/parser.rb redis -m run  -t redis -i basic -l DEBUG lib/redis/spec/input/redis_all_command.log"
   ## Memcached(binary_protocol) TO Redis
@@ -290,7 +281,7 @@ task :int_redis => [:setup] do
   ## Mongodb TO Redis
   sh "bundle exec ruby ./bin/parser.rb  mongodb -m run  -t redis -l DEBUG  lib/redis/spec/input/mongodb_all_command.log"
   ## CQL tO Redis
-  sh "bundle exec ruby ./bin/parser.rb cassandra -m run  -t redis -i cql -l DEBUG lib/redis/spec/input/cql_all_command.log"
+  sh "bundle exec ruby ./bin/parser.rb cassandra -m run  -t redis -i cql3 -l DEBUG lib/redis/spec/input/cql3.log --schema lib/redis/spec/input/cql3.schema" 
   
 end
 
@@ -370,7 +361,7 @@ end
 
 desc "BENCHMARK TEST for cassandra"
 task :bench_cassandra => [:setup] do
-  ## CQL   TO CQL
+  ## CQL TO CQL
   system('bundle exec ruby ./bin/parser.rb cassandra -m run  -t cassandra -i cql -b --keyspace "testdb" --schema lib/redis/spec/input/cql_all_command.schema lib/redis/spec/input/cql_all_command.log')
   ## Redis TO CQL
   system('bundle exec ruby ./bin/parser.rb redis -m run  -t cassandra  -b --keyspace "testdb" --schema lib/redis/spec/input/redis_all_command.schema lib/redis/spec/input/redis_all_command.log')

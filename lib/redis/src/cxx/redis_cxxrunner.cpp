@@ -111,7 +111,9 @@ bool RedisCxxRunner::syncExecuter(const char* command)
 		result += ",";
 		result += reply->element[i]->str;
 	    }else{
-		result = reply->element[i]->str;
+		if(reply->element[i]->len > 0) {
+		    result = reply->element[i]->str;
+		}
 	    }
 	}
 	this->_reply = result;

@@ -113,6 +113,9 @@ class CassandraArgumentParser
     ## primary key
     result["primaryKey"] = get_primarykey_from_schemas(result["table"])
     ## schema fields
+    if @schemas[result["table"]].nil?
+      @logger.error("Not Found Schema")
+    end
     result["schema_fields"] = @schemas[result["table"]].fields.size
     result
   end
@@ -560,6 +563,10 @@ class CassandraArgumentParser
 
   def prepare_args_update_cql3(args)
     prepare_args_update_cql(args)
+  end
+
+  def prepare_args_delete_cql3(args)
+    prepare_args_delete_cql(args)
   end
 
   private

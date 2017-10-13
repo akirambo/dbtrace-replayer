@@ -109,7 +109,7 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
   context 'SETS Operation' do
     it "sadd" do
       @tester.sync
-      args = {"key"=>"test","args"=>"elem1"}
+      args = {"key"=>"test","args"=>["elem1"]}
       expect(@tester.send("sadd",args)).to eq "OK"
       expect(@tester.getCommand).to eq ["sadd test elem1"]
     end

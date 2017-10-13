@@ -222,7 +222,7 @@ module RedisOperation
   end
 
   def sadd(args)
-    command = "#{__method__} #{args["key"]} #{args["args"]}"
+    command = "#{__method__} #{args["key"]} #{args["args"].join(" ")}"
     redis_cxx_executer(__method__, command)
   end
 
@@ -395,9 +395,15 @@ module RedisOperation
     command = "#{__method__} #{args[0]}"
     redis_cxx_executer(__method__, command)
   end
-
+  
   def keys(pattern, type)
-    keys = @client.keys
+    keys = []
+    if @client.syncExecuter("keys *")
+      keys = @client.getReply.split(",")
+      if keys.empty?
+        keys = []
+      end
+    end
     targets = []
     if type == "keyspace"
       pattern = "#{pattern}."
@@ -446,13 +452,10 @@ module RedisOperation
     result["operand"] = operand
     result["args"] = args
     case1 = %w[zunionstore zinterstore].freeze
-    case2 = %w[mset mget msetnx].freeze
-    case3 = %w[hmset hmget sdiffstore sinterstore sunionstore].freeze
+    case2 = %w[sadd hmset hmget sdiffstore sinterstore sunionstore].freeze
     if case1.include?(operand)
       result["args"] = @parser.extract_z_x_store_args(args)
     elsif case2.include?(operand)
-      result["args"] = @parser.args2hash(args)
-    elsif case3.include?(operand)
       result["args"] = @parser.args2key_args(args)
     end
     result
@@ -475,6 +478,7 @@ module RedisOperation
     if @option[:async]
       v = redis_async_executer(query, attime)
     else
+      p query
       if @client.syncExecuter(query)
         v = "OK"
       end
