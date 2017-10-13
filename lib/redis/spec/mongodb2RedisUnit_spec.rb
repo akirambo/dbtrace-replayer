@@ -110,7 +110,7 @@ module MongodbTest
     end
   end
   
-  RSpec.describe 'Memcached TO Redis Unit Test' do
+  RSpec.describe 'Mongodb TO Redis Unit Test' do
     before do
       @logger = Logger.new(STDOUT)
       @logger.level = Logger::FATAL
@@ -227,7 +227,7 @@ module MongodbTest
         expect(@tester.send(:mongodb_findandmodify,{})).to eq "NG"
       end
       it "mongodb_upsert (Not Implemented)" do
-        expect(@tester.send(:mongodb_upsert,{})).to eq "OK"
+        expect(@tester.send(:mongodb_upsert,{})).to eq "NG"
       end
       it "mongodb_group (Not Implemented)" do
         expect(@tester.send(:mongodb_group,{})).to eq "NG"

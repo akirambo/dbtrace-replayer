@@ -4,7 +4,8 @@ class RedisCxxClientMock
   def initialize
     @pooledQuerySize = 0
     @queries = []
-    @keys = ["k1.t1","k1.t2","k2.t1"]
+    @keys = "k1.t1,k1.t2,k2.t1"
+    @keys_flag = false
   end
   def syncConnect(h,p)
     # dummy (do nothing)
@@ -16,6 +17,11 @@ class RedisCxxClientMock
     @queries.push(query)
   end
   def syncExecuter(query)
+    @keys_flag = if query == "keys *"
+                   true
+                 else
+                   false
+                 end
     @queries.push(query)
     return "OK"
   end
@@ -27,6 +33,9 @@ class RedisCxxClientMock
     return "asyncReply"
   end
   def getReply
+    if @keys_flag
+      return @keys
+    end
     return "syncReply"
   end
   def getDuration

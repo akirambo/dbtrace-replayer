@@ -92,9 +92,9 @@ module CassandraTest
           "args"=>{"pkey"=>"p1","c1"=>"v1","c2"=>"v2"}}
         expect(@tester.send(:cassandra_insert,args)).to eq "OK"
         expect(@tester.command).to eq "hmset"
-        expect(@tester.key).to eq "t--p1"
-        ans = {"c1"=>"v1","c2"=>"v2"}
-        expect(@tester.value).to include ans
+        expect(@tester.key).to eq "t"
+        ans = ["c1","v1","c2","v2"]
+        expect(@tester.value).to match ans
       end
       it "cassandra_select (key value)" do
         args = {"table"=>"t",
@@ -111,7 +111,9 @@ module CassandraTest
           "primaryKey"=>"pkey",
           "cond_keys"=>["c1","pkey"],
           "cond_values"=>["v1","p1"],
-          "schema_fields" => 3}
+          "schema_fields" => 3,
+          "fields" => ["a,b"]
+        }
         expect(@tester.send(:cassandra_select,args)).to eq "data"
         expect(@tester.command).to eq "hmget"
         expect(@tester.key).to eq "t--p1"
@@ -137,9 +139,9 @@ module CassandraTest
           "set"=>{"pkey"=>"p1","c1"=>"v1","c2"=>"v2"}}
         expect(@tester.send(:cassandra_update,args)).to eq "OK"
         expect(@tester.command).to eq "hmset"
-        expect(@tester.key).to eq "t--p1"
-        ans = {"c1"=>"v1","c2"=>"v2"}
-        expect(@tester.value).to include ans
+        expect(@tester.key).to eq "t"
+        ans = ["c1","v1","c2","v2"]
+        expect(@tester.value).to match ans
       end
       it "cassandra_delete (key value)" do
         args = {"table"=>"t",

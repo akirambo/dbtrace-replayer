@@ -478,7 +478,6 @@ module RedisOperation
     if @option[:async]
       v = redis_async_executer(query, attime)
     else
-      p query
       if @client.syncExecuter(query)
         v = "OK"
       end
