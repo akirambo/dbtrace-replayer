@@ -151,6 +151,9 @@ module Cassandra2MongodbOperation
   def get_primarykey(args)
     primarykey = args["primaryKey"]
     index = args["cond_keys"].index(primarykey)
+    if index.nil?
+      return nil
+    end
     id = args["cond_values"][index]
     id
   end

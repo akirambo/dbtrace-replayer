@@ -98,6 +98,8 @@ class Utils
     str.gsub!("]\"", "\"]")
     str.gsub!("[\"{", "\[{")
     str.gsub!("}\"]", "}]")
+    str.delete!("\\\\")
+    str.delete!("''")
     if str == "{\"\"}"
       str = "{}"
     end

@@ -265,7 +265,7 @@ task :int_mongodb do
   ## Memcached (binary_protocol) TO Mongodb
   sh "bundle exec ruby ./bin/parser.rb memcached -m run  -t mongodb -i binary -l DEBUG lib/memcached/spec/input/memcached_all_command_binary_protocol.log"
   ## CQL                         TO Mongodb
-  sh "bundle exec ruby ./bin/parser.rb cassandra -m run  -t mongodb -i cql3 -l DEBUG lib/redis/spec/input/cql_all_command.log"
+  sh "bundle exec ruby ./bin/parser.rb cassandra -m run  -t mongodb -i cql3 -l DEBUG lib/redis/spec/input/cql3.log --schema lib/redis/spec/input/cql3.schema"
   ## Mongodb                     TO Mongodb
   sh "bundle exec ruby ./bin/parser.rb mongodb -m run  -t mongodb -i basic -l DEBUG lib/mongodb/spec/input/all_command.log"
 end
@@ -286,9 +286,9 @@ task :int_redis do
 end
 
 desc "INTEGRATION TEST for cassandra"
-task :int_cassandra => [:setup] do
+task :int_cassandra do
   ## CQL   TO CQL
-  sh 'bundle exec ruby ./bin/parser.rb cassandra -m run  -t cassandra -i cql -l DEBUG --keyspace "testdb" --schema lib/redis/spec/input/cql_all_command.schema lib/redis/spec/input/cql_all_command.log'
+  sh 'bundle exec ruby ./bin/parser.rb cassandra -m run  -t cassandra -i cql3 -l DEBUG --keyspace "testdb" lib/redis/spec/input/cql3.log --schema lib/redis/spec/input/cql3.schema'
   ## Redis TO CQL
   sh 'bundle exec ruby ./bin/parser.rb redis -m run  -t cassandra  -l DEBUG --keyspace "testdb" --schema lib/redis/spec/input/redis_all_command.schema lib/redis/spec/input/redis_all_command.log'
   ## Memcached(binary_protocol) TO CQL

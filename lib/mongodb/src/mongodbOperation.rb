@@ -144,6 +144,11 @@ module MongodbOperation
     ""
   end
 
+  def group(args)
+    @logger.debug("GENERATED QUERY: #{__method__} #{args}")
+    @logger.warn("Unimplemented..")
+  end
+
   def mapreduce(args)
     @logger.debug("GENERATED QUERY: #{__method__} #{args}")
     @logger.warn("Unimplemented..")
