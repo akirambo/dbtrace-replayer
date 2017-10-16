@@ -67,7 +67,7 @@ class MongodbQueryProcessor
   def query(conds, value)
     conds.each_key do |cond_key|
       if MONGODB_NUMERIC_QUERY.include?(cond_key)
-        result = change_string_to_num
+        result = change_string_to_num(conds[cond_key], value)
         unless numeric_query(cond_key, result["num"], result["cond_num"])
           return false
         end
@@ -84,19 +84,22 @@ class MongodbQueryProcessor
 
   private
 
-  def change_string_to_num(conds, value, cond_key)
+  def change_string_to_num(cond, value)
     result = { "num" => 0, "cond_num" => 0 }
-    if value.include?(".")
+    if value.to_s.include?(".")
       result["num"] = value.to_f
-      result["cond_num"] = conds[cond_key].to_f
+      result["cond_num"] = cond.to_f
     else
       result["num"] = value.to_i
-      result["cond_num"] = conds[cond_key].to_i
+      result["cond_num"] = cond.to_i
     end
     result
   end
 
   def real_value(doc, conds__)
+    if conds__.nil?
+      return nil
+    end
     conds = conds__.split("..")
     case conds.size
     when 1 then
@@ -156,22 +159,22 @@ class MongodbQueryProcessor
 
   def numeric_query(operation, value, cond_value)
     if operation.include?("$gt")
-      numeric_query_gt(operation, value, cond_value)
+      return numeric_query_gt(operation, value, cond_value)
     elsif operation.include?("$lt")
-      numeric_query_lt(operation, value, cond_value)
+      return numeric_query_lt(operation, value, cond_value)
     else
       @logger.warn("Unsupported NUMERIC operation '#{operation}' !!")
     end
-    true
+    false
   end
 
   def numeric_query_gt(operation, value, cond_value)
-    if operation.inlclude?("$gt")
+    if operation == "$gt"
       ## Return false
       if value <= cond_value
         return false
       end
-    elsif operaiton.include?("$gte")
+    elsif operation == "$gte"
       ## Return false
       if value < cond_value
         return false
@@ -181,12 +184,12 @@ class MongodbQueryProcessor
   end
 
   def numeric_query_lt(operation, value, cond_value)
-    if operation.include?("$lt")
+    if operation == "$lt"
       ## Return false
       if value >= cond_value
         return false
       end
-    elsif operation.include?("$lte")
+    elsif operation == "$lte"
       ## Return false
       if value < cond_value
         return false

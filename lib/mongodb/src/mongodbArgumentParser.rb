@@ -82,17 +82,21 @@ class MongodbArgumentParser
       result.push([key, doc, false])
     else
       ## Bulk insert / insert array
-      @logger.info("Using Pseudo-data (#{@key_value_num} key-value data) on Bulk Insert/ Array Insert.")
+      @logger.info("Using Pseudo-data #{doc.to_i} documents  (#{@key_value_num} key-value data) on Bulk Insert/ Array Insert.")
       doc.to_i.times do
         hash = {}
-        @key_value_num.times do
-          hash[@utils.create_string(@byte_size)] = @utils.create_string(@byte_size)
+        @key_value_num.times do |index|
+          if index == 0
+            hash[:_id] = @utils.create_string(@byte_size)
+          else
+            hash[@utils.create_string(@byte_size)] = @utils.create_string(@byte_size)
+          end
         end
-        if no_string
-          result.push([key, hash, true])
-        else
-          result.push([key, @utils.convert_json(hash), true])
-        end
+        #if no_string
+        result.push([key, [hash], true])
+        #else
+        #  result.push([key, [@utils.convert_json(hash)], true])
+        #end
       end
     end
     result

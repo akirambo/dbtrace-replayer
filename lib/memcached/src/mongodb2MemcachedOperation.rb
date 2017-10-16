@@ -43,6 +43,14 @@ module MongoDB2MemcachedOperation
     mongodb_insert_update(args, "update")
   end
 
+  def mongodb_group(args)
+    @logger.warn("Unsupported Command Group")
+  end
+
+  def mongodb_mapreduce(args)
+    @logger.warn("Unsupported Command Mapreduce")
+  end
+
   def mongodb_insert_update(args, type)
     case @option[:datamodel]
     when "KEYVALUE" then
@@ -129,11 +137,14 @@ module MongoDB2MemcachedOperation
       match_duration = start_time - Time.now
       if match_flag
         if first_flag
-          key2realkey = @query_parser.createkey2realkey(doc, params["cond"])
+          key2realkey = @query_parser.createkey2realkey(doc, params["cond"], nil)
           first_flag = false
         end
         # create group key
         key = @query_parser.create_groupkey(doc, params["cond"])
+        if key == ""
+          next
+        end
         if result[key].nil?
           result[key] = {}
         end
@@ -157,6 +168,8 @@ module MongoDB2MemcachedOperation
   def mongodb_query(doc, query, _)
     if query
       query = document_symbolize(query)
+    end
+    if query
       query.each do |key, cond|
         if doc[key]
           unless mongodb_query_has_doc(doc, key, cond)
@@ -253,20 +266,22 @@ module MongoDB2MemcachedOperation
   end
 
   def mongodb_insert_document(args)
-    ## Create New Data
-    key = args[0][0]
-    docs = @utils.stringhash2symbolhash(args[0][1])
-    docs.each do |doc|
-      doc[:_id].sub!(/ObjectId\(\'(\w+)\'\)/, '\1')
-    end
-    ## GET exists data
-    predocs = mongodb_get_stored_document(key)
-    if predocs && predocs.class == Array && !predocs.size.zero?
-      docs.concat(predocs)
-    end
-    ## Commit
-    unless set([key, docs.to_json])
-      return false
+    args.each do |insert_docs|
+      ## Create New Data
+      key = insert_docs[0]
+      docs = @utils.stringhash2symbolhash(insert_docs[1])
+      docs.each do |doc|
+        doc[:_id].sub!(/ObjectId\(\'(\w+)\'\)/, '\1')
+      end
+      ## GET exists data
+      predocs = mongodb_get_stored_document(key)
+      if predocs && predocs.class == Array && !predocs.size.zero?
+        docs.concat(predocs)
+      end
+      ## Commit
+      unless set([key, docs.to_json])
+        return false
+      end
     end
     true
   end

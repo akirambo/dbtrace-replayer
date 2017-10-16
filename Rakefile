@@ -247,25 +247,25 @@ task :int_test => [:int_memcached,:int_mongodb,:int_redis,:int_cassandra] do
 end
 
 desc "INTEGRATION TEST for memcached" 
-task :int_memcached => [:setup] do
+task :int_memcached do
   ## Redis     TO Memcached
   sh "bundle exec ruby ./bin/parser.rb redis -m run  -t memcached -l DEBUG  lib/redis/spec/input/redis_all_command.log"
   ## Memcached(binary_protocol) TO Memcached
   sh "bundle exec ruby ./bin/parser.rb memcached -m run  -t memcached -i binary -l DEBUG lib/memcached/spec/input/memcached_all_command_binary_protocol.log"
   ## CQL       TO Memcached
-  sh "bundle exec ruby ./bin/parser.rb cassandra -m run  -t memcached -i cql -l DEBUG lib/redis/spec/input/cql_all_command.log"
+  sh "bundle exec ruby ./bin/parser.rb cassandra -m run  -t memcached -i cql3 -l DEBUG  lib/redis/spec/input/cql3.log --schema lib/redis/spec/input/cql3.schema"
   ## Mongodb   TO Memcached
   sh "bundle exec ruby ./bin/parser.rb mongodb -m run  -t memcached -l DEBUG  lib/redis/spec/input/mongodb_all_command.log"
 end
 
 desc "INTEGRATION TEST for mongodb"
-task :int_mongodb => [:setup] do
+task :int_mongodb do
   ## Mongodb                     TO Mongodb
   sh  "bundle exec ruby ./bin/parser.rb mongodb -m run  -t mongodb -i basic -l DEBUG lib/mongodb/spec/input/all_command.log"
   ## Memcached (binary_protocol) TO Mongodb
   sh "bundle exec ruby ./bin/parser.rb memcached -m run  -t mongodb -i binary -l DEBUG lib/memcached/spec/input/memcached_all_command_binary_protocol.log"
   ## CQL                         TO Mongodb
-  sh "bundle exec ruby ./bin/parser.rb cassandra -m run  -t mongodb -i cql -l DEBUG lib/redis/spec/input/cql_all_command.log"
+  sh "bundle exec ruby ./bin/parser.rb cassandra -m run  -t mongodb -i cql3 -l DEBUG lib/redis/spec/input/cql_all_command.log"
   ## Mongodb                     TO Mongodb
   sh "bundle exec ruby ./bin/parser.rb mongodb -m run  -t mongodb -i basic -l DEBUG lib/mongodb/spec/input/all_command.log"
 end

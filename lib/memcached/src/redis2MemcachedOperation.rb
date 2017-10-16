@@ -439,6 +439,9 @@ module Redis2MemcachedOperation
   def redis_zincrby(args)
     data = get([args[0]])
     hash = redis_deserialize_withscore(data)
+    if hash[args[2]].nil?
+      hash[args[2]] = 0
+    end
     hash[args[2]] += args[1].to_i
     result = redis_serialize_withscore(hash, true)
     set([args[0], result])
@@ -544,11 +547,20 @@ module Redis2MemcachedOperation
       key = args["args"][index]
       weight = redis_get_weight(args, index)
       if !result.keys.empty?
-        result.merge!(redis_deserialize_withscore(data[key])) do |_, v0, v1|
-          aggregate_score(args["option"][:aggregate], v0.to_f, v1.to_f, weight)
+        tmp = redis_deserialize_withscore(data[key])
+        tmp.each do |k, v|
+          result[k] = if result[k].nil? || args["option"][:aggregate].nil?
+                        v
+                      else
+                        result[k] = aggregate_score(args["option"][:aggregate],
+              result[k], v.to_f, weight)
+                      end
         end
       else
         result = redis_deserialize_withscore(data[key])
+        result.each_key do |k|
+          result[k] *= weight
+        end
       end
     end
     value = redis_serialize_withscore(result)
@@ -568,7 +580,11 @@ module Redis2MemcachedOperation
         keys = result.keys & new_hash.keys
         tmp__ = {}
         keys.each do |key_|
-          tmp__[key_] = aggregate_score(args["option"][:aggregate], result[key_].to_f, new_hash[key_].to_f, weight)
+          tmp__[key_] = if args["option"][:aggregate].nil?
+                          result[key_].to_f + new_hash[key_].to_f
+                        else
+                          aggregate_score(args["option"][:aggregate], result[key_].to_f, new_hash[key_].to_f, weight)
+                        end
         end
       else
         result = redis_deserialize_withscore(data[key])

@@ -115,6 +115,7 @@ class Utils
   end
 
   def convert_hash(docs, type)
+    p docs
     if docs.class == Hash
       return convert_hash_from_hash(docs, type)
     elsif docs.class == Array

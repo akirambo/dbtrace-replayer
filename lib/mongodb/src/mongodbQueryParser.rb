@@ -50,13 +50,13 @@ class MongodbQueryParser
     conds.each do |_, c|
       if c.class == Hash
         c.each do |_, c2|
-          realkey = keys2realkey(c2, doc)
+          realkey = key2realkey(c2, doc, nil)
           if realkey
             key2real[c2] = realkey
           end
         end
       elsif c.class == String
-        realkey = keys2realkey(c, doc)
+        realkey = key2realkey(c, doc, nil)
         if realkey
           key2real[c] = realkey
         end
@@ -68,7 +68,7 @@ class MongodbQueryParser
   def key2realkey(str, doc, key2real)
     if str.class == String
       targetkey = str.sub("$", "")
-      if key2real[str].nil?
+      if key2real.nil? || key2real[str].nil?
         return deepkey(doc, targetkey)
       end
     end
@@ -93,10 +93,14 @@ class MongodbQueryParser
     key = ""
     conds.each do |k, v|
       if v.class.to_s == "String"
-        key += if doc[v.sub("$", "")]
-                 "#{k}=#{doc[v.sub('$', '')].delete(" ")}_KEY_"
-               else
+        key_element = doc[v.sub("$", "")]
+        key_element_sym = doc[v.sub("$", "").to_sym]
+        key += if key_element
+                 "#{k}=#{key_element.delete(" ")}_KEY_"
+               elsif key_element_sym
                  "#{k}=#{doc[v.sub('$', '').to_sym].delete(" ")}_KEY_"
+               else
+                 ""
                end
       end
     end

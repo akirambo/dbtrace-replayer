@@ -61,7 +61,7 @@ class CassandraArgumentParser
     ## field name
     field_names = args[3].sub(/\A\(/, "").sub(/\)\Z/, "").split(",")
     ## schema fields
-    result["schema_fields"] = field_names.size
+    result["schema_fields"] = @schemas[result["table"]].fields.size
     ## values
     values = ""
     args.each_index do |index|
@@ -245,13 +245,19 @@ class CassandraArgumentParser
     end
     args.each_index do |index|
       if args[index] == "WHERE"
-        result["cond_keys"].push(index + 1)
-        result["cond_values"].push(index + 3)
+        if args[index + 1].include?("=")
+          cond = args[index + 1].split("=")
+          result["cond_keys"].push(cond[0])
+          result["cond_values"].push(cond[1])
+        else
+          result["cond_keys"].push(args[index + 1])
+          result["cond_values"].push(args[index + 3])
+        end
       end
     end
     result["primaryKey"] = get_primarykey(result["table"])
     ## schema fields
-    result["schema_fields"] = result["fields"].size
+    result["schema_fields"] = @schemas[result["table"]].fields.size
     result
   end
 
@@ -265,7 +271,7 @@ class CassandraArgumentParser
     ## schema fields
     result["schema_fields"] = 0
     if result["fields"]
-      result["schema_fields"] = result["fields"].size
+      result["schema_fields"] = @schemas[result["table"]].fields.size
     end
     result
   end
@@ -627,8 +633,15 @@ class CassandraArgumentParser
     values = []
     args.each_index do |index|
       if args[index] == "WHERE"
-        keys.push(index + 1)
-        values.push(index + 3)
+        condition = args[index + 1]
+        if condition.include?("=")
+          cond = condition.split("=")
+          keys.push(cond[0])
+          values.push(cond[1])
+        else
+          keys.push(condition)
+          values.push(args[index + 3])
+        end
       end
     end
     array.push(keys)

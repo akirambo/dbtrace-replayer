@@ -38,17 +38,18 @@ module Cassandra2MemcachedOperation
   # @conv {"INSERT" => ["SET"]}
   def cassandra_insert(args)
     primarykey = args["primaryKey"]
-    key = "#{args["table"]}--#{args["args"][primarykey]}"
     args["args"].delete(primarykey)
     values = args["args"]
     ## keylist
     if args["schema_fields"] == 2
       ### String (Key-Value)
+      key = "#{args["table"]}--#{args["args"][primarykey]}"
       field = values.keys[0]
       value = values[field]
       return set([key, value])
     else
       ### Value is JSON
+      key = args["table"]
       str = convert_json(values)
       return set([key, str])
     end
@@ -59,7 +60,11 @@ module Cassandra2MemcachedOperation
   def cassandra_select(args)
     results = []
     index = args["cond_keys"].index(args["primaryKey"])
-    key = "#{args["table"]}--#{args["cond_values"][index]}"
+    key = if index && args["cond_values"][index]
+            "#{args["table"]}--#{args["cond_values"][index]}"
+          else
+            "#{args["table"]}"
+          end
     if args["schema_fields"] == 2
       ### String (Key-Value)
       results = [get([key])]
@@ -89,13 +94,14 @@ module Cassandra2MemcachedOperation
     end
     if args["schema_fields"] == 2
       ## Key-Value
+      #key = "#{args["table"]}--#{args["cond_values"][index]}"
       return cassandra_insert(args)
     elsif args["schema_fields"] == args["set"].keys.size
       ## Key-JSON Full Update
       return cassandra_insert(args)
     else
       index = args["cond_keys"].index(args["primaryKey"])
-      key = "#{args["table"]}--#{args["cond_values"][index]}"
+      key = args["table"]
       ## Key-JSON Partical Update
       str_json = get([key])
       docs = parse_json(str_json)
@@ -110,13 +116,16 @@ module Cassandra2MemcachedOperation
   # @conv {"DELETE" =>["DELETE"]}
   def cassandra_delete(args)
     index = args["cond_keys"].index(args["primaryKey"])
-    key = "#{args["table"]}--#{args["cond_values"][index]}"
-    delete([key])
+    if !index.nil? && !args["cond_values"][index].nil?
+      key = "#{args["table"]}--#{args["cond_values"][index]}"
+      return delete([key])
+    end
+    true
   end
 
   # @conv {"DROP" =>["GET","SET","DELETE"] }
   def cassandra_drop(args)
-    keylist = KEYLIST()
+    keylist_ = keylist
     pattern = ""
     pattern = if args["type"] == "table"
                 ".#{args["key"]}"
@@ -124,7 +133,7 @@ module Cassandra2MemcachedOperation
                 "#{args["key"]}."
               end
     deletes = []
-    keylist.each do |k|
+    keylist_.each do |k|
       if k.include?(pattern)
         deletes.push(k)
       end
