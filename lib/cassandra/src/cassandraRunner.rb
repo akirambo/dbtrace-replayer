@@ -100,10 +100,13 @@ class CassandraRunner < AbstractRunner
   end
 
   def cassandra_setup_query(query, code)
-    @client.syncExecuter(query)
-  rescue => e
-    @logger.error("#{code} #{e.message}")
-    @logger.error("QUERY :: #{query}")
+    begin
+      @logger.debug(query)
+      @client.syncExecuter(query)
+    rescue => e
+      @logger.error("#{code} #{e.message}")
+      @logger.error("QUERY :: #{query}")
+    end
   end
 
   def connect
@@ -129,10 +132,10 @@ class CassandraRunner < AbstractRunner
   end
 
   def init
-    setup_cxx
     if @option[:clearDB]
       refresh
     end
+    setup_cxx
   end
 
   def finish

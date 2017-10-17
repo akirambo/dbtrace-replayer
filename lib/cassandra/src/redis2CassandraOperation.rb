@@ -208,7 +208,7 @@ module Redis2CassandraOperation
   def redis_lpush(args)
     redis_push(args, "lpush")
   end
-
+  
   # @conv {"RPUSH" => ["UPDATE"]}
   def redis_rpush(args)
     redis_push(args, "rpush")
@@ -385,6 +385,9 @@ module Redis2CassandraOperation
   # @conv {"LLEN" => ["SELECT","length@client"]}
   def redis_llen(args)
     list = redis_lget(args)
+    if list.nil?
+      return 0
+    end
     list.size
   end
 
@@ -628,7 +631,7 @@ module Redis2CassandraOperation
   ## args = [key, score, member]
   def redis_zincrby(args)
     value = redis_zget(args)
-    value[args[2].to_sym] += args[1].to_f
+    value[args[2].to_sym] = args[1].to_f + value[args[2].to_sym].to_f
     redis_zadd([args[0], value[args[2].to_sym], args[2]])
   end
 
@@ -724,7 +727,7 @@ module Redis2CassandraOperation
     remkey.each do |rkey|
       all.delete(rkey.to_sym)
     end
-    redis_zadd(args, all)
+     redis_zadd(args, all)
   end
 
   # @conv {"ZREMRANGEBYRANK" => ["SELECT","UPDATE"]}
@@ -830,7 +833,12 @@ module Redis2CassandraOperation
     begin
       result = direct_select(command)
       if result
-        return eval(result)
+        tmp = eval(result)
+        ret = {}
+        tmp.each do |k, v|
+          ret[k] = v.to_f
+        end
+        return ret
       end
     rescue => e
       @logger.error(command)
@@ -976,31 +984,38 @@ module Redis2CassandraOperation
   # @conv {"HLEN" => ["SELECT"]}
   ## args = [key]
   def redis_hlen(args)
-    @schemas[args[0]].fields.size
+    redis_hkeys(args).size
   end
 
   # @conv {"HKEYS" => ["SELECT"]
   ## args = [key]
   def redis_hkeys(args)
-    @schemas[args[0]].fields
+    redis_hgetall(args).keys
   end
 
   # @conv {"HVALS" => ["SELECT"]}
   ## args = [key]
   def redis_hvals(args)
-    hash = redis_hgetall("key" => args[0])
-    hash.values
+    redis_hgetall(args).values
   end
 
   # @conv {"HGETALL" => ["SELECT"]}
   ## args = [key]
   def redis_hgetall(args)
     hash = {}
-    keys = redis_hkeys([args["key"]])
-    args["args"] = keys
-    values = redis_hmget(args)
-    keys.each_index do |index|
-      hash[keys[index]] = values[index]
+    table = @option[:keyspace] + ".hash"
+    command = "SELECT value FROM #{table}"
+    command += " WHERE key = '#{args[0]}';"
+    begin
+      value = direct_executer(command)
+      data = eval(value)
+      data.each do |f, v|
+        hash[f.to_s] = v
+      end
+    rescue => e
+      @logger.debug(command)
+      @logger.error(e.message)
+      abort
     end
     hash
   end
@@ -1009,7 +1024,7 @@ module Redis2CassandraOperation
   ## OTHRES ##
   ############
   # @conv {"FLUSHALL" => ["reset@client"]}
-  def redis_flushall
+  def redis_flushall(_)
     queries = []
     queries.push("drop keyspace if exists #{@option[:keyspace]};")
     queries.push("create keyspace #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3};")

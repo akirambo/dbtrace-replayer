@@ -72,6 +72,10 @@ private:
     void resetResults();
     const char* getResult(const CassResult* result);
     std::string parseResult(const CassResult* result);
+    std::string parseSetResult(const CassValue* value,
+			       const char* outputString,
+			       std::string type);
+    std::string parseValue(const CassValue* value);
 };
 
 #endif // __CASSANDRA_CXXRUNNER_HPP__

@@ -117,7 +117,18 @@ module CassandraTest
         expect(@tester.send(:cassandra_select,args)).to eq "data"
         expect(@tester.command).to eq "hmget"
         expect(@tester.key).to eq "t--p1"
-
+      end
+      it "cassandra_select (table)" do
+        args = {"table"=>"t",
+          "primaryKey"=>"pkey",
+          "cond_keys"=>["c1"],
+          "cond_values"=>["v1","p1"],
+          "schema_fields" => 3,
+          "fields" => ["a,b"]
+        }
+        expect(@tester.send(:cassandra_select,args)).to eq "data"
+        expect(@tester.command).to eq "hmget"
+        expect(@tester.key).to eq "t"
       end
       it "cassandra_update (key value)" do
         args = {"table"=>"t",
@@ -164,6 +175,11 @@ module CassandraTest
         expect(@tester.send(:cassandra_drop,args)).to eq "OK"
         expect(@tester.command).to eq "del"
         expect(@tester.key).to eq "target_keys"
+      end
+      it "prepare_cassandra" do
+        args = {"key"=>"t","type"=>"a"}
+        ans =  {"operand"=>"cassandra_drop", "args"=>"PARSED"}
+        expect(@tester.send("prepare_cassandra", "drop", args)).to eq ans
       end
     end
   end

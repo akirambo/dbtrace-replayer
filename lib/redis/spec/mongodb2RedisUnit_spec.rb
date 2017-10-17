@@ -63,6 +63,9 @@ module MongodbTest
     def resetGetValue
       @getValue = "reply"
     end
+    def setArrayGetValue
+      @getValue = "[]"
+    end
     def setQueryFlag(bool)
       @query_processor.setQueryFlag(bool)
     end
@@ -117,16 +120,21 @@ module MongodbTest
       @tester = Mock.new(@logger,{:datamodel=>"DOCUMENT", :key_of_keyvalue => "_id"})
     end
     context 'Operation' do
-      it "mongodb_insert" do
+      it "mongodb_insert(document)" do
         @tester.datamodel("DOCUMENT")
         args = [[["key"],[{"a"=>1,"b"=>"v"}]]]
         expect(@tester.send(:mongodb_insert,args)).to eq "OK"
         expect(@tester.command).to eq "sadd"
       end
-      it "mongodb_insert(error)" do
+      it "mongodb_insert(keyvalue)" do
         args = [[["key"],[{"a"=>1,"b"=>"v"}]]]
         @tester.datamodel("KEYVALUE") ## unsupported.
         expect(@tester.send(:mongodb_insert,args)).to eq "OK"
+      end
+      it "mongodb_insert(error)" do
+        args = [[["key"],[{"a"=>1,"b"=>"v"}]]]
+        @tester.datamodel("ERRROR") ## unsupported.
+        expect(@tester.send(:mongodb_insert,args)).to eq "NG"
       end
       it "mongodb_update(simple docs)" do
         ## setup
@@ -166,7 +174,12 @@ module MongodbTest
         @tester.datamodel("KEYVALUE")
         expect(@tester.send(:mongodb_update,args)).to eq "OK"
       end
-      it "mongodb_update(query Error)" do
+      it "mongodb_update(error)" do
+      args = [[nil,[{"_id" => "a", "v" => "b"}]]]
+        @tester.datamodel("ERROR")
+        expect(@tester.send(:mongodb_update,args)).to eq "NG"
+      end
+      it "mongodb_update(document)" do
         args = {
           "key"    => "test_update",
           "query"  => {},
@@ -199,6 +212,12 @@ module MongodbTest
         args = {"filter" => {"_id" => "a"} }
         expect(@tester.send(:mongodb_find,args)).to eq "reply"
       end
+      it "mongodb_find(error)" do
+        @tester.datamodel("ERROR")
+        @tester.resetGetValue
+        args = {"filter" => {"_id" => "a"} }
+        expect(@tester.send(:mongodb_find,args)).to eq "NG"
+      end
       it "mongodb_delete" do
         @tester.datamodel("DOCUMENT")
         args = {"key"=>"k1","filter" => {}}
@@ -218,6 +237,13 @@ module MongodbTest
         expect(@tester.send(:mongodb_delete,args)).to eq "OK"
         @tester.resetGetValue
       end
+      it "mongodb_delete(data empty)" do
+        args = {"key"=>"k1","filter" => {"b"=>"v"}}
+        @tester.setArrayGetValue
+        @tester.datamodel("DOCUMENT")
+        expect(@tester.send(:mongodb_delete,args)).to eq "OK"
+      end
+
       it "mongodb_delete(data model Error)" do
         args = {}
         @tester.datamodel("KEYVALUE") ## unsupported.
@@ -360,6 +386,10 @@ module MongodbTest
       it "prepare_mongodb" do
         ans = {"operand" => "mongodb_test", "args" => "PARSED"}
         expect(@tester.send(:prepare_mongodb,"test",{})).to include ans
+      end
+      it "prepare_mongodb (upsert)" do
+        ans = {"operand" => "mongodb_upsert", "args" => "PARSED"}
+        expect(@tester.send(:prepare_mongodb,"test", "upsert: true")).to include ans
       end
     end
   end

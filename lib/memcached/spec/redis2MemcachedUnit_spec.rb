@@ -420,6 +420,15 @@ module MemcachedOperationUnitTest
         ans = ["key","300_m0,10_m1"]
         expect(@tester.args).to match_array ans
       end      
+      it "redis_zincrby (args[2] == nil)" do
+        args = ["key",200]
+        @tester.getValue = "100_m0,10_m1"
+        @tester.queryReturn = true
+        expect(@tester.send(:redis_zincrby,args)).to be true
+        expect(@tester.command).to eq "set"
+        ans = ["100_m0,10_m1,200_", "key"]
+        expect(@tester.args).to match_array ans
+      end      
       it "redis_zrank" do
         args = ["key","m0"]
         @tester.getValue = "100_m0,10_m1"
@@ -492,7 +501,7 @@ module MemcachedOperationUnitTest
         }
         expect(@tester.send(:redis_zunionstore,args)).to be true
         expect(@tester.command).to eq "set"
-        ans = ["500.0_m0,350.0_m1,20_m2,120_m5", "dst"]
+        ans = ["500.0_m0,350.0_m1,20.0_m2,120_m5", "dst"]
         expect(@tester.args).to match_array ans
       end
 
@@ -501,6 +510,22 @@ module MemcachedOperationUnitTest
           "key"=>"dst", 
           "args"=>["src0","src1"],
           "option"=>{:weights => [1,2],:aggregate =>"SUM"}
+        }
+        @tester.queryReturn = true
+        @tester.getValue = {
+          "src0" =>"100_m0,50_m1,20_m2",
+          "src1" =>"200_m0,150_m1,120_m5"
+        }
+        expect(@tester.send(:redis_zinterstore,args)).to be true
+        expect(@tester.command).to eq "set"
+        ans = ["100_m0,50_m1,20_m2", "dst"]
+        expect(@tester.args).to match_array ans
+      end
+      it "redis_zinterstore (no aggregate)" do 
+        args = {
+          "key"=>"dst", 
+          "args"=>["src0","src1"],
+          "option"=>{:weights => [1,2]}
         }
         @tester.queryReturn = true
         @tester.getValue = {

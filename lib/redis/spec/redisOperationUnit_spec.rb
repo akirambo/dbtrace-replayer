@@ -538,6 +538,11 @@ RSpec.describe 'RedisOperation Unit Test (Check Generated Command)' do
       @tester.sync
       expect(@tester.send("keys","t1","table")).to match_array ["k1.t1","k2.t1"]
     end
+    it "keys empty case" do
+      @tester.sync
+      @tester.empty_reply
+      expect(@tester.send("keys","t1","table")).to match_array []
+    end
     it "prepare_redis" do
       expect(@tester.send("prepare_redis","zunionstore",[])["args"]).to eq "extract_z_x_store_args"
       expect(@tester.send("prepare_redis","hmget",[])["args"]).to eq "args2key_args"

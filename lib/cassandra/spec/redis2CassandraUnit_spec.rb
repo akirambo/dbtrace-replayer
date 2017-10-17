@@ -745,14 +745,15 @@ module Redis2CassandraOperationTester
         schema = CassandraSchemaMock.new()
         schema.fields = ["f0","f1","f2"]
         @tester.schemas = {"k0" => schema}
+        @tester.value = "{'f0':'v0','f1':'v1','f2':'v2'}"
         expect(@tester.send(:redis_hlen,["k0"])).to eq 3
       end
       it "REDIS_HKEYS" do
         ans = ["f0","f1","f2"]
         @tester.raiseError = false
         schema = CassandraSchemaMock.new()
-        schema.fields = ["f0","f1","f2"]
         @tester.schemas = {"k0" => schema}
+        @tester.value = "{'f0':'v0','f1':'v1','f2':'v2'}"
         expect(@tester.send(:redis_hkeys,["k0"])).to match_array ans
       end
       it "REDIS_HVALS" do
@@ -779,12 +780,12 @@ module Redis2CassandraOperationTester
       it "REDIS_FLUSHALL (success)" do
         @tester.raiseError = false
         @tester.schemas = {"k"=> CassandraSchemaMock.new}
-        expect(@tester.send(:redis_flushall)).to be true
+        expect(@tester.send(:redis_flushall,[])).to be true
       end
       it "REDIS_FLUSHALL (success)" do
         @tester.raiseError = true
         @tester.schemas = {"k"=> CassandraSchemaMock.new}
-        expect(@tester.send(:redis_flushall)).to be false
+        expect(@tester.send(:redis_flushall,[])).to be false
       end
       it "prepare_redis (ZUNIONSTORE)" do
         ans = {"operand" => "redis_zunionstore", "args" => "OK"}

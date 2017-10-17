@@ -42,6 +42,13 @@ RSpec.describe 'Mongodb Unit TEST' do
       expect(result.size).to eq 100
       expect(result[0][2]).to eq true
     end
+    it "UPSERT (bulk #2)" do
+      args = ' "db", "insert" : "test", "documents" : 100  }'
+      result = @parser.exec("upsert",args,true)
+      expect(result[0][0]).to eq "db"
+      expect(result.size).to eq 100
+      expect(result[0][2]).to eq true
+    end
     it "UPDATE (basic)" do
       args = ' "db", updates: [{"q":"Q","u":"U","multi":"M","upsert":"U"}]'
       ans = {"key"=>"db", "query"=>"Q", "update"=>"U", "multi"=>"M", "upsert"=>"U"}

@@ -159,12 +159,12 @@ module Memcached2CassandraOperationTester
         @tester.raiseError = false
         @tester.value = true
         @tester.schemas = {"k" => CassandraSchemaMock.new}
-        expect(@tester.send(:memcached_flush)).to eq true
+        expect(@tester.send(:memcached_flush, [])).to eq true
       end
       it "MEMCACHED_FLUSH(error)" do
         @tester.raiseError = true
         @tester.schemas = {"k" => CassandraSchemaMock.new}
-        expect(@tester.send(:memcached_flush)).to eq false
+        expect(@tester.send(:memcached_flush, [])).to eq false
       end
     end
     context "Private Method" do

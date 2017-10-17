@@ -55,7 +55,7 @@ class CassandraSchema
   def check(kv, bulk = false)
     kv.each do |k, v|
       if bulk
-        if @fields.keys && !kv.keys.zero? &&
+        if @fields.keys && !kv.keys.empty? &&
            @fields.keys.size >= kv.keys.size
           k = @fields.keys[kv.keys.index(k)]
         else
@@ -96,7 +96,7 @@ class CassandraSchema
         keys.push(key)
         values.push(extract_keyvalue_normalize(value))
       else
-        @logger.error("ERROR KEY : #{key} => #{value} (#{value.class})")
+        @logger.debug("SKIP KEY : #{key} => #{value} (#{value.class})")
       end
     end
     kvs["key"] = keys.join(",")

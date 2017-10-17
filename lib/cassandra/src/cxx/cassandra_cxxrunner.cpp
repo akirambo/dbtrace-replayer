@@ -49,7 +49,7 @@ std::string CassandraCxxRunner::getReply(unsigned int number){
     if(this->_results.size() > number){
 	result = this->_results.at(number);
 	if(result){
-	    return  parseResult(result);
+	    return parseResult(result);
 	}
     }
     return "";
@@ -96,8 +96,8 @@ void CassandraCxxRunner::resetResults(){
 /* Executer */
 bool CassandraCxxRunner::syncExecuter(const char* command)
 {
-  //std::cout << "***********************************" << std::endl;
-  //std::cout << "Sync Executer :: " <<  command << std::endl;
+    //std::cout << "***********************************" << std::endl;
+    //std::cout << "Sync Executer :: " <<  command << std::endl;
     resetResults();
     double nsec = 0.0;
     if(this->_session != NULL){
@@ -112,6 +112,10 @@ bool CassandraCxxRunner::syncExecuter(const char* command)
 	//std::cout << " Duration :: " << this->_duration << std::endl;
 	if(cass_future_error_code(future) != CASS_OK) {
 	    std::cout << "[ERROR on CQL]:: " << command << std::endl;
+	    const char* error_message;
+	    size_t error_message_length;
+	    cass_future_error_message(future, &error_message, &error_message_length);
+	    std::cout << "              ::  " << error_message << std::endl;
 	    return false;
 	}
 	this->_results.push_back(cass_future_get_result(future));
@@ -216,7 +220,6 @@ bool CassandraCxxRunner::asyncExecuter()
 std::string CassandraCxxRunner::parseResult(const CassResult* result){
     std::string res = "";    
     CassIterator* itr = cass_iterator_from_result(result);
-    CassIterator* collectionItr;
     while(cass_iterator_next(itr)){
 	const CassRow* row = cass_iterator_get_row(itr);
        	size_t index = 0;
@@ -228,126 +231,7 @@ std::string CassandraCxxRunner::parseResult(const CassResult* result){
 	    if(value == NULL){
 		break;
 	    }
-	    int outputInt = 0;
-	    long int outputBigInt = 0 ;
-	    double outputDouble = 0.0;
-	    float outputFloat = 0.0;
- 	    const char* outputString = "";
-	    const char* outputText = "";
-	    size_t value_length_text;
-	    size_t value_length;
-	    cass_bool_t outputBool = cass_false;
-
-	    // For Hash
-	    const char* key0;
-	    const char* val0;
-	    size_t key0_length;
-	    size_t val0_length;
-	    std::ostringstream ostr;
-	    //unsigned int ostrLength = 0;
-	    switch (cass_value_type(value)) {
-	    case CASS_VALUE_TYPE_UNKNOWN:
-		std::cout << "Unsupported type :: CASS_VALUE_TYPE_UNKNOWN";
-		std::cout << " @ cassandra_cxxrunner.cpp" << std::endl;
-		break;
-	    case CASS_VALUE_TYPE_CUSTOM:
-		std::cout << "Uncorfirmed type :: CASS_VALUE_TYPE_CUSTOM";
-		std::cout << " @ cassandra_cxxrunner.cpp" << std::endl;
-		cass_value_get_string(value, &outputText, &value_length_text);
-		str = outputText;
-		str = str.substr(0,value_length_text);
-		break;
-	    case CASS_VALUE_TYPE_INT:
-		cass_value_get_int32(value, &outputInt);
-		str = std::to_string(outputInt);
-		break;
-	    case CASS_VALUE_TYPE_BIGINT:
-		cass_value_get_int64(value, &outputBigInt);
-		str = std::to_string(outputBigInt);
-		break;
-	    case CASS_VALUE_TYPE_DOUBLE:
-		cass_value_get_double(value, &outputDouble);
-		str = std::to_string(outputDouble);
-		break;
-	    case CASS_VALUE_TYPE_FLOAT:
-		outputFloat = 0.0;
-		cass_value_get_float(value, &outputFloat);
-		str = std::to_string(outputFloat);
-		break;
-	    case CASS_VALUE_TYPE_BOOLEAN:
-		cass_value_get_bool(value, &outputBool);
-		if(outputBool == cass_false){
-		    str = "false";
-		}else{
-		    str = "true";
-		}
-		break;
-	    case CASS_VALUE_TYPE_TEXT:
-		cass_value_get_string(value, &outputText, &value_length_text);
-		str = outputText;
-		str = str.substr(0,value_length_text);
-		break;
-	    case CASS_VALUE_TYPE_VARCHAR:
-		cass_value_get_string(value, &outputString, &value_length);
-		str = outputString;
-		str = str.substr(0,value_length);
-		break;
-	    case CASS_VALUE_TYPE_SET:
-		collectionItr = cass_iterator_from_collection(value);
-		if(collectionItr != NULL){
-		    while(cass_iterator_next(collectionItr)){
-			cass_value_get_string(cass_iterator_get_value(collectionItr), 
-					      &outputString, &value_length);
-			if(outputString){
-			    str = outputString;
-			    str = str.substr(0,value_length);
-			    ostr << "'" << str << "'";
-			    ostr << ",";
-			}else{
-			    ostr << "'',";
-			}
-		    }
-		    str = ostr.str();
-		    if(str.length() > 0){
-			str.pop_back();
-		    }else{
-			str = "''";
-		    }
-		    str = "{" + str + "}";
-		}else{
-		    str = "{}";
-		}
-		cass_iterator_free(collectionItr);
-		break;
-	    case CASS_VALUE_TYPE_MAP:
-		collectionItr = cass_iterator_from_map(value);
-		while(cass_iterator_next(collectionItr)){
-		    cass_value_get_string(cass_iterator_get_map_key(collectionItr),
-					  &key0,&key0_length);
-		    cass_value_get_string(cass_iterator_get_map_value(collectionItr),
-					  &val0,&val0_length);
-		    str = key0;
-		    str = str.substr(0,key0_length);
-		    ostr << "'" << str << "' : '";
-		    str = val0;
-		    str = str.substr(0,val0_length);
-		    ostr << str << "',";
-
-		}
-		str = ostr.str();
-		if(str.length() > 0){
-		    str.pop_back();
-		}else{
-		    str = "''";
-		}
-		str = "{" + str + "}";
-		cass_iterator_free(collectionItr);
-		break;
-	    default:
-		std::cout << "Unsupported type :: " << cass_value_type(value) ;
-		std::cout << " @ cassandra_cxxrunner.cpp" << std::endl;
-		break;
-	    } 
+	    str = parseValue(value);
 	    if(initFlag){
 		res += str;
 		initFlag = false;
@@ -365,3 +249,141 @@ std::string CassandraCxxRunner::parseResult(const CassResult* result){
     //return res.c_str();
     return res;
 }
+
+std::string CassandraCxxRunner::parseValue(const CassValue* value){
+    std::string str = "";
+
+    std::string map_key;
+    std::string map_val;
+    size_t value_length_text;
+    size_t value_length;
+    int outputInt = 0;
+    long int outputBigInt = 0 ;
+    double outputDouble = 0.0;
+    float outputFloat = 0.0;
+    const char* outputString = "";
+    const char* outputText = "";
+    cass_bool_t outputBool = cass_false;
+    std::ostringstream ostr;
+    CassIterator* collectionItr;
+    switch (cass_value_type(value)) {
+    case CASS_VALUE_TYPE_UNKNOWN:
+	std::cout << "Unsupported type :: CASS_VALUE_TYPE_UNKNOWN";
+	std::cout << " @ cassandra_cxxrunner.cpp" << std::endl;
+	break;
+    case CASS_VALUE_TYPE_CUSTOM:
+	std::cout << "Uncorfirmed type :: CASS_VALUE_TYPE_CUSTOM";
+	std::cout << " @ cassandra_cxxrunner.cpp" << std::endl;
+	cass_value_get_string(value, &outputText, &value_length_text);
+	str = outputText;
+	str = str.substr(0,value_length_text);
+	break;
+    case CASS_VALUE_TYPE_INT:
+	cass_value_get_int32(value, &outputInt);
+	str = std::to_string(outputInt);
+	break;
+    case CASS_VALUE_TYPE_BIGINT:
+	cass_value_get_int64(value, &outputBigInt);
+	str = std::to_string(outputBigInt);
+	break;
+    case CASS_VALUE_TYPE_DOUBLE:
+	cass_value_get_double(value, &outputDouble);
+	str = std::to_string(outputDouble);
+	break;
+    case CASS_VALUE_TYPE_FLOAT:
+	outputFloat = 0.0;
+	cass_value_get_float(value, &outputFloat);
+	str = std::to_string(outputFloat);
+	break;
+    case CASS_VALUE_TYPE_BOOLEAN:
+	cass_value_get_bool(value, &outputBool);
+	if(outputBool == cass_false){
+	    str = "false";
+	}else{
+	    str = "true";
+	}
+	break;
+    case CASS_VALUE_TYPE_TEXT:
+	cass_value_get_string(value, &outputText, &value_length_text);
+	str = outputText;
+	str = str.substr(0,value_length_text);
+	break;
+    case CASS_VALUE_TYPE_VARCHAR:
+	cass_value_get_string(value, &outputString, &value_length);
+	str = outputString;
+	str = str.substr(0,value_length);
+	break;
+    case CASS_VALUE_TYPE_SET:
+	str = parseSetResult(value, outputString, "set"); 
+	break;
+    case CASS_VALUE_TYPE_MAP:
+	collectionItr = cass_iterator_from_map(value);
+	while(cass_iterator_next(collectionItr)){
+	    map_key = parseValue(cass_iterator_get_map_key(collectionItr));
+	    map_val = parseValue(cass_iterator_get_map_value(collectionItr));
+	    ostr << "'" << map_key << "':'" << map_val << "',";
+	}
+	str = ostr.str();
+	if(str.length() > 0){
+	    str.pop_back();
+	}else{
+	    str = "''";
+	}
+	str = "{" + str + "}";
+	cass_iterator_free(collectionItr);
+	break;
+    case CASS_VALUE_TYPE_LIST:
+	str = parseSetResult(value, outputString, "list");
+	break;
+    default:
+	std::cout << "Unsupported type :: " << cass_value_type(value) ;
+	std::cout << " @ cassandra_cxxrunner.cpp" << std::endl;
+	std::cout << " Please check the number at cassandra.h" << std::endl;
+	break;
+    }
+    return str;
+}
+
+std::string CassandraCxxRunner::parseSetResult(const CassValue* value,
+					       const char* outputString,
+					       const std::string type){
+    size_t value_length;
+    CassIterator* collectionItr = cass_iterator_from_collection(value);
+    std::string str;
+    std::ostringstream ostr;
+    std::string prefix;
+    std::string postfix;
+    if (type == "list"){
+	prefix = "[";
+	postfix = "]";
+    } else if(type == "set"){
+	prefix = "{";
+	postfix = "}";
+    }
+    if(collectionItr != NULL){
+	while(cass_iterator_next(collectionItr)){
+	    cass_value_get_string(cass_iterator_get_value(collectionItr), 
+				  &outputString, &value_length);
+	    if(outputString){
+		str = outputString;
+		str = str.substr(0,value_length);
+		ostr << "'" << str << "'";
+		ostr << ",";
+	    }else{
+		ostr << "'',";
+	    }
+	}
+	str = ostr.str();
+	if(str.length() > 0){
+	    str.pop_back();
+	}else{
+	    str = "''";
+	}
+	str = prefix + str + postfix;
+    }else{
+	str = prefix + postfix;
+    }
+    cass_iterator_free(collectionItr);
+    return str;
+}
+    

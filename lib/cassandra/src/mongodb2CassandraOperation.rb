@@ -38,7 +38,7 @@ module Mongodb2CassandraOperation
   # @conv {"INSERT" => ["INSERT"]}
   def mongodb_insert(args)
     args.each do |arg|
-      name = arg[0]
+      name = mongodb_get_table(arg[0])
       kv = mongo_insert_check(arg)
       if kv == false
         return false
@@ -49,7 +49,7 @@ module Mongodb2CassandraOperation
         kv["mongoid"] = kv["_id"].delete("-")
         kv.delete("_id")
       end
-      if !@schemas[name].nil?
+      unless @schemas[name].nil?
         ## args[2] == true means bulk
         return mongo_bulk_schemas(kv, name, arg[2])
       else
@@ -61,7 +61,7 @@ module Mongodb2CassandraOperation
 
   # @conv {"UPDATE" => ["UPDATE"]}
   def mongodb_update(arg)
-    name = arg["key"]
+    name = mongodb_get_table(arg["key"])
     command = "UPDATE #{name} SET"
     ## EXTRACT NEW VALUE FOR EACH FIELD
     updates = []
@@ -96,7 +96,7 @@ module Mongodb2CassandraOperation
 
   # @conv {"FIND" => ["SELECT"]}
   def mongodb_find(arg)
-    name = arg["key"]
+    name = mongodb_get_table(arg["key"])
     command = "SELECT * FROM #{name}"
     result = true
     ## EXTRACT NEW VALUE FOR EACH FIELD
@@ -119,7 +119,8 @@ module Mongodb2CassandraOperation
 
   # @conv {"COUNT" => ["SELECT"]}
   def mongodb_count(arg)
-    command = "SELECT count(*) FROM #{arg["key"]}"
+    name = mongodb_get_table(arg["key"])
+    command = "SELECT count(*) FROM #{name}"
     ## EXTRACT NEW VALUE FOR EACH FIELD
     ## EXTRACT FILTER
     query = if arg["filter"]
@@ -144,8 +145,9 @@ module Mongodb2CassandraOperation
 
   # @conv {"DELETE" => ["DELETE"]}
   def mongodb_delete(arg)
+      name = mongodb_get_table(arg["key"])
     if arg["filter"].nil? || arg["filter"].size.zero?
-      command = "TRUNCATE #{arg["key"]};"
+      command = "TRUNCATE #{name};"
       begin
         direct_executer(command)
       rescue
@@ -159,7 +161,8 @@ module Mongodb2CassandraOperation
   end
 
   def mongodb_delete_exec(arg)
-    command = "DELETE FROM #{arg["key"]}"
+    name = mongodb_get_table(arg["key"])
+    command = "DELETE FROM #{name}"
     ## EXTRACT QUERY
     query = mongodb_parse_query(arg["filter"])
     if arg["filter"] && query
@@ -179,10 +182,7 @@ module Mongodb2CassandraOperation
 
   # @conv {"AGGREGATE" => ["SELECT"]}
   def mongodb_aggregate(arg)
-    name = @option[:keyspace] + "." + arg["key"]
-    if arg["key"].include?(".")
-      name = arg["key"]
-    end
+    name = mongodb_get_table(arg["key"])
     arg.delete("key")
     target_keys = @query_parser.targetkeys(arg)
     command = if target_keys.empty?
@@ -192,20 +192,24 @@ module Mongodb2CassandraOperation
               end
     if arg["match"]
       where = []
+      if arg["match"].class == String
+        arg["match"] = eval(arg["match"])
+      end
       arg["match"].each do |k, v|
         ## primary key ?
-        if @schemas[name].primarykeys.include?(k)
-          where.push("#{k} = '#{v}'")
+        key = k.to_s
+        if @schemas[name].primarykeys.include?(key)
+          where.push("#{key} = '#{v}'")
         end
       end
       unless where.empty?
         command += " WHERE #{where.join(" AND ")}"
       end
     end
-    mongodb_aggregate_exec(command, target_keys)
+    mongodb_aggregate_exec(command, target_keys, arg)
   end
 
-  def mongodb_aggregate_exec(command, target_keys)
+  def mongodb_aggregate_exec(command, target_keys, arg)
     begin
       ans = direct_executer(command + ";")
       docs = @query_parser.csv2docs(target_keys, ans)
@@ -228,6 +232,12 @@ module Mongodb2CassandraOperation
       @logger.error(e.message)
     end
     result
+  end
+
+  def mongodb_mapreduce(args)
+  end
+
+  def mongodb_group(args)
   end
 
   #############
@@ -325,6 +335,16 @@ module Mongodb2CassandraOperation
       return false
     end
     true
+  end
+
+  def mongodb_get_table(default)
+    name = @option[:keyspace] + "."
+    name += if default.include?(".")
+              default.split(".")[1]
+            else
+              default
+            end
+    name
   end
 
   def cassandra_exec(command)

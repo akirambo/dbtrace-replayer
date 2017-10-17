@@ -46,7 +46,7 @@ module CassandraParserTester
         result = {"insert"=>["insert", "into", "testdb.testcf",
                              "(field0,field1,field2,field3)",
                              "values", "('\"A\"','\"G1\"','1','10')"]}
-        ans = {"insert"=>["insert", "into", "testdb.testcf", "(field0,field1,field2,field3)", "values", "(''\"A\"'',''\"G1\"'',''1'',''10'')"]}
+        ans = {"insert"=>["insert", "into", "testdb.testcf", "(field0,field1,field2,field3)", "values", "(''A'',''G1'','1','10')"]}
         expect(@tester.parse_insert_cql3(result)).to eq ans
       end
       it "ParseSELECT_CQL3 " do

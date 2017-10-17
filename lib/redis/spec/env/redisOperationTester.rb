@@ -60,6 +60,9 @@ class RedisOperationTester
   def setPooledQuerySize(size)
     @client.setPooledQuerySize(size)
   end
+  def empty_reply
+    @client.empty_reply
+  end
   private
   ## Dummry Method
   def connect 

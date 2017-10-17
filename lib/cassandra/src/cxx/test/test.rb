@@ -115,9 +115,12 @@ begin
   end
   client.syncExecuter("drop keyspace if exists testdb")
   
-    ## SET / MAP
+  ###############
+  ## SET / MAP ##
+  ###############
   client.syncExecuter("drop keyspace if exists test;")
   client.syncExecuter("create keyspace if not exists test with replication = {'class':'SimpleStrategy','replication_factor':3};")
+  
   #### SET
   client.syncExecuter("CREATE TABLE test.sets (id TEXT, val SET<TEXT>, primary key(id));");
   client.syncExecuter("INSERT INTO test.sets (id,val) VALUES ('test0',{'a','b'});")
@@ -130,13 +133,11 @@ begin
     puts "[TEST] Sync Execution(insert SET) : PASSED"
   else
     puts "[TEST] Sync Execution(insert SET) : FAILED"
-    p "ans01"
-    p ans01
-    p "exp01"
-    p expected01
-    #puts "#{ans01} for #{expected01}"
+    puts "#{ans01} for #{expected01}"
   end
+
   
+
   #### MAP
   client.syncExecuter("CREATE TABLE test.maps (id TEXT, val MAP<TEXT,TEXT>, primary key(id));");
   client.syncExecuter("INSERT INTO test.maps (id,val) VALUES ('test0',{'key0':'val0','key1':'val1'});")
@@ -150,12 +151,44 @@ begin
     puts "[TEST] Sync Execution(MAP) : FAILED"
     puts "#{ans} for #{expected}"
   end
+  #### MAP 2
+  client.syncExecuter("CREATE TABLE test.sarray (key TEXT, value MAP<TEXT,FLOAT>, primary key (key));")
+  client.syncExecuter("UPDATE test.sarray SET value = value + {'v1':100.0} WHERE key = 'set';")
+  client.syncExecuter("UPDATE test.sarray SET value = value + {'v2':200.0} WHERE key = 'set';")
+  client.syncExecuter("UPDATE test.sarray SET value = value + {'v3':300.0} WHERE key = 'set';")
+  client.syncExecuter("UPDATE test.sarray SET value = value + {'v4':400.0} WHERE key = 'set';")
+  client.syncExecuter("SELECT value FROM test.sarray WHERE key = 'set'")
+  ans = client.getReply(0)
+  expected = "{'v1' : '100.000000','v2' : '200.000000','v3' : '300.000000','v4' : '400.000000'}"
+  if(ans == expected)then
+    puts "[TEST] Sync Execution(MAP2) : PASSED"
+  else
+    puts "[TEST] Sync Execution(MAP2) : FAILED"
+    puts "#{ans} for #{expected}"
+  end
+
+
+  #### LIST
+  client.syncExecuter("CREATE TABLE test.list (key TEXT, val LIST<TEXT>, primary key (key));")
+  client.syncExecuter("UPDATE test.list SET val = val + ['v1'] WHERE key = 'list' ;")
+  client.syncExecuter("UPDATE test.list SET val = val + ['v2'] WHERE key = 'list' ;")
+  client.syncExecuter("UPDATE test.list SET val = val + ['v3'] WHERE key = 'list' ;")
+  client.syncExecuter("UPDATE test.list SET val = val + ['v4'] WHERE key = 'list' ;")
+  client.syncExecuter("UPDATE test.list SET val = val + ['v5'] WHERE key = 'list' ;")
+  client.syncExecuter("SELECT val from test.list WHERE key = 'list' ;")
+  ans = client.getReply(0)
+  expected = "['v1','v2','v3','v4','v5']"
+  if(ans == expected)then
+    puts "[TEST] Sync Execution(LIST) : PASSED"
+  else
+    puts "[TEST] Sync Execution(LIST) : FAILED"
+    puts "#{ans} for #{expected}"
+  end
+
+
+  #### EPLOGUE
   client.syncExecuter("drop keyspace if exists test")
-
-
   client.syncExecuter("create keyspace testdb with replication = {'class':'SimpleStrategy','replication_factor':3}");
   client.resetDatabase();
-  
-
   client.close()
 end

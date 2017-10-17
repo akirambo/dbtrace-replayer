@@ -45,7 +45,7 @@ module Cassandra2MemcachedOperationUnitTest
     def delete(a)
       return execQuery("#{__method__}",a)
     end
-    def KEYLIST
+    def keylist
       return ["t.a","t.t","a.t"]
     end
     def flush(a)

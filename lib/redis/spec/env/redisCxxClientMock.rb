@@ -6,6 +6,10 @@ class RedisCxxClientMock
     @queries = []
     @keys = "k1.t1,k1.t2,k2.t1"
     @keys_flag = false
+    @empty_flag = false
+  end
+  def empty_reply
+    @empty_flag = true
   end
   def syncConnect(h,p)
     # dummy (do nothing)
@@ -34,7 +38,12 @@ class RedisCxxClientMock
   end
   def getReply
     if @keys_flag
-      return @keys
+      unless @empty_flag
+        return @keys
+      else
+        @empty_flag = false
+        return ""
+      end
     end
     return "syncReply"
   end

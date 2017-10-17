@@ -167,6 +167,13 @@ module MongodbOperationTester
         @tester.setResult(false)
         expect(@tester.send("insert", [["test",doc00],["test",doc01]])).to eq false
       end
+      it "insert (false)" do
+        @tester.async
+        @tester.setResult(nil)
+        doc = {"val" => 'a', "_id" => 'key00'}
+        expect(@tester.send("insert", [["test",doc]])).to eq nil
+      end
+
       it "update (single/multi)" do
         @tester.setResult(true)
         ## Exec
@@ -234,6 +241,9 @@ module MongodbOperationTester
       it "prepare_mongodb" do
         ans = { "operand" => "test", "args"=>"ARGS"}
         expect(@tester.send("prepare_mongodb", "test","")).to include ans 
+      end
+      it "group" do
+        @tester.send("group", {})
       end
       it "mapreduce" do
         @tester.send("mapreduce", {})

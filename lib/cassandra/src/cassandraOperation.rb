@@ -124,12 +124,14 @@ module CassandraOperation
     query.tr!('"', "'")
     query.delete!("-")
     query.gsub!("__DOUBLEQ__", '"')
+    query.gsub!("''", "'")
+    query.gsub!("{'}", "{''}")
     unless query.include?(";")
       query += ";"
     end
     query
   end
-
+  
   def exec_buffered_queries
     @metrics.start_monitor("database", "AsyncExec")
     @client.asyncExecuter

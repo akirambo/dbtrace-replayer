@@ -1,6 +1,4 @@
 
 CREATE TABLE testdb.test (name VARCHAR, age FLOAT, gender VARCHAR, group VARCHAR, ratings SET<float>, PRIMARY KEY (age));
-CREATE INDEX age on testdb.test (name);
-CREATE INDEX age on testdb.test (age);
 CREATE INDEX gender on testdb.test (gender);
 CREATE INDEX group on testdb.test (group);

@@ -1,2 +1,2 @@
 
-CREATE TABLE testdb.test (key text, value int, PRIMARY KEY (key));
+CREATE TABLE testdb.string (key text, value text, PRIMARY KEY (key));

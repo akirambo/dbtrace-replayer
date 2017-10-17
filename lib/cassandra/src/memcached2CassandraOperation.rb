@@ -135,8 +135,7 @@ module Memcached2CassandraOperation
   end
 
   # @conv {"FLUSH" => ["TRUNCATE"]}
-  def memcached_flush
-    queries = []
+  def memcached_flush(queries)
     queries.push("drop keyspace if exists #{@option[:keyspace]}")
     queries.push("create keyspace #{@option[:keyspace]} with replication = {'class':'SimpleStrategy','replication_factor':3}")
     @schemas.each do |_, v|

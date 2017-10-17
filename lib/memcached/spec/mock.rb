@@ -43,7 +43,7 @@ module MemcachedUnitTest
     def get_parameter(a)
       return @cond
     end
-    def createkey2realkey(a,b)
+    def createkey2realkey(a,b,c)
     end
     def create_groupkey(a,b)
       return "groupKey"

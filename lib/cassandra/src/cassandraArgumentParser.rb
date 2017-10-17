@@ -72,7 +72,7 @@ class CassandraArgumentParser
     values = values.sub(/\A\(/, "").sub(/\)\Z/, "").split(",")
     values.each_index do |index|
       result["args"][field_names[index].to_s] = if index != 0
-                                                  "'" + values[index].to_s + "'"
+                                                  ("'" + values[index].to_s + "'")
                                                 else
                                                   values[index].to_s
                                                 end

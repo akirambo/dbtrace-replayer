@@ -280,14 +280,14 @@ task :int_redis do
   sh "bundle exec ruby ./bin/parser.rb memcached -i basic -m run  -t redis -l DEBUG  lib/memcached/spec/input/memcached_all_command.log"
   ## Mongodb TO Redis
   sh "bundle exec ruby ./bin/parser.rb  mongodb -m run  -t redis -l DEBUG  lib/redis/spec/input/mongodb_all_command.log"
-  ## CQL tO Redis
+  ## CQL TO Redis
   sh "bundle exec ruby ./bin/parser.rb cassandra -m run  -t redis -i cql3 -l DEBUG lib/redis/spec/input/cql3.log --schema lib/redis/spec/input/cql3.schema" 
   
 end
 
 desc "INTEGRATION TEST for cassandra"
 task :int_cassandra do
-  ## CQL   TO CQL
+  ## CQL TO CQL
   sh 'bundle exec ruby ./bin/parser.rb cassandra -m run  -t cassandra -i cql3 -l DEBUG --keyspace "testdb" lib/redis/spec/input/cql3.log --schema lib/redis/spec/input/cql3.schema'
   ## Redis TO CQL
   sh 'bundle exec ruby ./bin/parser.rb redis -m run  -t cassandra  -l DEBUG --keyspace "testdb" --schema lib/redis/spec/input/redis_all_command.schema lib/redis/spec/input/redis_all_command.log'

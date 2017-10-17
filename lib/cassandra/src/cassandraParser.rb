@@ -128,9 +128,9 @@ class CassandraParser < AbstractDBParser
     command = "insert"
     result[command].each_index do |idx|
       if values_flag && result[command][idx].include?("(")
-        result[command][idx].sub!("(", "('")
-        result[command][idx].sub!(")", "')")
-        result[command][idx].gsub!(",", "','")
+        result[command][idx].gsub!('"', "'")
+        #result[command][idx].sub!(")", "')")
+        #result[command][idx].gsub!(",", "','")
         values_flag = false
       end
       if !values_flag && result[command][idx] == "values"
