@@ -29,6 +29,8 @@
 #
 
 module Redis2CassandraOperation
+  require_relative "../../redis/src/redis_utils"
+  include RedisUtils
   private
 
   ############
@@ -1037,25 +1039,5 @@ module Redis2CassandraOperation
       end
     end
     true
-  end
-
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_redis(operand, args)
-    result = {}
-    result["operand"] = "redis_#{operand}"
-    result["args"] = if %w[zunionstore zinterstore].include?(operand)
-                       @parser.extract_z_x_store_args(args)
-                     elsif %w[mset mget msetnx].include?(operand)
-                       @parser.args2hash(args)
-                     elsif %w[hmget].include?(operand)
-                       @parser.args2key_args(args)
-                     elsif %w[hmset].include?(operand)
-                       @parser.args2key_hash(args)
-                     else
-                       args
-                     end
-    result
   end
 end

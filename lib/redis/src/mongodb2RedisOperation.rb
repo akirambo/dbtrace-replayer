@@ -29,6 +29,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 module MongoDB2RedisOperation
+  require_relative "../../mongodb/src/mongodb_utils"
+  include MongodbUtils
   MONGODB_NUMERIC_QUERY = ["$gt", "$gte", "$lt", "$lte"].freeze
   MONGODB_STRING_QUERY  = ["$eq", "$ne", "$in", "$nin"].freeze
 
@@ -332,17 +334,5 @@ module MongoDB2RedisOperation
       end
     end
     query
-  end
-
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_mongodb(operand, args)
-    if args.include?("upsert: true")
-      operand = "upsert"
-    end
-    result = { "operand" => "mongodb_#{operand}", "args" => nil }
-    result["args"] = @parser.exec(operand, args)
-    result
   end
 end

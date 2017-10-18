@@ -613,7 +613,7 @@ module Redis2MongodbTester
         expect(@tester.send(:aggregate_score,"ERROR",1,1,10)).to eq 0
       end
       it "aggregate_score(nil operation)" do
-        expect(@tester.send(:aggregate_score,nil,1,1,10)).to eq 11
+        expect(@tester.send(:aggregate_score,nil,1,1,10)).to eq 0
       end
       it "get_list" do
         expect(@tester.send("get_list","key")).to eq false

@@ -29,6 +29,8 @@
 #
 
 module Memcached2CassandraOperation
+  require_relative "../../memcached/src/memcached_utils"
+  include MemcachedUtils
   private
 
   # @conv {"SET" => ["INSERT"]}
@@ -151,21 +153,5 @@ module Memcached2CassandraOperation
       end
     end
     true
-  end
-
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_memcached(operand, args)
-    result = {}
-    ## PREPARE SPECIAL OPERATION
-    if %w[flushall].include?(operand)
-      result["operand"] = operand
-      return result
-    end
-    ## PREPARE OPERATION & ARGS
-    result["operand"] = "memcached_#{operand.downcase}"
-    result["args"] = @parser.exec(operand.downcase, args)
-    result
   end
 end

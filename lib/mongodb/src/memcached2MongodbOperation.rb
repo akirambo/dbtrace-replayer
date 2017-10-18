@@ -29,6 +29,8 @@
 #
 
 module Memcached2MongodbOperation
+  require_relative "../../memcached/src/memcached_utils"
+  include MemcachedUtils
   private
 
   # @conv {"SET" => ["INSERT"]}
@@ -87,7 +89,12 @@ module Memcached2MongodbOperation
       "filter" => { "_id" => args[0] },
       "query" => { "_id" => args[0] },
     }
-    str = find(cond)[0]["value"].to_s
+    ret = find(cond)
+    str = if ret.empty?
+            ""
+          else
+            find(cond)[0]["value"].to_s
+          end
     str += args.last.to_s
     cond["update"] = { "$set" => { "value" => str } }
     update(cond)
@@ -100,8 +107,13 @@ module Memcached2MongodbOperation
       "filter" => { "_id" => args[0] },
       "query" => { "_id" => args[0] },
     }
-    str = find(cond)[0]["value"].to_s
-    str = args.last.to_s + str
+    ret = find(cond)
+    str = if ret.empty?
+            ""
+          else
+            find(cond)[0]["value"].to_s
+          end
+    str += args.last.to_s + str
     cond["update"] = { "$set" => { "value" => str } }
     update(cond)
   end
@@ -149,21 +161,5 @@ module Memcached2MongodbOperation
   # @conv {"FLUSH" => ["DROP"]}
   def memcached_flush(_)
     drop(["testdb.col"])
-  end
-
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_memcached(operand, args)
-    result = {}
-    ## PREPARE SPECIAL OPERATION
-    if %w[flushall].include?(operand)
-      result["operand"] = operand
-      return result
-    end
-    ## PREPARE OPERATION & ARGS
-    result["operand"] = "memcached_#{operand}"
-    result["args"] = @parser.exec(operand, args)
-    result
   end
 end

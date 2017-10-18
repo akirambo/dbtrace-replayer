@@ -31,7 +31,7 @@
 require_relative "./cassandraSchema"
 
 class CassandraBatchMutateParser
-  def initizlie(logger, option)
+  def initialize(logger, option)
     @logger = logger
     @option = option
     @schemas = {}

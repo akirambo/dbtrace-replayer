@@ -31,6 +31,8 @@
 #
 
 module MongoDB2MemcachedOperation
+  require_relative "../../mongodb/src/mongodb_utils"
+  include MongodbUtils
   private
 
   # @conv {"insert" => ["get","set"]}
@@ -41,6 +43,10 @@ module MongoDB2MemcachedOperation
   # @conv {"update" => ["query@client","GET","REPLACE"]}
   def mongodb_update(args)
     mongodb_insert_update(args, "update")
+  end
+
+  def mongodb_upsert(args)
+    mongodb_insert_update(args, "insert")
   end
 
   def mongodb_group(_)
@@ -220,15 +226,6 @@ module MongoDB2MemcachedOperation
       end
     end
     convert_json(hashed_doc)
-  end
-
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_mongodb(operand, args)
-    result = { "operand" => "mongodb_#{operand.downcase}", "args" => nil }
-    result["args"] = @parser.exec(operand.downcase, args)
-    result
   end
 
   ####################

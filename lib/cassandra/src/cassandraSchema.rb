@@ -100,7 +100,6 @@ class CassandraSchema
     kvs = { "key" => [], "value" => [] }
     kv.each do |key_, value|
       key = key_.delete("_")
-      @logger.debug("KEY    :: #{key} IN Fields :: #{@fields.keys}")
       if @fields.keys.include?(key)
         keys.push(key)
         values.push(extract_keyvalue_normalize(value))
@@ -284,13 +283,13 @@ class CassandraSchema
 
   def check_field_type(value, schema_type_)
     schema_type = schema_type_.downcase
-    if @convert_types[value.class.to_s]
-      @convert_types[value.class.to_s].each do |val|
-        unless schema_type.include?(val)
-          return false
+    if types = @convert_types[value.class.to_s]
+      types.each do |type|
+        if schema_type.include?(type)
+          return true
         end
+        return false
       end
-      return true
     end
     @logger.error("Unsupport field type #{value.class}")
     false

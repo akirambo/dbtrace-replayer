@@ -29,6 +29,8 @@
 #
 
 module Memcached2RedisOperation
+  require_relative "../../memcached/src/memcached_utils"
+  include MemcachedUtils
   private
 
   # @conv {"set(args x3)" => ["setex"]}
@@ -116,21 +118,5 @@ module Memcached2RedisOperation
   # @conv {"flush" => ["flushall"]}
   def memcached_flush(args)
     flushall(args)
-  end
-
-  #############
-  ## prepare ##
-  #############
-  def prepare_memcached(operand, args)
-    result = {}
-    ## PREPARE SPECIAL OPERATION
-    if ["flushall"].include?(operand)
-      result["operand"] = operand
-      return result
-    end
-    ## PREPARE OPERATION & ARGS
-    result["operand"] = "memcached_#{operand.downcase}"
-    result["args"] = @parser.exec(operand.downcase, args)
-    result
   end
 end

@@ -30,6 +30,9 @@
 #
 
 module Mongodb2CassandraOperation
+
+  require_relative "../../mongodb/src/mongodb_utils"
+  include MongodbUtils
   MONGODB_NUMERIC_QUERY = %w[$gt $gte $lt $lte].freeze
   MONGODB_STRING_QUERY = %w[$eq $ne $in $nin].freeze
 
@@ -51,12 +54,16 @@ module Mongodb2CassandraOperation
       end
       if @schemas[name]
         ## args[2] == true means bulk
-        return mongo_bulk_schemas(kv, name, arg[2])
+        return mongodb_bulk_schemas(kv, name, arg[2])
       else
         return false
       end
     end
     true
+  end
+
+  def mongodb_upsert(args)
+    mongodb_insert(args)
   end
 
   # @conv {"UPDATE" => ["UPDATE"]}
@@ -241,15 +248,6 @@ module Mongodb2CassandraOperation
     @logger.warn("Unsupported Group Command")
   end
 
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_mongodb(operand, args)
-    result = { "operand" => "mongodb_#{operand}", "args" => nil }
-    result["args"] = @parser.exec(operand, args)
-    result
-  end
-
   def mongodb_parse_query(hash)
     where = []
     id_where = []
@@ -324,7 +322,7 @@ module Mongodb2CassandraOperation
     kv
   end
 
-  def mongo_bulk_schemas(kv, name, arg)
+  def mongodb_bulk_schemas(kv, name, arg)
     if @schemas[name].check(kv, arg)
       filtered_kv = @schemas[name].extract_keyvalue(kv)
       command = "INSERT INTO #{name} "

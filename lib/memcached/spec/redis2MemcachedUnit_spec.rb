@@ -648,7 +648,7 @@ module MemcachedOperationUnitTest
         expect(@tester.send(:aggregate_score,"SUM",10,20,2)).to eq 50
         expect(@tester.send(:aggregate_score,"MAX",10,20,2)).to eq 40
         expect(@tester.send(:aggregate_score,"MIN",10,20,2)).to eq 10
-        expect(@tester.send(:aggregate_score,"ERROR",10,20,2)).to eq 50
+        expect(@tester.send(:aggregate_score,"ERROR",10,20,2)).to eq 0
       end
     end
   end

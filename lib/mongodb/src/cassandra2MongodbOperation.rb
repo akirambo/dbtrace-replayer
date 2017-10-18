@@ -28,7 +28,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-module Cassandra2MongodbOperation
+module Cassandra2MongodbOperation 
+  require_relative "../../cassandra/src/cassandra_utils"
+  include CassandraUtils
   private
 
   ###############
@@ -98,17 +100,6 @@ module Cassandra2MongodbOperation
       @logger.warn("Unsupported CASSANDRA_DROP with #{args}.")
     end
     drop([])
-  end
-
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_cassandra(operand, args)
-    ## PREPARE OPERATION & ARGS
-    result = {}
-    result["operand"] = "cassandra_#{operand}"
-    result["args"] = @parser.exec(operand, args)
-    result
   end
 
   def cassandra_judge(result, args)

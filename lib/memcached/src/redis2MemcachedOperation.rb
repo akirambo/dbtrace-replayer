@@ -30,6 +30,8 @@
 #
 
 module Redis2MemcachedOperation
+  require_relative "../../redis/src/redis_utils"
+  include RedisUtils
   private
 
   ############
@@ -744,26 +746,6 @@ module Redis2MemcachedOperation
     delete(args)
   end
 
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_redis(operand, args)
-    result = {}
-    result["operand"] = "redis_#{operand}"
-    result["args"] = if %w[zunionstore zinterstore].include?(operand)
-                       @parser.extract_z_x_store_args(args)
-                     elsif %w[mset mget msetnx].include?(operand)
-                       @parser.args2hash(args)
-                     elsif %w[hmget].include?(operand)
-                       @parser.args2key_args(args)
-                     elsif %w[hmset].include?(operand)
-                       @parser.args2key_hash(args)
-                     else
-                       args
-                     end
-    result
-  end
-
   ## Private Function
   def extract_elements_fromlist(list, start_pos, end_pos)
     result = []
@@ -832,35 +814,5 @@ module Redis2MemcachedOperation
       end
     end
     result
-  end
-
-  def sorted_array_get_range(start_index, end_index, members)
-    result = []
-    i = start_index
-    if i == -1
-      i = 0
-    end
-    if end_index == -1
-      end_index = members.size - 1
-    end
-    while i <= end_index
-      result.push(members[i])
-      i += 1
-    end
-    result
-  end
-
-  def aggregate_score(operation, v0, v1, weight)
-    score = case operation.upcase
-            when "SUM" then
-              v0 + v1 * weight
-            when "MAX" then
-              [v0, v1 * weight].max
-            when "MIN" then
-              [v0, v1 * weight].min
-            else
-              v0 + v1 * weight
-            end
-    score
   end
 end

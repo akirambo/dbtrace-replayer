@@ -29,6 +29,8 @@
 #
 
 module Cassandra2RedisOperation
+  require_relative "../../cassandra/src/cassandra_utils"
+  include CassandraUtils
   private
 
   ###############
@@ -111,16 +113,5 @@ module Cassandra2RedisOperation
     targetkeys = keys(args["key"], args["type"])
     ## drop Table
     del(targetkeys)
-  end
-
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_cassandra(operand, args)
-    ## PREPARE OPERATION & ARGS
-    result = {}
-    result["operand"] = "cassandra_#{operand.downcase}"
-    result["args"] = @parser.exec(operand.downcase, args)
-    result
   end
 end

@@ -30,6 +30,8 @@
 #
 
 module Cassandra2MemcachedOperation
+  require_relative "../../cassandra/src/cassandra_utils"
+  include CassandraUtils
   private
 
   ###############
@@ -147,17 +149,6 @@ module Cassandra2MemcachedOperation
       delete([dk])
     end
     true
-  end
-
-  #############
-  ## PREPARE ##
-  #############
-  def prepare_cassandra(operand, args)
-    ## PREPARE OPERATION & ARGS
-    result = {}
-    result["operand"] = "cassandra_#{operand.downcase}"
-    result["args"] = @parser.exec(operand.downcase, args)
-    result
   end
 
   def cassandra_judge(doc, args)
