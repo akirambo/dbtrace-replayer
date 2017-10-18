@@ -113,7 +113,9 @@ class GvisGraph
     buf += POSTFIX_CODE.sub("filename", filename)
     return buf
   end
+
   private
+
   def createSubGraph(name,route,type)
     if(@subGraphs[name] == nil)then
       @subGraphs[name] = SubGraph.new(name)

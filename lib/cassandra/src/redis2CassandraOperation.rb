@@ -31,6 +31,7 @@
 module Redis2CassandraOperation
   require_relative "../../redis/src/redis_utils"
   include RedisUtils
+
   private
 
   ############

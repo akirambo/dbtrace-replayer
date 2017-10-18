@@ -32,6 +32,7 @@
 module Cassandra2MemcachedOperation
   require_relative "../../cassandra/src/cassandra_utils"
   include CassandraUtils
+
   private
 
   ###############
@@ -149,30 +150,6 @@ module Cassandra2MemcachedOperation
       delete([dk])
     end
     true
-  end
-
-  def cassandra_judge(doc, args)
-    args["where"].each do |cond__|
-      cond__ = cond__.split("=")
-      fieldname = cond__[0]
-      value = cond__[1]
-      if doc[fieldname] != value
-        return false
-      end
-    end
-    true
-  end
-
-  def select_field(hash, args)
-    row = {}
-    if args["fields"][0] == "*"
-      return hash
-    else
-      args["fields"][0].split(",").each do |field|
-        row[field] = hash[field]
-      end
-    end
-    row
   end
 
   def cassandra_serialize(array)
