@@ -112,6 +112,18 @@ module Cassandra2MemcachedOperationUnitTest
         }
         expect(@tester.send(:cassandra_select,args)).to match_array ["v0","v1"]
       end
+      it "cassandra_select (there is no key in cond_keys)" do
+        @tester.getValue = "dummy"
+        args = {
+          "table"         => "t1",
+          "schema_fields" => 3,
+          "cond_keys"     => ["f0"],
+          "cond_values"   => ["v0"],
+          "primaryKey"    => "pkey",
+          "fields"        => ["f0","f1"]
+        }
+        expect(@tester.send(:cassandra_select,args)).to match_array ["v0","v1"]
+      end
       it "cassandra_update (schema_fields == 2)" do
         @tester.queryReturn = true
         args = {
@@ -155,6 +167,15 @@ module Cassandra2MemcachedOperationUnitTest
         args = {
           "cond_keys"     => ["pkey","f0"],
           "cond_values"   => ["p0","v0"],
+          "primaryKey"    => "pkey"
+        }
+        expect(@tester.send(:cassandra_delete,args)).to be true
+      end
+      it "cassandra_delete (no target)" do
+        @tester.queryReturn = true
+        args = {
+          "cond_keys"     => ["f0"],
+          "cond_values"   => ["v0"],
           "primaryKey"    => "pkey"
         }
         expect(@tester.send(:cassandra_delete,args)).to be true

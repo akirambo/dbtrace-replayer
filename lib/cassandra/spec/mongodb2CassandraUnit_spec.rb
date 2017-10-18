@@ -183,13 +183,21 @@ module Mongodb2CassandraOperationTester
         args = [["k.f", ["dummy"],false]]
         expect(@tester.send(:mongodb_insert,args)).to eq false
       end
-      it "MONGODB_INSERT(error casae :: not match schema)" do
+      it "MONGODB_INSERT(error case :: not match schema)" do
         @tester.raiseError = false
         @tester.raiseParseJSONError = false
         @tester.returnParseJSON = {"_id"=>"k0", "f0"=>"v0"}
         @tester.schemas = {"k.f0" => CassandraSchemaMock.new}
         args = [["k.f", ["dummy"],false]]
         expect(@tester.send(:mongodb_insert,args)).to eq false
+      end
+      it "MONGODB_INSERT( no argumeht)" do
+        @tester.raiseError = false
+        @tester.raiseParseJSONError = false
+        @tester.returnParseJSON = {"_id"=>"k0", "f0"=>"v0"}
+        @tester.schemas = {"k.f0" => CassandraSchemaMock.new}
+        args = []
+        expect(@tester.send(:mongodb_insert,args)).to eq true
       end
     end
     context "UPDATE Operation" do
@@ -327,6 +335,13 @@ module Mongodb2CassandraOperationTester
         args = { "key" => "k.f", "match" => {"f0" => "v0"}}
         @tester.send(:mongodb_aggregate,args)
       end      
+      it "MONGODB_AGGREGATE(simple case)" do
+        @tester.raiseError = false
+        @tester.schemas = {"k.f" => CassandraSchemaMock.new}
+        @tester.setTargetKeysValue([])
+        args = { "key" => "k.f", "match" => '{"f0":"v0"}'}
+        @tester.send(:mongodb_aggregate,args)
+      end      
     end
     context "Private Method" do
       it "prepare_mongodb" do
@@ -376,6 +391,16 @@ module Mongodb2CassandraOperationTester
         hash = {"c0" => "5", "p0" => {"$gt" => 10}, "_id" => "m0"}
         ans = "c0 = '5' AND p0 > 10 AND (mongoid = 'm0')"
         expect(@tester.send(:mongodb_parse_query,hash)).to eq ans
+      end
+      it "mongdb_get_table (not include .)" do
+        arg = "test"
+        ans = "k.test"
+        expect(@tester.send(:mongodb_get_table,arg)).to eq ans
+      end
+      it "mongdb_get_table (include .)" do
+        arg = "m.test"
+        ans = "k.test"
+        expect(@tester.send(:mongodb_get_table,arg)).to eq ans
       end
     end
   end

@@ -83,13 +83,7 @@ class CassandraParser < AbstractDBParser
         if @supported_command.include?(command)
           result = {}
           result[command] = query.split("\s")
-          begin
-            result = send("parse_#{command}_cql3", result)
-          rescue => e
-            @logger.error e.message
-            @logger.error "Unimplemented #{command}"
-            return nil
-          end
+          result = send("parse_#{command}_cql3", result)
           return result
         else
           unless @skip_types.include?(command)

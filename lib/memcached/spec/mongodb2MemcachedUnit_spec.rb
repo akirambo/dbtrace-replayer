@@ -33,6 +33,9 @@ module Mongodb2MemcachedOperationUnitTest
     def setDocs(docs)
       @utils.docs = docs
     end
+    def set_nogroupkey
+      @query_parser.set_nogroupkey
+    end
     def setCond(cond)
       @query_parser.cond = cond
     end
@@ -304,6 +307,15 @@ module Mongodb2MemcachedOperationUnitTest
         ans = {"groupKey"=>{"v"=>10}}
         expect(@tester.send(:mongodb_aggregate,args)).to include ans 
       end
+      it "MONGODB_AGGREGATE (keys == "")" do
+        args = {"key"=>"k"}
+        @tester.set_nogroupkey
+        @tester.getValue = "[{\"_id\":\"001\",\"v\":2}]"
+        @tester.setDocs([{:_id =>"001",:v =>2 ,:x => 3},{:_id => "002", :v => 1, :x => 4}])
+        @tester.setCond({"cond"=>{"v" => "sum"}})
+        ans = {"groupKey"=>{"v"=>10}}
+        expect(@tester.send(:mongodb_aggregate,args)).to include ans 
+      end
     end
     context "Replace Operation" do
       it "MONGODB_REPLACE #1 " do
@@ -317,10 +329,30 @@ module Mongodb2MemcachedOperationUnitTest
         expect(@tester.send(:mongodb_replace,"dummy",args)).to include ans 
       end
     end
+    context "Unsupported Operation" do 
+      it "MONGODB_GROUP" do
+        expect(@tester.send(:mongodb_group,"dummy")).to eq true
+      end
+      it "MONGODB_MAPREDUCE" do
+        expect(@tester.send(:mongodb_mapreduce,"dummy")).to eq true
+      end
+    end
     context "Private Method" do
       it "prepare_mongodb" do
         ans = {"operand" => "mongodb_test", "args" => "OK"}
         expect(@tester.send(:prepare_mongodb,"TEST","dummy")).to include ans
+      end
+      it "mongodb_process_keyvalue (error)" do
+        expect(@tester.send(:mongodb_process_keyvalue,nil,"notype")).to be false
+      end
+      it "mongodb_process_document (error)" do
+        expect(@tester.send(:mongodb_process_document,nil,"notype")).to be false
+      end
+      it "mongodb_replace_doc (error)" do
+        @tester.getValue = '[{"a":"n"}]'
+        args = {"query" => nil}
+        newvals = {:a => "v", :b => "v"}
+        expect(@tester.send(:mongodb_replace_doc,args,newvals)).to include newvals
       end
       it "mongodbQuery (return TRUE)" do
         doc = {:_id => "001" , :value => "test"}

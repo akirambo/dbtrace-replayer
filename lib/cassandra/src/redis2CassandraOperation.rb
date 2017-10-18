@@ -385,9 +385,6 @@ module Redis2CassandraOperation
   # @conv {"LLEN" => ["SELECT","length@client"]}
   def redis_llen(args)
     list = redis_lget(args)
-    if list.nil?
-      return 0
-    end
     list.size
   end
 
@@ -1015,7 +1012,6 @@ module Redis2CassandraOperation
     rescue => e
       @logger.debug(command)
       @logger.error(e.message)
-      abort
     end
     hash
   end

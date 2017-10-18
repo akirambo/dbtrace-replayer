@@ -45,10 +45,12 @@ module MongoDB2MemcachedOperation
 
   def mongodb_group(args)
     @logger.warn("Unsupported Command Group")
+    true
   end
 
   def mongodb_mapreduce(args)
     @logger.warn("Unsupported Command Mapreduce")
+    true
   end
 
   def mongodb_insert_update(args, type)

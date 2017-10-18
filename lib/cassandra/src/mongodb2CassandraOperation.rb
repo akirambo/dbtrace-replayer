@@ -145,7 +145,7 @@ module Mongodb2CassandraOperation
 
   # @conv {"DELETE" => ["DELETE"]}
   def mongodb_delete(arg)
-      name = mongodb_get_table(arg["key"])
+    name = mongodb_get_table(arg["key"])
     if arg["filter"].nil? || arg["filter"].size.zero?
       command = "TRUNCATE #{name};"
       begin
@@ -157,7 +157,6 @@ module Mongodb2CassandraOperation
     else
       return mongodb_delete_exec(arg)
     end
-    true
   end
 
   def mongodb_delete_exec(arg)
@@ -334,7 +333,6 @@ module Mongodb2CassandraOperation
       @logger.warn("Not Found Table [#{name}]. Please Create Table @ INSERT .")
       return false
     end
-    true
   end
 
   def mongodb_get_table(default)

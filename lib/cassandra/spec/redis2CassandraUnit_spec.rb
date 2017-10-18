@@ -546,6 +546,15 @@ module Redis2CassandraOperationTester
         args = ["key00"]
         expect(@tester.send(:redis_rpop,args)).to eq false
       end
+      it "REDIS_RPOP (stdout)" do
+        @tester.raiseError = false
+        @tester.value = "['val00','val11']"
+        args = ["key00"]
+        command = "DELETE value[1] FROM k.list WHERE key = 'key00';"
+        expect(@tester.send(:redis_rpop,args,true)).to eq "val11"
+        expect(@tester.command).to eq command
+      end
+
       it "REDIS_LRANGE" do
         @tester.raiseError = false
         @tester.value = "['a','b','c']"
@@ -616,6 +625,12 @@ module Redis2CassandraOperationTester
         @tester.value = "['a','b','c']"
         args = ["key0"]
         expect(@tester.send(:redis_llen,args)).to eq 3
+      end
+      it "REDIS_LLEN (no data)" do
+        @tester.raiseError = false
+        @tester.value = nil
+        args = ["key0"]
+        expect(@tester.send(:redis_llen,args)).to eq 0
       end
       it "redis_lget (index)" do
         @tester.raiseError = false
@@ -775,6 +790,12 @@ module Redis2CassandraOperationTester
         ans = {"f0"=>"v0","f1"=>"v1","f2"=>"v2"}
         expect(@tester.send(:redis_hgetall,args)).to include ans
       end
+      it "REDIS_HGETALL (error on cql)" do
+        args = {"key"=>"k0"}
+        @tester.raiseError = true
+        ans = {}
+        expect(@tester.send(:redis_hgetall,args)).to eq ans
+      end
     end
     context "Others & Private Method" do
       it "REDIS_FLUSHALL (success)" do
@@ -806,6 +827,9 @@ module Redis2CassandraOperationTester
       it "prepare_redis (HGET)" do
         ans = {"operand" => "redis_hget", "args" => ""}
         expect(@tester.send(:prepare_redis,"hget","")).to include ans
+      end
+      it "check_option (false)" do
+        expect(@tester.send(:check_option,{}, 0, "false")).to eq false
       end
     end
   end

@@ -40,12 +40,22 @@ module MemcachedUnitTest
   end
   class QueryParserMock
     attr_accessor :cond
+    def initialize
+      @set_nogroupkey = true
+    end
+    def set_nogroupkey
+      @set_nogroupkey = false
+    end
     def get_parameter(a)
       return @cond
     end
     def createkey2realkey(a,b,c)
     end
     def create_groupkey(a,b)
+      if @set_nogroupkey
+        @set_nogroupkey = false
+        return ""
+      end
       return "groupKey"
     end
   end

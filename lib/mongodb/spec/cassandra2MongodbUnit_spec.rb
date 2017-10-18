@@ -111,6 +111,11 @@ module Cassandra2MongodbTester
         expect(@tester.send(:cassandra_drop,[])).to eq true
         expect(@tester.command).to eq "drop"
       end
+      it "CASSANDRA_DROP (args not empty)" do
+        @tester.setQueryValue(true)
+        expect(@tester.send(:cassandra_drop,["a"])).to eq true
+        expect(@tester.command).to eq "drop"
+      end
     end
     context "Private Method" do
       it "prepare_cassandra" do
@@ -140,6 +145,10 @@ module Cassandra2MongodbTester
       it "cassandraDeserialize" do
         dummy = ["d1"]
         expect(@tester.send(:cassandra_deserialize,dummy)).to eq [{"f1"=>"v1","f2"=>"v2"}]
+      end
+      it "get_primarykey" do
+        args = { "primary_key" => "a", "cond_keys" => ["b"]}
+        expect(@tester.send(:get_primarykey,args)).to eq nil
       end
     end
   end
