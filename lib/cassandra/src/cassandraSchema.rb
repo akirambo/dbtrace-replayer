@@ -283,7 +283,8 @@ class CassandraSchema
 
   def check_field_type(value, schema_type_)
     schema_type = schema_type_.downcase
-    if types = @convert_types[value.class.to_s]
+    types = @convert_types[value.class.to_s]
+    if types
       types.each do |type|
         if schema_type.include?(type)
           return true

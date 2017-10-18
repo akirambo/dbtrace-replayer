@@ -124,9 +124,25 @@ module Memcahed2MongodbTester
         expect(@tester.send(:memcached_append, args)).to eq true
         expect(@tester.command).to eq "update"
       end
+      it "MEMCACHED_APPEND (no pre-stored data)" do
+        args = [{"_id" => "id00"},"v"]
+        ans = []
+        @tester.setFindValue(ans)
+        @tester.setQueryValue(true)
+        expect(@tester.send(:memcached_append, args)).to eq true
+        expect(@tester.command).to eq "update"
+      end
       it "MEMCACHED_PREPEND" do
         args = [{"_id" => "id00"},"f"]
         ans = [{"value"=>"a"}]
+        @tester.setFindValue(ans)
+        @tester.setQueryValue(true)
+        expect(@tester.send(:memcached_prepend, args)).to eq true
+        expect(@tester.command).to eq "update"
+      end
+      it "MEMCACHED_PREPEND (there is not pre-stored data)" do
+        args = [{"_id" => "id00"},"f"]
+        ans = []
         @tester.setFindValue(ans)
         @tester.setQueryValue(true)
         expect(@tester.send(:memcached_prepend, args)).to eq true

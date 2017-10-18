@@ -31,6 +31,7 @@
 module Memcached2CassandraOperation
   require_relative "../../memcached/src/memcached_utils"
   include MemcachedUtils
+
   private
 
   # @conv {"SET" => ["INSERT"]}

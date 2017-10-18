@@ -45,6 +45,15 @@ class SubGraph
       }
     }
   end
+
+  def draw(type)
+    if type == "routes"
+      drawRoutes
+    elsif type == "subgraph"
+      drawSubGraph
+    end
+  end
+
   def drawRoutes
     buf = "\n"
     @routes.each{|node, __targets__|
@@ -53,6 +62,7 @@ class SubGraph
     }
     return buf
   end
+
   def drawSubGraph
     buf  = "\n\tsubgraph do\n"
     buf += "\t\tglobal label:'#{@name}'\n"
@@ -97,18 +107,14 @@ class GvisGraph
     buf = ""
     ## Perfix Code
     buf += PREFIX_CODE
-    ## Routes
-    @subGraphs.each{|name, subGraph|
-      if(targets.size == 0 or targets.include?(name))then
-        buf += subGraph.drawRoutes
+    ## Draw Routes & SubGraph
+    %w[routes subgraph].each do |type|
+      @subgGraphs.each do |name, subGraph|
+        if targets.empty? || targets.include?(name)
+          buf += subGraph.draw(type)
+        end
       end
-    }
-    ## SubGraph
-    @subGraphs.each{|name, subGraph|
-      if(targets.size == 0 or targets.include?(name))then
-        buf += subGraph.drawSubGraph
-      end
-    }
+    end
     ## Postfix Code
     buf += POSTFIX_CODE.sub("filename", filename)
     return buf

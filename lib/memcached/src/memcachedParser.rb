@@ -152,11 +152,11 @@ class MemcachedParser < AbstractDBParser
       params = flush_and_register(params)
       ## Parse Request Header ##
       params = parse_request_header(f, data, params)
-    elsif data.size > 2
-      params = parse_datasize_two(data, params)
-    elsif data.size > 3 && data.include?("FOUND") && @get_key_command_from_found.include?(command)
+    elsif data.size > 3 && data.include?("FOUND") && @get_key_command_from_found.include?(params["command"])
       ## Add Real Key
       params["args"].push(data[3])
+    elsif data.size > 2
+      params = parse_datasize_two(data, params)
     end
     params
   end

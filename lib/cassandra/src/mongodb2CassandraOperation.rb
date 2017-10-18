@@ -30,7 +30,6 @@
 #
 
 module Mongodb2CassandraOperation
-
   require_relative "../../mongodb/src/mongodb_utils"
   include MongodbUtils
   MONGODB_NUMERIC_QUERY = %w[$gt $gte $lt $lte].freeze

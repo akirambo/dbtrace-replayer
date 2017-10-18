@@ -141,6 +141,13 @@ module Mongodb2MemcachedOperationUnitTest
         args = []
         expect(@tester.send(:mongodb_insert, args)).to be false
       end
+      it "MONGODB_UPSERT(key value when SET is passed)" do
+        @tester.queryReturn = true
+        @tester.datamodel("KEYVALUE")
+        args = [["k0",{"_id"=>"v0","f0"=>"v1"}]]
+        expect(@tester.send(:mongodb_upsert, args)).to be true
+        expect(@tester.command).to eq "set"
+      end
     end
     context "Update Operation" do
       it "MONGODB_UPDATE (key value)" do

@@ -199,6 +199,19 @@ module Mongodb2CassandraOperationTester
         args = []
         expect(@tester.send(:mongodb_insert,args)).to eq true
       end
+      it "MONGODB_UPSERT(simple case :: string)" do
+        @tester.raiseError = false
+        @tester.raiseParseJSONError = false
+        @tester.returnParseJSON = {"_id"=>"k0", "f0"=>"v0"}
+        @tester.schemas = {"k.f" => CassandraSchemaMock.new}
+        @tester.schemas["k.f"].checkValue = true
+        @tester.schemas["k.f"].fields = ["_id","f0"]
+        ## args[2] means bulk import or not
+        args = [["k.f", "dummy",false]]
+        expect(@tester.send(:mongodb_upsert,args)).to eq true
+        command = "INSERT INTO k.f ('_id','f0') VALUES ('k0','v0');"
+        expect(@tester.command).to eq command
+      end
     end
     context "UPDATE Operation" do
       it "MONGODB_UPDATE(simple case :: w/ update(string) & query)" do
@@ -342,6 +355,22 @@ module Mongodb2CassandraOperationTester
         args = { "key" => "k.f", "match" => '{"f0":"v0"}'}
         @tester.send(:mongodb_aggregate,args)
       end      
+    end
+    context "UNSUPPORTED Operation" do
+      it "MONGODB_GROUP" do
+        @tester.raiseError = false
+        @tester.schemas = {"k.f" => CassandraSchemaMock.new}
+        @tester.setTargetKeysValue(["f0","f1"])
+        @tester.send(:mongodb_group,[])
+        expect(@tester.command).to eq nil
+      end
+      it "MONGODB_MAPREDUCE" do
+        @tester.raiseError = false
+        @tester.schemas = {"k.f" => CassandraSchemaMock.new}
+        @tester.setTargetKeysValue(["f0","f1"])
+        @tester.send(:mongodb_mapreduce,[])
+        expect(@tester.command).to eq nil
+      end
     end
     context "Private Method" do
       it "prepare_mongodb" do

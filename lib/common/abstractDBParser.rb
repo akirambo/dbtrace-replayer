@@ -36,39 +36,46 @@ class AbstractDBParser
     @option = option
     @logger = logger
   end
+
   def exec()
     log_commands = []
-    if(!@option[:parseMultiLines])then
+    if !@option[:parseMultiLines]
       begin
-        File.open(@filename, "r"){|f|
+        File.open(@filename, "r") do |f|
           while line = f.gets
-            if(parsed = parse(line))then
+            parsed = parse(line)
+            if parsed
               command = parsed.keys()[0]
-              if(!log_commands.include?(command))then
+              unless log_commands.include?(command)
                 log_commands.push(command)
               end
               @logs.push(parsed)
             end
           end
-        }
+        end
       rescue => e
         @logger.error(e)
       end
     else
-      logs_command = parse_multilines(@filename)
       ## @logs is updated in parse_multilines
+      logs_command = parse_multilines(@filename)
     end
   end
+
   def log
     return @logs
   end
+
   def workload
     return @logs.log
   end
-protected
-  def parse(line)
+
+  protected
+  
+  def parse(_line)
     @logger.warn("Parse Method is not implemeted")
   end
+
   def operationCount(line)
     @logger.warn("OperationCount method is Not Implemented")
   end

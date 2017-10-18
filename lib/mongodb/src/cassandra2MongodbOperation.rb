@@ -28,7 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-module Cassandra2MongodbOperation 
+module Cassandra2MongodbOperation
   require_relative "../../cassandra/src/cassandra_utils"
   include CassandraUtils
 
