@@ -107,76 +107,28 @@ class MemcachedParser < AbstractDBParser
   end
 
   def parse_multilines(filename)
-    # incr/decr is able to get incr/decr value
-    ## command => the position of argument
-    gettable_value = {
-      "incr" => 3,
-      "decr" => 3,
+    params = {
+      "results" => {},
+      "logs" => [],
+      "args" => [],
+      "command" => "",
     }
-    results = {}
-    logs = []
-    split_term = "0x80"
-    args = []
-    command = ""
     File.open(filename, "r") do |f|
       line = f.gets
       until line.nil?
-        data = line.chop.split("\s")
-        if data[1] == split_term
-          ######################
-          ## flush & register ##
-          ######################
-          unless args.empty?
-            command = args[0]
-            if results[command].nil?
-              results[command] = []
-            end
-            results[command].push(args)
-            logs.push(args)
-            args = []
-          end
-          ##########################
-          ## Parse Request Header ##
-          ##########################
-          # Add Command
-          command = BIN2COMMAND[data[2]]
-          if @supported_command.include?(command)
-            args = extract_args(f, data)
-            args.unshift(command)
-          elsif !@skip_types.include?(command) &&
-                !@skip_types.include?(data[0])
-            @logger.warn("Unsupported Command #{command}")
-            @logger.debug(data)
-          end
-        elsif data.size > 2 && @supported_command.include?(data[1].downcase)
-          # Add Real KeyName
-          ## CASE1 : command = data[1], key = data[2]
-          args.push(data[2])
-          command = data[1].downcase
-        elsif data.size > 2 && @supported_command.include?(data[0].downcase)
-          ## CASE2 : command = data[0], key = data[1]
-          args.push(data[1])
-          ## Add Real Value
-          command = data[0].downcase
-          if gettable_value.key?(command)
-            args.push(data[2].sub(",", "").to_i)
-          end
-        elsif data.size > 3 && data.include?("FOUND") && @get_key_command_from_found.include?(command)
-          ## Add Real Key
-          args.push(data[3])
-        end
+        params = parse_multilines_single(line, f, params)
         ## GO TO NEXT
         line = f.gets
       end
       ## Push Final Command
-      unless args.empty?
-        command = args[0]
-        logs.push(args)
-        results[command].push(args)
+      unless params["args"].empty?
+        params["command"] = params["args"][0]
+        params["logs"].push(params["args"])
+        params["results"][params["command"]].push(params["args"])
       end
     end
-    register_logs(logs)
-    results.keys.uniq
+    register_logs(params["logs"])
+    params["results"].keys.uniq
   end
 
   def integer_string?(str)
@@ -189,6 +141,82 @@ class MemcachedParser < AbstractDBParser
   end
 
   private
+
+  def parse_multilines_single(line, f, params)
+    ## command => the position of argument
+    # incr/decr is able to get incr/decr value
+    split_term = "0x80"
+    data = line.chop.split("\s")
+    if data[1] == split_term
+      ## flush & register ##
+      params = flush_and_register(params)
+      ## Parse Request Header ##
+      params = parse_request_header(f, data, params)
+    elsif data.size > 2
+      params = parse_datasize_two(data, params)
+    elsif data.size > 3 && data.include?("FOUND") && @get_key_command_from_found.include?(command)
+      ## Add Real Key
+      params["args"].push(data[3])
+    end
+    params
+  end
+
+  def flush_and_register(params)
+    unless params["args"].empty?
+      params["command"] = params["args"][0]
+      command = params["command"]
+      if params["results"][command].nil?
+        params["results"][command] = []
+      end
+      params["results"][command].push(params["args"])
+      params["logs"].push(params["args"])
+      params["args"] = []
+    end
+    params
+  end
+
+  def parse_request_header(f, data, params)
+    command = BIN2COMMAND[data[2]]
+    params["command"] = command
+    if @supported_command.include?(command)
+      params["args"] = extract_args(f, data)
+      params["args"].unshift(command)
+    elsif !@skip_types.include?(command) &&
+          !@skip_types.include?(data[0])
+      @logger.warn("Unsupported Command #{command}")
+      @logger.debug(data)
+    end
+    params
+  end
+
+  def parse_datasize_two(data, params)
+    if @supported_command.include?(data[1].downcase)
+      params = parse_keyname(data, params)
+    elsif @supported_command.include?(data[0].downcase)
+      params = parse_value(data, params)
+    end
+    params
+  end
+
+  def parse_keyname(data, params)
+    # Add Real KeyName
+    ## CASE1 : command = data[1], key = data[2]
+    params["args"].push(data[2])
+    params["command"] = data[1].downcase
+    params
+  end
+
+  def parse_value(data, params)
+    ## Add Real Value
+    ## CASE2 : command = data[0], key = data[1]
+    gettable_value = { "incr" => 3, "decr" => 3 }
+    params["args"].push(data[1])
+    params["command"] = data[0].downcase
+    if gettable_value.key?(params["command"])
+      params["args"].push(data[2].sub(",", "").to_i)
+    end
+    params
+  end
 
   def register_logs(logs)
     ## log format []

@@ -208,7 +208,7 @@ module Redis2CassandraOperation
   def redis_lpush(args)
     redis_push(args, "lpush")
   end
-  
+
   # @conv {"RPUSH" => ["UPDATE"]}
   def redis_rpush(args)
     redis_push(args, "rpush")
@@ -724,7 +724,7 @@ module Redis2CassandraOperation
     remkey.each do |rkey|
       all.delete(rkey.to_sym)
     end
-     redis_zadd(args, all)
+    redis_zadd(args, all)
   end
 
   # @conv {"ZREMRANGEBYRANK" => ["SELECT","UPDATE"]}

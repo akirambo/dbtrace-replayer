@@ -105,28 +105,39 @@ class MongodbQueryProcessor
     when 1 then
       return real_value_one_cond(doc, conds[0])
     when 2 then
-      if doc[conds[0]]
-        return doc[conds[0]][conds[1]]
-      else
-        return doc[conds[0].to_sym][conds[1].to_sym]
-      end
+      return real_value_two_conds(doc, conds)
     when 3 then
-      if doc[conds[0]]
-        return doc[conds[0]][conds[1]][conds[2]]
-      else
-        return doc[conds[0].to_sym][conds[1].to_sym][conds[2].to_sym]
-      end
+      return real_value_three_conds(doc, conds)
     else
       @logger.error("[ERROR] Unsupported Deep layer(it means bigger than 3) Document.")
     end
   end
 
   def real_value_one_cond(doc, cond)
-    if doc[cond]
-      doc[cond]
-    else
-      doc[cond.to_sym]
-    end
+    ret = if doc[cond]
+            doc[cond]
+          else
+            doc[cond.to_sym]
+          end
+    ret
+  end
+
+  def real_value_two_conds(doc, conds)
+    ret = if doc[conds[0]]
+            doc[conds[0]][conds[1]]
+          else
+            doc[conds[0].to_sym][conds[1].to_sym]
+          end
+    ret
+  end
+
+  def real_value_three_conds(doc, conds)
+    ret = if doc[conds[0]]
+            doc[conds[0]][conds[1]][conds[2]]
+          else
+            doc[conds[0].to_sym][conds[1].to_sym][conds[2].to_sym]
+          end
+    ret
   end
 
   ### Operater
@@ -158,42 +169,19 @@ class MongodbQueryProcessor
   end
 
   def numeric_query(operation, value, cond_value)
-    if operation.include?("$gt")
-      return numeric_query_gt(operation, value, cond_value)
-    elsif operation.include?("$lt")
-      return numeric_query_lt(operation, value, cond_value)
-    else
-      @logger.warn("Unsupported NUMERIC operation '#{operation}' !!")
-    end
-    false
-  end
-
-  def numeric_query_gt(operation, value, cond_value)
     if operation == "$gt"
-      ## Return false
-      if value <= cond_value
-        return false
-      end
+      # Return False
+      return value <= cond_value
     elsif operation == "$gte"
+      return value < cond_value
+    elsif operation == "$lt"
       ## Return false
-      if value < cond_value
-        return false
-      end
-    end
-    true
-  end
-
-  def numeric_query_lt(operation, value, cond_value)
-    if operation == "$lt"
-      ## Return false
-      if value >= cond_value
-        return false
-      end
+      return value >= cond_value
     elsif operation == "$lte"
       ## Return false
-      if value < cond_value
-        return false
-      end
+      return value < cond_value
+    else
+      @logger.warn("Unsupported NUMERIC operation '#{operation}' !!")
     end
     true
   end

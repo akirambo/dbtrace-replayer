@@ -46,8 +46,8 @@ module MongoDB2RedisOperation
         doc_args.delete!(" ")
         doc = {
           "key"  => args[0][0],
-          "args" => [doc_args]
-          }
+          "args" => [doc_args],
+        }
         v = sadd(doc)
       end
     elsif @option[:datamodel] == "KEYVALUE"
@@ -120,28 +120,33 @@ module MongoDB2RedisOperation
     results = []
     case @option[:datamodel]
     when "DOCUMENT" then
-      ## documents
-      data = smembers([args["key"]], true)
-      docs = []
-      unless data.nil?
-        docs = eval("[" + data + "]")
-      end
-      results = []
-      if args["filter"].nil? || args["filter"] == {}
-        results = docs
-      else
-        docs.each do |doc|
-          if mongodb_query(doc, args["filter"])
-            results.push(doc)
-          end
-        end
-      end
+      results = mongodb_find_document(args)
     when "KEYVALUE"
       ## documents
       key = args["filter"][@option[:key_of_keyvalue]]
       results = get([key])
     else
       return "NG"
+    end
+    results
+  end
+
+  def mongodb_find_document(args)
+    ## documents
+    data = smembers([args["key"]], true)
+    docs = []
+    unless data.nil?
+      docs = eval("[" + data + "]")
+    end
+    results = []
+    if args["filter"].nil? || args["filter"] == {}
+      results = docs
+    else
+      docs.each do |doc|
+        if mongodb_query(doc, args["filter"])
+          results.push(doc)
+        end
+      end
     end
     results
   end
@@ -154,19 +159,7 @@ module MongoDB2RedisOperation
       if args["filter"].size.zero?
         v = del([args["key"]])
       else
-        data = get([args["key"]])
-        new_docs = []
-        docs = if data != "[]"
-                 eval("[" + data + "]")
-               else
-                 []
-               end
-        docs.each_index do |index|
-          doc = parse_json(docs[index])
-          unless mongodb_query(doc, args["filter"])
-            new_docs.push(convert_json(doc))
-          end
-        end
+        new_docs = mongodb_delete_newdocs(args)
         if new_docs.size.zero?
           v = del(args["key"])
         else
@@ -178,6 +171,23 @@ module MongoDB2RedisOperation
       @logger.error("Unsupported Data Model @ mongodb2redis #{@option[:datamodel]}")
     end
     v
+  end
+
+  def mongodb_delete_newdocs(args)
+    new_docs = []
+    data = get([args["key"]])
+    docs = if data != "[]"
+             eval("[" + data + "]")
+           else
+             []
+           end
+    docs.each_index do |index|
+      doc = parse_json(docs[index])
+      unless mongodb_query(doc, args["filter"])
+        new_docs.push(convert_json(doc))
+      end
+    end
+    new_docs
   end
 
   # @conv {"findandmodify" => ["undefined"]}

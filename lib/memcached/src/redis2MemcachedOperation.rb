@@ -553,7 +553,7 @@ module Redis2MemcachedOperation
                         v
                       else
                         result[k] = aggregate_score(args["option"][:aggregate],
-              result[k], v.to_f, weight)
+                                                    result[k], v.to_f, weight)
                       end
         end
       else

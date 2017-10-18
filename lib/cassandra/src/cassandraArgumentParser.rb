@@ -30,6 +30,7 @@
 #
 
 require_relative "./cassandraSchema"
+require_relative "./cassandraBatchMutateParser"
 
 class CassandraArgumentParser
   attr_reader :schemas
@@ -37,6 +38,7 @@ class CassandraArgumentParser
     @logger = logger
     @option = option
     @schemas = {}
+    @batch_parser = CassandraBatchMutateParser.new(logger, option)
     extract_schema_from_file
   end
 
@@ -280,129 +282,7 @@ class CassandraArgumentParser
   # PREPARE for BATCH_MUTATE #
   #--------------------------#
   def prepare_args_batch_mutate_java(args)
-    data = parse_batch_mutate_parameter(args, false)
-    hash = data["keyValue"]
-    if !data["counterColumn"]
-      hash[data["rowKey"]] = data["rowValue"]
-    else
-      hash.each do |h|
-        h[data["rowKey"]] = data["rowValue"]
-      end
-    end
-    result = {
-      "key"  => data["table"],
-      "args" => hash,
-      "counterColumn" => data["counterColumn"],
-    }
-    result
-  end
-
-  # Parser #
-  def parse_batch_mutate_parameter(param, cassandra = true)
-    result = {
-      "table" => nil, "rowKey" => "key", "rowValue" => nil,
-      "cf" => nil, "keyValue" => {}, "counterColumn" => false,
-      "counterKeyValue" => {}
-    }
-    # 1. key_name
-    if param.match(/{(.+?):(.+?):(.*)/)
-      rowkey = $1
-      rowkey.delete!("'")
-      columnfamily = $2
-      others = $3
-      result["cf"] = columnfamily.delete!(" ").sub!(/\'/, "")
-      ## Find Keyspace
-      result["table"] = extract_keyspace_for_batch_mutate_parameter(result)
-      ## Primary Key's Field Type
-      result["rowValue"] = if @schemas[result["table"]].primarykey_type != "blob"
-                             rowkey
-                           else
-                             "0x" + rowkey
-                           end
-      kv = {}
-      values = []
-      counter_column_flag = false
-      if others.include?("column:Column(")
-        values = others.split("Mutation(column_or_supercolumn:ColumnOrSuperColumn(column:Column(")
-      elsif others.include?("counter_column:CounterColumn(")
-        counter_column_flag = true
-        result["counterColumn"] = true
-        values = others.split("Mutation(column_or_supercolumn:ColumnOrSuperColumn(counter_column:CounterColumn(")
-      else
-        @logger.fatal("Cannot Parse BatchMutateParameter #{__FILE__}")
-      end
-      ## Remove "["
-      values.shift
-      values.pop
-      if !counter_column_flag
-        values.each do |cols__|
-          cols = cols__.split(",")
-          key = nil
-          cols.each_index do |index|
-            key_value = cols[index].split(":")
-            if key_value.size == 2 && !key_value[0].include?("timestamp")
-              if index.zero?
-                ## name
-                key = [key_value[1].delete(" ")].pack("H*")
-                key = @schemas[result["table"]].get_key(key.sub("C", "").to_i + 1)
-              elsif index == 1
-                ## value
-                kv[key] = extract_values_for_batch_mutate_parameter(result, key, cassandra, key_value)
-              end
-            end
-          end
-        end
-        result["keyValue"] = kv
-      else
-        #### CounterColumn
-        kvs = []
-        ckvs = []
-        ckv = {}
-        values.each do |cols__|
-          cols = cols__.delete(")").delete(" ").split(",")
-          key = nil
-          cols.each_index do |index|
-            key_value = cols[index].split(":")
-            if index.zero?
-              ## Name
-              key_name = @schemas[result["table"]].get_key(1)
-              kv[key_name] = extract_values_for_batch_mutate_parameter(result, key, cassandra. key_value)
-            elsif index == 1
-              ## Counter
-              key = @schemas[result["table"]].counter_key
-              if key
-                ckv[key] = key_value[1].delete(" ").to_i
-              end
-            end
-          end
-          kvs.push(kv)
-          ckvs.push(ckv)
-          kv = {}
-          ckv = {}
-        end
-        result["keyValue"] = kvs
-        result["counterKeyValue"] = ckvs
-      end
-    end
-    result
-  end
-
-  def extract_keyspace_for_batch_mutate_parameter(result)
-    @schemas.keys.each do |ks_tb|
-      if ks_tb.include?(".#{result["cf"]}")
-        return ks_tb
-      end
-    end
-  end
-
-  def extract_values_for_batch_mutate_parameter(result, key, cassandra, key_value)
-    if @schemas[result["table"]].field_type(key) == "blob" && cassandra
-      "0x" + key_value[1].delete(" ")
-    elsif @schemas[result["table"]].field_type(key) == "counter" && cassandra
-      key_value[1].delete(" ").to_i
-    else
-      [key_Value[1].delete(" ")].pack("H*")
-    end
+    @batch_parser.send(__method__, args, @schemas)
   end
 
   #------------------------------#
@@ -476,16 +356,21 @@ class CassandraArgumentParser
       result["primaryKey"] = ret["primaryKey"]
     end
     ## Get Target Key
+    result = update_target_key(args, result, cassandra)
+    ## Get Count
+    if args.match(/.+count': '(\w+?)'.+/)
+      result["count"] = $1
+    end
+    result
+  end
+
+  def update_target_key(args, result, cassandra)
     if args.match(/.+key': '(\w+?)'.+/)
       result["targetKey"] = if @schemas[result["table"]].primarykey_type == "blob" && cassandra
                               "0x" + $1
                             else
                               [$1.delete(" ", "")].pack("H*")
                             end
-    end
-    ## Get Count
-    if args.match(/.+count': '(\w+?)'.+/)
-      result["count"] = $1
     end
     result
   end

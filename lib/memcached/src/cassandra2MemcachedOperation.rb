@@ -59,12 +59,7 @@ module Cassandra2MemcachedOperation
   ## args = {"key"=>tablename, "fields" => [],"where"=> [], "limit" =>number}
   def cassandra_select(args)
     results = []
-    index = args["cond_keys"].index(args["primaryKey"])
-    key = if index && args["cond_values"][index]
-            "#{args["table"]}--#{args["cond_values"][index]}"
-          else
-            "#{args["table"]}"
-          end
+    key = cassandra_get_tablename(args)
     if args["schema_fields"] == 2
       ### String (Key-Value)
       results = [get([key])]
@@ -84,6 +79,16 @@ module Cassandra2MemcachedOperation
     results
   end
 
+  def cassandra_get_tablename(args)
+    index = args["cond_keys"].index(args["primaryKey"])
+    key = if index && args["cond_values"][index]
+            "#{args["table"]}--#{args["cond_values"][index]}"
+          else
+            args["table"].to_s
+          end
+    key
+  end
+
   # @conv {"UPDATE" =>["SET","GET"]}
   def cassandra_update(args)
     args["args"] = {}
@@ -94,13 +99,13 @@ module Cassandra2MemcachedOperation
     end
     if args["schema_fields"] == 2
       ## Key-Value
-      #key = "#{args["table"]}--#{args["cond_values"][index]}"
+      # key = "#{args["table"]}--#{args["cond_values"][index]}"
       return cassandra_insert(args)
     elsif args["schema_fields"] == args["set"].keys.size
       ## Key-JSON Full Update
       return cassandra_insert(args)
     else
-      index = args["cond_keys"].index(args["primaryKey"])
+      # index = args["cond_keys"].index(args["primaryKey"])
       key = args["table"]
       ## Key-JSON Partical Update
       str_json = get([key])

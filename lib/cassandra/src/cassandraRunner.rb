@@ -100,8 +100,8 @@ class CassandraRunner < AbstractRunner
   end
 
   def cassandra_setup_query(query, code)
+    @logger.debug(query)
     begin
-      @logger.debug(query)
       @client.syncExecuter(query)
     rescue => e
       @logger.error("#{code} #{e.message}")

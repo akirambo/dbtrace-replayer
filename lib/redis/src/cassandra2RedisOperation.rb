@@ -47,7 +47,7 @@ module Cassandra2RedisOperation
     else
       ### Hash
       args["key"] = args["table"]
-      if args["args"].class == Hash then
+      if args["args"].class == Hash
         tmp = []
         args["args"].each do |k, v|
           if k != primarykey
@@ -69,7 +69,7 @@ module Cassandra2RedisOperation
     key = if idx && args["cond_values"][idx]
             "#{args["table"]}--#{args["cond_values"][idx].delete("\"")}"
           else
-            "#{args["table"]}"
+            args["table"].to_s
           end
     if args["schema_fields"] == 2
       ### String (Key-Value)

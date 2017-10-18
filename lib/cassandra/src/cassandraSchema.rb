@@ -35,6 +35,15 @@ class CassandraSchema
               :drop_query, :create_indexes
 
   def initialize(keyspace, create_query, logger)
+    @convert_types = {
+      "String" => %w[varchar text].freeze,
+      "Integer" => %w[int].freeze,
+      "Float" => %w[float].freeze,
+      "Array" => %w[set map].freeze,
+      "TrueClass" => %w[text].freeze,
+      "FalseClass" => %w[text].freeze,
+      "Hash" => %w[map].freeze,
+    }
     @keyspace = keyspace
     @table = nil
     @primarykeys = nil
@@ -275,24 +284,15 @@ class CassandraSchema
 
   def check_field_type(value, schema_type_)
     schema_type = schema_type_.downcase
-    case value.class.to_s
-    when "String" then
-      return (schema_type == "varchar" || schema_type == "text")
-    when "Integer" then
-      return schema_type == "int"
-    when "Float" then
-      return schema_type == "float"
-    when "Array" then
-      return (schema_type.include?("set") || schema_type.include?("map"))
-    when "TrueClass" then
-      return schema_type == "text"
-    when "FalseClass" then
-      return schema_type == "text"
-    when "Hash" then
-      return schema_type.include?("map")
-    else
-      @logger.error("Unsupport field type #{value.class}")
+    if @convert_types[value.class.to_s]
+      @convert_types[value.class.to_s].each do |val|
+        unless schema_type.include?(val)
+          return false
+        end
+      end
+      return true
     end
+    @logger.error("Unsupport field type #{value.class}")
     false
   end
 

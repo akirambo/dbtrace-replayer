@@ -395,7 +395,7 @@ module RedisOperation
     command = "#{__method__} #{args[0]}"
     redis_cxx_executer(__method__, command)
   end
-  
+
   def keys(pattern, type)
     keys = []
     if @client.syncExecuter("keys *")

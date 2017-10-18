@@ -47,45 +47,19 @@ module CassandraOperation
     value
   end
 
-  def direct_executer(query, onTime = true)
+  def direct_executer(query, on_time = true)
     value = false
     if query.class.to_s == "Array"
       value = direct_executer_array(query)
     else
-      value = {}
       query = normalize_cassandra_query(query)
       connect
       command = query.split(" ")[0].upcase
-      if @option[:async] && command != "DROP" && command != "CREATE"
-        ## Async Execution
-        add_count(query.split(" ")[0])
-        @pool_request_size += 1
-        @pool_byte_size += query.bytesize
-        commit_condition =
-          @option[:poolRequestMaxSize] == -1 || (@pool_request_size < @option[:poolRequestMaxSize] && @pool_byte_size < 64_000)
-        if !onTime && commit_condition
-          ####################
-          ## COMMIT QUERIES ##
-          ####################
-          value = @client.commitQuery(query).to_s
-        elsif !onTime && !commit_condition
-          value = exec_buffered_queries
-          @client.commitQuery(query)
-          @pool_request_size = query.bytesize
-          @pool_byte_size = 1
-        elsif onTime
-          exec_buffered_queries
-          @client.syncExecuter(query)
-          value = @client.getReply(0)
-        end
-      else
-        ## Sync Execution
-        @client.syncExecuter(query)
-        add_duration(@client.getDuration, "database", query.split(" ")[0].upcase)
-        if query.split(" ")[0].casecmp("SELECT")
-          value = @client.getReply(0)
-        end
-      end
+      value = if @option[:async] && command != "DROP" && command != "CREATE"
+                direct_executer_async(query, on_time)
+              else
+                direct_executer_sync(query)
+              end
       close
     end
     value
@@ -99,6 +73,44 @@ module CassandraOperation
       end
     end
     true
+  end
+
+  def direct_executer_sync(query)
+    ## Sync Execution
+    @client.syncExecuter(query)
+    add_duration(@client.getDuration, "database", query.split(" ")[0].upcase)
+    if query.split(" ")[0].casecmp("SELECT")
+      value = @client.getReply(0)
+    end
+    value
+  end
+
+  def direct_executer_async(query, on_time)
+    ## Async Execution
+    add_count(query.split(" ")[0])
+    @pool_request_size += 1
+    @pool_byte_size += query.bytesize
+    commit_condition = check_commit_condition
+    if !on_time && commit_condition
+      ####################
+      ## COMMIT QUERIES ##
+      ####################
+      value = @client.commitQuery(query).to_s
+    elsif !on_time && !commit_condition
+      value = exec_buffered_queries
+      @client.commitQuery(query)
+      @pool_request_size = query.bytesize
+      @pool_byte_size = 1
+    elsif on_time
+      exec_buffered_queries
+      @client.syncExecuter(query)
+      value = @client.getReply(0)
+    end
+    value
+  end
+
+  def check_commit_condition
+    @option[:poolRequestMaxSize] == -1 || (@pool_request_size < @option[:poolRequestMaxSize] && @pool_byte_size < 64_000)
   end
 
   #############
@@ -131,7 +143,7 @@ module CassandraOperation
     end
     query
   end
-  
+
   def exec_buffered_queries
     @metrics.start_monitor("database", "AsyncExec")
     @client.asyncExecuter

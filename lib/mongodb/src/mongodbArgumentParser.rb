@@ -1,3 +1,4 @@
+# coding: utf-8
 
 #
 # Copyright (c) 2017, Carnegie Mellon University.
@@ -72,7 +73,7 @@ class MongodbArgumentParser
     hash
   end
 
-  def insert(args, no_string)
+  def insert(args, _no_string)
     ## Parse Arguments
     result = []
     log = parse_log(args)
@@ -86,17 +87,17 @@ class MongodbArgumentParser
       doc.to_i.times do
         hash = {}
         @key_value_num.times do |index|
-          if index == 0
+          if index.zero?
             hash[:_id] = @utils.create_string(@byte_size)
           else
             hash[@utils.create_string(@byte_size)] = @utils.create_string(@byte_size)
           end
         end
-        #if no_string
+        # if no_string
         result.push([key, [hash], true])
-        #else
+        # else
         #  result.push([key, [@utils.convert_json(hash)], true])
-        #end
+        # end
       end
     end
     result

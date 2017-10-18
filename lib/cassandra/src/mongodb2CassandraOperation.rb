@@ -49,7 +49,7 @@ module Mongodb2CassandraOperation
         kv["mongoid"] = kv["_id"].delete("-")
         kv.delete("_id")
       end
-      unless @schemas[name].nil?
+      if @schemas[name]
         ## args[2] == true means bulk
         return mongo_bulk_schemas(kv, name, arg[2])
       else
@@ -233,10 +233,12 @@ module Mongodb2CassandraOperation
     result
   end
 
-  def mongodb_mapreduce(args)
+  def mongodb_mapreduce(_)
+    @logger.warn("Unsupported Mapreduce Command")
   end
 
-  def mongodb_group(args)
+  def mongodb_group(_)
+    @logger.warn("Unsupported Group Command")
   end
 
   #############
@@ -328,10 +330,10 @@ module Mongodb2CassandraOperation
       command = "INSERT INTO #{name} "
       command += "(" + filtered_kv["key"] + ") VALUES "
       command += "(" + filtered_kv["value"] + ");"
-      return cassandra_exec(command)
+      cassandra_exec(command)
     else
       @logger.warn("Not Found Table [#{name}]. Please Create Table @ INSERT .")
-      return false
+      false
     end
   end
 

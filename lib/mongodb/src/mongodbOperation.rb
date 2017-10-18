@@ -93,7 +93,6 @@ module MongodbOperation
       results = []
       unless rows.size.zero?
         rows.each do |row|
-          row.gsub(":", "=>")
           results.push(eval(row.gsub(":", "=>")))
         end
       end
