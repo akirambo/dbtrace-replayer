@@ -93,7 +93,7 @@ module CassandraTest
         expect(@tester.send(:cassandra_insert,args)).to eq "OK"
         expect(@tester.command).to eq "hmset"
         expect(@tester.key).to eq "t"
-        ans = ["c1","v1","c2","v2"]
+        ans = ["pkey","p1","c1","v1","c2","v2"]
         expect(@tester.value).to match ans
       end
       it "cassandra_select (key value)" do
@@ -151,7 +151,7 @@ module CassandraTest
         expect(@tester.send(:cassandra_update,args)).to eq "OK"
         expect(@tester.command).to eq "hmset"
         expect(@tester.key).to eq "t"
-        ans = ["c1","v1","c2","v2"]
+        ans = ["pkey","p1","c1","v1","c2","v2"]
         expect(@tester.value).to match ans
       end
       it "cassandra_delete (key value)" do
