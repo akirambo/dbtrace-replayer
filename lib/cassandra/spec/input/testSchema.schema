@@ -1,4 +1,0 @@
-
-CREATE TABLE testdb.string (key TEXT, value TEXT, primary key (key)) ;
-CREATE TABLE testdb.mongodb (mongoid TEXT, value TEXT, primary key (mongoid)) ;
-CREATE TABLE testdb.hash (key TEXT, field0 TEXT, field1 TEXT,primary key (key)) ;

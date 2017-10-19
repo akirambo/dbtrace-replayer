@@ -113,19 +113,11 @@ module TestRunner
     case logtype
     when "cassandra"
       ret.push("-i cql3")
-      ret.push("#{prefix_dir}/cql3.log")
-      ret.push("--schema #{prefix_dir}/cql3.schema")
     when "memcached"
       ret.push("-i binary")
-      ret.push("#{prefix_dir}/memcached_all_command_binary_protocol.log")
-      ret.push("--schema #{prefix_dir}/memcached_all_command.schema")
-    when "mongodb"
-      ret.push("#{prefix_dir}/all_command.log")
-      ret.push("--schema #{prefix_dir}/mongodb_all_command.schema")
-    when "redis"
-      ret.push("#{prefix_dir}/redis_all_command.log")
-      ret.push("--schema #{prefix_dir}/redis_all_command.schema")
     end
+    ret.push("#{prefix_dir}/all_command.log")
+    ret.push("--schema #{prefix_dir}/all_command.schema")
     ret.join(" ")
   end
 end

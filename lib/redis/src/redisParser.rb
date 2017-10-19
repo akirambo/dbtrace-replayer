@@ -58,7 +58,6 @@ class RedisParser < AbstractDBParser
     %w[incr incrby decr decrby srem hincrby hdel rem zincrby ltrim lrem zremrangebyscore zremrangebyrank del].each do |name|
       @command2basic[name] = "update"
     end
-
     ## Append Pattern #5 SCAN
     %w[lrange hgetall hkeys hvals hlen smembers scard zcount zcard zrank zrevrank zrange zrangebyscore zrevrange zscore llen].each do |name|
       @command2basic[name] = "scan"

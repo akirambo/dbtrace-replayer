@@ -7,7 +7,7 @@ RSpec.describe 'Memcached Parser Unit Test' do
   context 'Parser' do
     before(:each) do
       dir = File.dirname(__FILE__)
-      @filename = "#{dir}/input/memcached_all_command_binary_protocol.log"
+      @filename = "#{dir}/input/all_command.log"
       logger = DummyLogger.new
       option = {
         :inputFormat => "basic"
