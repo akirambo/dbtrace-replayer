@@ -1,0 +1,2 @@
+
+CREATE TABLE testdb.testcf (field0 TEXT, field1 TEXT, field2 INT, field3 INT, field4 INT, primary key (field0));

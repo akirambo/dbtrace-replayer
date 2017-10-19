@@ -75,3 +75,57 @@ module Runner
     sh "#{executer} #{options}"
   end
 end
+
+module TestRunner  
+  def test_multi_logs(logtypes, dbtype)
+    logtypes.each do |logtype|
+      test(logtype, dbtype)
+    end
+  end
+
+  def test(logtype, dbtype)
+    executer = "bundle exec ruby ./bin/parser.rb "
+    begin
+      sh "#{executer} #{test_option(logtype, dbtype)}"
+    rescue => e
+      puts "#{executer} #{test_option(logtype, dbtype)}"
+      puts "[ERROR] :: #{e}"
+    end
+  end
+  
+  def test_option(logtype, dbtype)
+    files = getlog(logtype)
+    options = []
+    options.push(logtype)
+    options.push("-m run")
+    options.push("-t #{dbtype}")
+    options.push("-l DEBUG")
+    options.push(files)
+    if dbtype == "cassandra"
+      options.push("--keyspace testdb")
+    end
+    options.join(" ")
+  end
+  
+  def getlog(logtype)
+    ret = []
+    prefix_dir = "lib/#{logtype}/spec/input"
+    case logtype
+    when "cassandra"
+      ret.push("-i cql3")
+      ret.push("#{prefix_dir}/cql3.log")
+      ret.push("--schema #{prefix_dir}/cql3.schema")
+    when "memcached"
+      ret.push("-i binary")
+      ret.push("#{prefix_dir}/memcached_all_command_binary_protocol.log")
+      ret.push("--schema #{prefix_dir}/memcached_all_command.schema")
+    when "mongodb"
+      ret.push("#{prefix_dir}/all_command.log")
+      ret.push("--schema #{prefix_dir}/mongodb_all_command.schema")
+    when "redis"
+      ret.push("#{prefix_dir}/redis_all_command.log")
+      ret.push("--schema #{prefix_dir}/redis_all_command.schema")
+    end
+    ret.join(" ")
+  end
+end
