@@ -259,7 +259,7 @@ begin
     puts opt.banner
     abort
   end
-
+  
   ###### LOGGER #######
   File.open(option[:logFile], "w") { |f| } if option[:logFileClean]
   logger = Logger.new(option[:logFile])

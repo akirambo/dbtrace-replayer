@@ -55,6 +55,11 @@ class RedisRunner < AbstractRunner
     @port = 6379
     if ENV["REDIS_IPADDRESS"]
       @host = ENV["REDIS_IPADDRESS"]
+    else
+      host = get_ip_from_file("REDIS_IPADDRESS")
+      if host
+        @host = host
+      end
     end
     ## SETUP
     @parser = nil

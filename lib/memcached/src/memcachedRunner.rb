@@ -51,8 +51,13 @@ class MemcachedRunner < AbstractRunner
   def initialize(log_dbname, logger, option)
     @host = "127.0.0.1"
     @port = "11211"
-    unless ENV["MEMCACHED_IPADDRESS"].nil?
+    if ENV["MEMCACHED_IPADDRESS"]
       @host = "#{ENV["MEMCACHED_IPADDRESS"]}:#{@port}"
+    else
+      host = get_ip_from_file("MEMCACHED_IPADDRESS")
+      if host
+        @host = host
+      end
     end
     ## SETUP
     @client = nil

@@ -5,7 +5,8 @@ FROM ubuntu:16.04
 ## IF IT IS UNDER PROXY PLEASE SET ##
 #ENV http_proxy <HTTP_PROXY>
 #ENV https_proxy <HTTPS_PROXY>
-ENV LD_LIBRARY_PATH /usr/local/lib/x86_64-linux-gnu/
+ENV LD_LIBRARY_PATH /usr/local/lib/:/usr/local/lib/x86_64-linux-gnu/:${LD_LIBRARY_PATH}
+
 ################ FOR TRIAL ###################
 ENV http_proxy="http://proxy.pdl.cmu.edu:8080" \
      https_proxy="http://proxy.pdl.cmu.edu:8080"

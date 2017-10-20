@@ -52,6 +52,11 @@ class MongodbRunner < AbstractRunner
     @port = "27017"
     if ENV["MONGODB_IPADDRESS"]
       @host = ENV["MONGODB_IPADDRESS"]
+    else
+      host = get_ip_from_file("MONGODB_IPADDRESS")
+      if host
+        @host = host
+      end
     end
     ## SETUP
     @client = nil

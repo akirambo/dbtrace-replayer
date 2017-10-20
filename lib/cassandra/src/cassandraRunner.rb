@@ -49,8 +49,13 @@ class CassandraRunner < AbstractRunner
   def initialize(log_dbname, logger, option)
     ## SETUP
     @host = "127.0.0.1"
-    unless ENV["CASSANDRA_IPADDRESS"].nil?
+    if ENV["CASSANDRA_IPADDRESS"]
       @host = ENV["CASSANDRA_IPADDRESS"]
+    else
+      host = get_ip_from_file("CASSANDRA_IPADDRESS")
+      if host
+        @host = host
+      end
     end
     @client = nil
     @parser = nil

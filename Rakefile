@@ -4,53 +4,37 @@
 ###########
 require_relative "./lib/tools/runner"
 
-desc "Run bundle install"
-namespace :setup do
-  task :bundle do
-    sh "bundle install --path vender/bundle"
-  end
-  task :redis do
-    sh "cd lib/redis/src/cxx; rake build"
-  end
-  task :memcached do
-    sh "cd lib/memcached/src/cxx; rake build"
-  end
-  task :mongodb do
-    sh "cd lib/mongodb/src/cxx; rake build"
-  end
-  task :cassandra do
-    sh "cd lib/cassandra/src/cxx; rake build"
-  end
+desc "Install Packages"
+task :install do
+  sh "cd lib/cassandra/src/cxx; rake init"
+  sh "cd lib/memcached/src/cxx; rake init"
+  sh "cd lib/mongodb/src/cxx; rake init"
+  sh "cd lib/redis/src/cxx; rake init"
 end
 
-desc "Install Packages"
-namespace :install do
-  task :cassandra do
-    sh "cd lib/cassandra/src/cxx; rake init"
-  end
-  task :memcached do
-    sh "cd lib/memcached/src/cxx; rake init"
-  end
-  task :mongodb do
-    sh "cd lib/mongodb/src/cxx; rake init"
-  end
-  task :redis do
-    sh "cd lib/redis/src/cxx; rake init"
-  end
+desc "Bundle install"
+task :bundle do
+  sh "bundle install --path vender/bundle"
+end
+
+desc "Build Cxx Drivers"
+task :build do
+  sh "cd lib/redis/src/cxx; rake build"
+  sh "cd lib/memcached/src/cxx; rake build"
+  sh "cd lib/mongodb/src/cxx; rake build"
+  sh "cd lib/cassandra/src/cxx; rake build"
 end
 
 #############
 ## CLEANER ##
 #############
-namespace :clean do
-  desc "Remove files " 
-  task :files do
-    sh "rm -f *.log *.csv *.png"
-  end
-  desc "Distclean"
-  task :all do
-    sh "rm -rf vender output *.log *.query *.summary *.csv *.png"
-  end
+desc "Remove files " 
+task :clean do
+  sh "rm -f *.log *.csv *.png"
+end
+desc "Distclean"
+task :distclean do
+  sh "rm -rf vender output *.log *.query *.summary *.csv *.png"
 end
 
 ############
@@ -105,34 +89,37 @@ end
 ###############
 ## UNIT TEST ##
 ###############
+desc "Run All Unit Tests" 
+task :unit_test do
+  sh "bundle exec rspec lib/**/spec/*Unit_spec.rb lib/common/spec/"
+end
+
+desc "Show Coverage http://IP_ADDRESS:8000"
+task :coverage do
+  sh "bundle exec ruby bin/webPageForCoverage.rb"
+end
+
+
+## Hide Command ##
 namespace :unitTest do
-  desc "Run All Unit Tests" 
-  task :all do
-    sh "bundle exec rspec lib/**/spec/*Unit_spec.rb lib/common/spec/"
-  end
-  desc "lib/common [utils,metircs]" 
   task :common do
     sh "bundle exec rspec lib/common/spec/"
   end
-  desc "Redis Unit Test" 
+  #desc "Redis Unit Test" 
   task :redis do
     sh "bundle exec rspec lib/redis/spec/*Unit_spec.rb"
   end
-  desc "Mongodb Unit Test" 
+  #desc "Mongodb Unit Test" 
   task :mongodb do
     sh "bundle exec rspec lib/mongodb/spec/*Unit_spec.rb"
   end
-  desc "Memcached Unit Test"
+  #desc "Memcached Unit Test"
   task :memcached do
     sh "bundle exec rspec lib/memcached/spec/*Unit_spec.rb"
   end
-  desc "Cassandra Unit Test"
+  #desc "Cassandra Unit Test"
   task :cassandra do
     sh "bundle exec rspec lib/cassandra/spec/*Unit_spec.rb"
-  end
-  desc "Show Coverage http://IP_ADDRESS:8000"
-  task :coverage do
-    sh "bundle exec ruby bin/webPageForCoverage.rb"
   end
 end
 
@@ -191,3 +178,4 @@ task :test_ycsb_cassandra do
   system("bundle exec rspec lib/cassandra/spec/cassandra_ycsb_spec.rb")
 end
 =end
+

@@ -54,6 +54,23 @@ class AbstractRunner
     setup_argument_parser
   end
 
+  def get_ip_from_file(name)
+    path = File.expand_path(__FILE__).sub("lib/common/abstract_runner.rb", "")
+    if File.exist?("#{path}/database.config")
+      File.open("#{path}/database.config", "r") do |f|
+        line = f.gets
+        while line
+          data = line.split(",")
+          if data.include?(name)
+            return data[1].to_s.sub("\n", "")
+          end
+          line = f.gets
+        end
+      end
+    end
+    nil
+  end
+
   def setup_argument_parser
     case @option[:sourceDB].upcase
     when "MONGODB" then

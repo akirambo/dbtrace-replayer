@@ -19,47 +19,23 @@ It is diffcult and costly work to port NoSQL database processes to other NoSQL d
 |Mongodb|v2.6 to v3.2|
 |Cassandra|3.0 - 3.6|
 
-## Quick Trial(Start)
-- Under Construction
-
-## Installation
-- ruby 2.x or later
-- rake
-- bundler
-
-### Setup Databases
- Please setup one or more databases from the following databases.
- - memcached
- - redis
- - mongodb
- - cassandra
-
-### Setup This tool
-It is required sudo command to finish setup phase.
-
-For ALL
+## Quick Start with docker
+Please set up docker on your machine.
+- Build docker container
 ```
-rake setup:bundle
+ ruby bin/docker.rb build
 ```
-
-For Redis
+- Run TEST
 ```
-rake setup:redis
+ # Unit Test
+ ruby bin/docker.rb unittest
+ # Test With Database
+ ruby bin/docker.rb test
 ```
-
-For Memcached
+- Run Execute
 ```
-rake setup:memcached
-```
-
-For Mongodb
-```
-rake setup:mognodb
-```
-
-For Cassandra
-```
-rake setup:cassandra
+ ruby bin/docker.rb rake run [redis,mongodb]
+ ruby bin/docker.rb run TRACE_FILE_NAME
 ```
 
 ## How to Replay Traces
