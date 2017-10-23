@@ -52,10 +52,8 @@ module Cassandra2RedisOperation
       if args["args"].class == Hash
         tmp = []
         args["args"].each do |k, v|
-          if k != primarykey
-            tmp.push(k)
-            tmp.push(v)
-          end
+          tmp.push(k)
+          tmp.push(v)
         end
         args["args"] = tmp
       end
