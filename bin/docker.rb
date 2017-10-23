@@ -114,7 +114,7 @@ class DockerRunner
 
   def unittest(_ = nil)
     start
-    run("rake unitTest:all")
+    run("rake unit_test")
   end
 
   def test(_ = nil)

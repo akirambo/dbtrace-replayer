@@ -7,11 +7,6 @@ FROM ubuntu:16.04
 #ENV https_proxy <HTTPS_PROXY>
 ENV LD_LIBRARY_PATH /usr/local/lib/:/usr/local/lib/x86_64-linux-gnu/:${LD_LIBRARY_PATH}
 
-################ FOR TRIAL ###################
-ENV http_proxy="http://proxy.pdl.cmu.edu:8080" \
-     https_proxy="http://proxy.pdl.cmu.edu:8080"
-##############################################
-
 RUN apt-get update && \
     apt-get install -y apt-utils gcc git g++ make ruby ruby-dev sudo && \
     gem install bundler rake && \
