@@ -30,6 +30,7 @@
 require "optparse"
 class CommandLine
   COMMANDS = {
+    "build" => "Docker build replay images",
     "rm" => "Remove container",
     "unittest" => "Run UNIT TEST ( run rake unitTest:all)",
     "test" => "Run TEST with Databases (run rake test:all)",

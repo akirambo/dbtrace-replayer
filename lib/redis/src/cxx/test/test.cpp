@@ -50,12 +50,8 @@ void showDetail(const char* reply){
     std::cout << "=================" << std::endl;
 }
 
-void syncTest(RedisCxxRunner *client, char *ip){
+void syncTest(RedisCxxRunner *client, char *env_ip){
     // SET
-    const char *env_ip = getenv("REDIS_IPADDRESS");
-    if(env_ip == NULL){
-      env_ip = "127.0.0.1";
-    }
     client->syncConnect(env_ip,6379);
     if(client->syncExecuter("set aaa BBBB")){
 	std::cout << "TEST(cxx) [set data] :: PASSED" << std::endl;
@@ -156,13 +152,9 @@ void syncTest(RedisCxxRunner *client, char *ip){
     client->syncClose();
 }
 
-void asyncTest(RedisCxxRunner* client, char *ip){
+void asyncTest(RedisCxxRunner* client, char *env_ip){
     /** Async Test(1st) **/
     client->resetDuration();
-    const char *env_ip = getenv("REDIS_IPADDRESS");
-    if(env_ip == NULL){
-      env_ip = "127.0.0.1";
-    }
     client->asyncConnect(env_ip,6379);
     client->commitQuery("set test11 GOOD");
     client->commitQuery("get test11");
@@ -259,10 +251,6 @@ int main(){
     asyncTest(client, env_ip);
 
     // Specific Test 
-    const char *env_ip = getenv("REDIS_IPADDRESS");
-    if(env_ip == NULL){
-      env_ip = "127.0.0.1";
-    }
     client->syncConnect(env_ip,6379);
     client->syncExecuter("FLUSHALL");
     client->syncExecuter("SADD test001 '{\"name\":\"p001\"}'");
