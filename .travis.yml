@@ -15,7 +15,7 @@ addons:
 
 install:
  - gem install bundler rake
- - rake setup:bundle
+ - rake bundle
 
 
 before_script:
