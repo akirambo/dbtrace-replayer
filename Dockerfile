@@ -21,20 +21,15 @@ WORKDIR /home/replayer/
 # BUILD Database Trace Replayer
 RUN git clone https://github.com/akirambo/dbtrace-replayer.git
 WORKDIR /home/replayer/dbtrace-replayer
-RUN rake install:cassandra && \
-    rake install:redis && \
-    rake install:memcached && \
-    rake install:mongodb 
+RUN rake instal
 
 RUN chown replayer:dbtrace -R ../dbtrace-replayer/
 
 USER replayer
 WORKDIR /home/replayer/dbtrace-replayer
-RUN rake setup:bundle && \
-    rake setup:redis && \
-    rake setup:memcached && \
-    rake setup:cassandra && \
-    rake setup:mongodb
+RUN rake bundle && \
+    rake build
+
 
 
 
