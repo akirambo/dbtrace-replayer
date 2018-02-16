@@ -25,7 +25,7 @@ before_script:
  - sudo rm /etc/apt/sources.list.d/mongodb-3.2.list
 
 script:
- - rake unitTest:all
+ - rake unit_test
 
 after_script:
  # Preferably you will run test-reporter on branch update events. But

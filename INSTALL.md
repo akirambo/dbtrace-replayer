@@ -17,26 +17,7 @@ It is required sudo command to finish setup phase.
 
 For ALL
 ```
-rake setup:bundle
-```
-
-For Redis
-```
-rake setup:redis
-```
-
-For Memcached
-```
-rake setup:memcached
-```
-
-For Mongodb
-```
-rake setup:mognodb
-```
-
-For Cassandra
-```
-rake setup:cassandra
+rake bundle
+rake install
 ```
 
