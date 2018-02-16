@@ -22,7 +22,6 @@ before_script:
  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
  - chmod +x ./cc-test-reporter
  - ./cc-test-reporter before-build
- - sudo rm /etc/apt/sources.list.d/mongodb-3.2.list
 
 script:
  - rake unit_test
